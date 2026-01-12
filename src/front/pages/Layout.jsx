@@ -1,19 +1,23 @@
-import { Outlet } from "react-router-dom/dist"
-import ScrollToTop from "../components/ScrollToTop"
-import Navbar  from "../components/Navbar"
-import Footer from "../components/Footer"
+import { Outlet } from "react-router-dom";
+import Navbar from "../components/Navbar";
+import SidebarLayout from "../components/Sidebar";
+import Footer from "../components/Footer";
 
-// Base component that maintains the navbar and footer throughout the page and the scroll to top functionality.
 export const Layout = () => {
-    return (
-         <ScrollToTop>
-            <Navbar />
-            
-            <main>
-                <Outlet />
-            </main>
+  return (
+    <div className="h-screen flex flex-col">
+      {/* Navbar siempre arriba */}
+      <Navbar />
 
-            <Footer />
-        </ScrollToTop>
-    )
-}
+      {/* Zona central: sidebar + contenido */}
+      <div className="flex flex-1 overflow-hidden">
+        <SidebarLayout />
+
+    
+      </div>
+
+      {/* Footer  */}
+      <Footer />
+    </div>
+  );
+};

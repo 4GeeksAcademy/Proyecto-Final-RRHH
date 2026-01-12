@@ -23,7 +23,7 @@ export default function Navbar() {
     activo: "bg-green-500",
     ausente: "bg-yellow-400",
     ocupado: "bg-red-500",
-    nomolestar: "bg-gray-800",
+    "no molestar": "bg-gray-800",
   };
 
   // Cerrar menús al hacer clic fuera
@@ -55,11 +55,7 @@ export default function Navbar() {
                 TeamCore
               </span>
             </a>
-            <input
-              type="text"
-              placeholder="Search"
-              className="hidden md:block bg-white border border-gray-300 text-black text-sm rounded-lg w-96 p-2.5"
-            />
+            
           </div>
 
           {/* RIGHT */}
@@ -79,25 +75,6 @@ export default function Navbar() {
                 <div className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-lg border border-gray-100 z-50">
                     <div className="p-4 font-semibold text-center text-black border-b">Notifications</div>
                     <div className="p-4 text-sm text-gray-600">No new notifications</div>
-                </div>
-                )}
-            </div>
-
-            {/* Apps */}
-            <div className="relative">
-                <button
-                onClick={() => setAppsOpen(!appsOpen)}
-                className="p-2 text-black rounded-lg hover:bg-gray-100"
-                >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-                </svg>
-                </button>
-                {appsOpen && (
-                <div className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-lg p-4 grid grid-cols-3 gap-4 text-sm text-black border border-gray-100 z-50">
-                    {["Sales", "Users", "Inbox", "Profile", "Settings", "Logout"].map((item) => (
-                    <button key={item} className="p-2 rounded hover:bg-gray-100">{item}</button>
-                    ))}
                 </div>
                 )}
             </div>
