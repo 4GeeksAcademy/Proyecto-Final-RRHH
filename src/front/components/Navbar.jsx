@@ -1,12 +1,13 @@
 
 import React, { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 
 export default function Navbar() {
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [appsOpen, setAppsOpen] = useState(false);
   const [userOpen, setUserOpen] = useState(false);
   const [status, setStatus] = useState("activo");
-  
+
   // Estados para el selector de idiomas
   const [langOpen, setLangOpen] = useState(false);
   const [selectedLang, setSelectedLang] = useState('English (US)');
@@ -55,7 +56,7 @@ export default function Navbar() {
                 TeamCore
               </span>
             </a>
-            
+
           </div>
 
           {/* RIGHT */}
@@ -63,20 +64,20 @@ export default function Navbar() {
 
             {/* Notifications */}
             <div className="relative">
-                <button
+              <button
                 onClick={() => setNotificationsOpen(!notificationsOpen)}
                 className="p-2 text-black rounded-lg hover:bg-gray-100"
-                >
+              >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                 </svg>
-                </button>
-                {notificationsOpen && (
+              </button>
+              {notificationsOpen && (
                 <div className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-lg border border-gray-100 z-50">
-                    <div className="p-4 font-semibold text-center text-black border-b">Notifications</div>
-                    <div className="p-4 text-sm text-gray-600">No new notifications</div>
+                  <div className="p-4 font-semibold text-center text-black border-b">Notifications</div>
+                  <div className="p-4 text-sm text-gray-600">No new notifications</div>
                 </div>
-                )}
+              )}
             </div>
 
             {/* User Avatar & Dropdown */}
@@ -134,11 +135,11 @@ export default function Navbar() {
                         className="flex items-center justify-between w-full px-4 py-2 hover:bg-gray-100 text-sm font-medium"
                       >
                         <div className="flex items-center gap-2">
-                           🌐 <span>{selectedLang}</span>
+                          🌐 <span>{selectedLang}</span>
                         </div>
-                        <svg className={`w-4 h-4 transition-transform ${langOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                        <svg className={`w-4 h-4 transition-transform ${langOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
                       </button>
-                      
+
                       {langOpen && (
                         <div className="bg-white border-t">
                           {languages.map((lang) => (
@@ -159,10 +160,12 @@ export default function Navbar() {
 
                     {/* SIGN OUT */}
                     <li className="flex items-center gap-3 px-4 py-2 hover:bg-red-50 text-red-600 cursor-pointer">
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                      </svg>
-                      <span className="font-medium">Sign out</span>
+                      <Link to="/login">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                        </svg>
+                        <span className="font-medium">Sign out</span>
+                      </Link>
                     </li>
                   </ul>
                 </div>
