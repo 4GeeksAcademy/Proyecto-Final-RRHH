@@ -7,8 +7,15 @@ import {
 } from "react-router-dom";
 import { Layout } from "./pages/Layout";
 import { Home } from "./pages/Home";
-import { Single } from "./pages/Single";
-import { Demo } from "./pages/Demo";
+import Fichaje from "./pages/Fichaje";
+import Mensajes from "./pages/Mensajes";
+import Reuniones from "./pages/Reuniones";
+import Tareas from "./pages/Tareas";
+import Calendario from "./pages/Calendario";
+import Notificaciones from "./pages/Notificaciones";
+import Administracion from "./pages/Administracion";
+import Dashboard from "./pages/Dashboard";
+
 
 export const router = createBrowserRouter(
     createRoutesFromElements(
@@ -23,8 +30,16 @@ export const router = createBrowserRouter(
 
         {/* Nested Routes: Defines sub-routes within the BaseHome component. */}
         <Route path= "/" element={<Home />} />
-        <Route path="/single/:theId" element={ <Single />} />  {/* Dynamic route for single items */}
-        <Route path="/demo" element={<Demo />} />
+        <Route path= "/fichaje" element={<Fichaje />} />
+        <Route path= "/mensajes" element={<Mensajes />} />
+        <Route path= "/reuniones" element={<Reuniones />} />
+        <Route path= "/tareas" element={<Tareas />} />
+        <Route path= "/calendario" element={<Calendario />} />
+        <Route path= "/notificaciones" element={<Notificaciones />} />
+        <Route path= "/administracion" element={<Administracion />} />
+        <Route path= "/dashboard" element={<Dashboard />} />
+
+
       </Route>
     )
 );
