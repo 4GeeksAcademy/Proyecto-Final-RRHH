@@ -16,7 +16,7 @@ export default function Navbar() {
     { name: 'English (US)', code: 'en' },
     { name: 'Deutsch', code: 'de' },
     { name: 'Italiano', code: 'it' },
-    { name: '中文 (繁體)', code: 'zh-TW' },
+    { name: '中文 (繁體)', code: 'zh-TW' }, // se le añade TW, sinó google lo traduce al chino simplificado. solo zh:simplificado + TH = chino tradicional
   ];
 
   const changeLanguage = (langCode) => {
@@ -51,7 +51,7 @@ export default function Navbar() {
 
   return (
     <div className="antialiased bg-white pt-16">
-      {/*  Google Translate */}
+      {/*  Google Translate widget (oculto) */}
       <div id="google_translate_element" className="hidden"></div>
 
       <nav className="fixed left-0 right-0 top-0 z-50 bg-white border-b border-gray-200 px-4 py-2.5">
@@ -138,7 +138,7 @@ export default function Navbar() {
                       <span>Settings</span>
                     </li>
 
-                    {/* --- IDIOMAS (CORREGIDO) --- */}
+                    {/*IDIOMAS*/}
                     <li className="relative border-t border-b bg-gray-50">
                       <button
                         onClick={() => setLangOpen(!langOpen)}
@@ -155,7 +155,7 @@ export default function Navbar() {
                       {langOpen && (
                         <div className="bg-white border-t">
                           {languages.map((lang) => (
-                            // 🔸 AHORA LLAMA A changeLanguage
+                            // changeLanguage
                             <button
                               key={lang.code}
                               onClick={() => changeLanguage(lang.code)}
