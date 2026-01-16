@@ -7,9 +7,11 @@ export default function Calendario() {
       <h1 className="text-3xl mb-4 text-black">
         Página de calendario
       </h1>
-      <p>
-        <InlineWidget url="https://calendly.com/" />
-      </p>
+      <div className="contenedor-calendly">
+        <p>
+          <InlineWidget url="https://calendly.com/" />
+        </p>
+      </div>
     </section>
   );
 }

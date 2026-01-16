@@ -18,3 +18,12 @@ footer {
     text-align: center;
     padding: 1rem;
 }
+
+.contenedor-calendly {
+  width: 100%;
+  max-width: 800px; /* Ancho máximo deseado */
+  margin: 0 auto;   /* Centrar */
+  border: 2px solid #333; /* Borde personalizado */
+  border-radius: 10px;
+  overflow: hidden; /* Asegura que el borde redondeado funcione */
+}
