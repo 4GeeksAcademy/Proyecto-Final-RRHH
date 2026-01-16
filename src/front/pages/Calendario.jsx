@@ -1,3 +1,6 @@
+import { InlineWidget } from "react-calendly";
+
+
 export default function Calendario() {
   return (
     <section className="">
@@ -5,8 +8,7 @@ export default function Calendario() {
         Página de calendario
       </h1>
       <p>
-        <div className="calendly-inline-widget" data-url="https://calendly.com/fillaux33/30min" style="min-width:320px;height:700px;"></div>
-        <script type="text/javascript" src="https://assets.calendly.com/assets/external/widget.js" async></script>
+        <InlineWidget url="https://calendly.com/" />
       </p>
     </section>
   );
