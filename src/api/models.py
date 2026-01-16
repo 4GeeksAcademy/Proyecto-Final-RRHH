@@ -234,14 +234,12 @@ class Proyecto(db.Model):
             "estado": self.estado.value
         }
 
-
 proyecto_user = Table(
     "proyecto_user",
     db.metadata,
     Column("user_id", ForeignKey("user.id")),
     Column("proyecto_id", ForeignKey("proyecto.id"))
 )
-
 
 class Tarea(db.Model):
     __tablename__ = "tarea"

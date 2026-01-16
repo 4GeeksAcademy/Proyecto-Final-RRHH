@@ -15,6 +15,7 @@ import Calendario from "./pages/Calendario";
 import Notificaciones from "./pages/Notificaciones";
 import Administracion from "./pages/Administracion";
 import Dashboard from "./pages/Dashboard";
+import Login from "./pages/Login";
 
 
 export const router = createBrowserRouter(
@@ -26,10 +27,15 @@ export const router = createBrowserRouter(
     // Note: The child paths of the Layout element replace the Outlet component with the elements contained in the "element" attribute of these child paths.
 
       // Root Route: All navigation will start from here.
+    <>
+      {/*Ruta Publica*/}
+       <Route path= "/login" element={<Login />} />
+
+        {/*Ruta Privada*/}
       <Route path="/" element={<Layout />} errorElement={<h1>Not found!</h1>} >
 
         {/* Nested Routes: Defines sub-routes within the BaseHome component. */}
-        <Route path= "/" element={<Home />} />
+        <Route path= "/" element={<Dashboard />} />
         <Route path= "/fichaje" element={<Fichaje />} />
         <Route path= "/mensajes" element={<Mensajes />} />
         <Route path= "/reuniones" element={<Reuniones />} />
@@ -37,9 +43,10 @@ export const router = createBrowserRouter(
         <Route path= "/calendario" element={<Calendario />} />
         <Route path= "/notificaciones" element={<Notificaciones />} />
         <Route path= "/administracion" element={<Administracion />} />
-        <Route path= "/dashboard" element={<Dashboard />} />
-
+        
+        
 
       </Route>
+    </>
     )
 );
