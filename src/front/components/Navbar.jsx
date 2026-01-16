@@ -11,12 +11,12 @@ export default function Navbar() {
   const [selectedLang, setSelectedLang] = useState('English (US)');
   const dropdownRef = useRef(null);
 
-  // 
+  
   const languages = [
     { name: 'English (US)', code: 'en' },
     { name: 'Deutsch', code: 'de' },
     { name: 'Italiano', code: 'it' },
-    { name: '中文 (繁體)', code: 'zh-TW' }, // se le añade TW, sinó google lo traduce al chino simplificado. solo zh:simplificado + TH = chino tradicional
+    { name: '中文 (繁體)', code: 'zh-TW' }, // se le añade TW, sinó google tiene que coincidior con google sinó, no llega a traducirlo :(
   ];
 
   const changeLanguage = (langCode) => {
