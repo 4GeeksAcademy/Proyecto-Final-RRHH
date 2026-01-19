@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: a7b70ff74a7d
+Revision ID: ccd3508d7b6e
 Revises: 
-Create Date: 2026-01-15 15:49:47.740342
+Create Date: 2026-01-19 18:17:09.502930
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'a7b70ff74a7d'
+revision = 'ccd3508d7b6e'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -22,25 +22,6 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('nombre', sa.String(length=50), nullable=False),
     sa.Column('imagen', sa.String(), nullable=False),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_table('horario',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('name', sa.String(length=100), nullable=False),
-    sa.Column('lunes_entrada', sa.Time(), nullable=False),
-    sa.Column('lunes_salida', sa.Time(), nullable=False),
-    sa.Column('martes_entrada', sa.Time(), nullable=False),
-    sa.Column('martes_salida', sa.Time(), nullable=False),
-    sa.Column('miercoles_entrada', sa.Time(), nullable=False),
-    sa.Column('miercoles_salida', sa.Time(), nullable=False),
-    sa.Column('jueves_entrada', sa.Time(), nullable=False),
-    sa.Column('jueves_salida', sa.Time(), nullable=False),
-    sa.Column('viernes_entrada', sa.Time(), nullable=False),
-    sa.Column('viernes_salida', sa.Time(), nullable=False),
-    sa.Column('sabado_entrada', sa.Time(), nullable=True),
-    sa.Column('sabado_salida', sa.Time(), nullable=True),
-    sa.Column('domingo_entrada', sa.Time(), nullable=True),
-    sa.Column('domingo_salida', sa.Time(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('proyecto',
@@ -65,6 +46,27 @@ def upgrade():
     sa.Column('puede_crear_reunion', sa.Boolean(), nullable=False),
     sa.Column('puede_compartir_reunion', sa.Boolean(), nullable=False),
     sa.Column('puede_invitar_proyectos', sa.Boolean(), nullable=False),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('horario',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('name', sa.String(length=100), nullable=False),
+    sa.Column('lunes_entrada', sa.Time(), nullable=False),
+    sa.Column('lunes_salida', sa.Time(), nullable=False),
+    sa.Column('martes_entrada', sa.Time(), nullable=False),
+    sa.Column('martes_salida', sa.Time(), nullable=False),
+    sa.Column('miercoles_entrada', sa.Time(), nullable=False),
+    sa.Column('miercoles_salida', sa.Time(), nullable=False),
+    sa.Column('jueves_entrada', sa.Time(), nullable=False),
+    sa.Column('jueves_salida', sa.Time(), nullable=False),
+    sa.Column('viernes_entrada', sa.Time(), nullable=False),
+    sa.Column('viernes_salida', sa.Time(), nullable=False),
+    sa.Column('sabado_entrada', sa.Time(), nullable=True),
+    sa.Column('sabado_salida', sa.Time(), nullable=True),
+    sa.Column('domingo_entrada', sa.Time(), nullable=True),
+    sa.Column('domingo_salida', sa.Time(), nullable=True),
+    sa.Column('empresa_id', sa.Integer(), nullable=False),
+    sa.ForeignKeyConstraint(['empresa_id'], ['empresa.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('tarea',
@@ -126,9 +128,9 @@ def downgrade():
     op.drop_table('fichaje')
     op.drop_table('user')
     op.drop_table('tarea')
+    op.drop_table('horario')
     op.drop_table('rol')
     op.drop_table('reunion')
     op.drop_table('proyecto')
-    op.drop_table('horario')
     op.drop_table('empresa')
     # ### end Alembic commands ###
