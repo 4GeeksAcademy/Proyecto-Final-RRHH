@@ -7,11 +7,19 @@ from typing import List
 
 db = SQLAlchemy()
 
+
 class EstadoUser(enum.Enum):
     activo = "Activo"
     ausente = "Ausente"
     ocupado = "Ocupado"
     no_molestar = "No Molestar"
+
+
+class Estado(enum.Enum):
+    en_proceso = "En Proceso"
+    pendiente = "Pendiente"
+    finalizado = "Finalizado"
+
 
 class User(db.Model):
     __tablename__ = "user"
@@ -19,25 +27,34 @@ class User(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     nombre: Mapped[str] = mapped_column(String(30), nullable=False)
     apellidos: Mapped[str] = mapped_column(String(50), nullable=False)
-    email: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
+    email: Mapped[str] = mapped_column(
+        String(120), unique=True, nullable=False)
     password: Mapped[str] = mapped_column(nullable=False)
     dni: Mapped[str] = mapped_column(String(9), unique=True, nullable=False)
-    foto_perfil: Mapped[str] = mapped_column(String(), nullable=True, default="logo.png")
-    estado: Mapped[EstadoUser] = mapped_column(Enum(EstadoUser), nullable=False, default=EstadoUser.activo)
+    foto_perfil: Mapped[str] = mapped_column(
+        String(), nullable=True, default="logo.png")
+    estado: Mapped[EstadoUser] = mapped_column(
+        Enum(EstadoUser), nullable=False, default=EstadoUser.activo)
     link_calendly: Mapped[str] = mapped_column(String(), nullable=True)
 
-    empresa_id: Mapped[int] = mapped_column(ForeignKey("empresa.id"), nullable=False)
+    empresa_id: Mapped[int] = mapped_column(
+        ForeignKey("empresa.id"), nullable=False)
     empresa: Mapped["Empresa"] = relationship(back_populates="users")
 
     rol_id: Mapped[int] = mapped_column(ForeignKey("rol.id"), nullable=True)
     rol: Mapped["Rol"] = relationship(back_populates="users")
 
-    horario_id: Mapped[int] = mapped_column(ForeignKey("horario.id"), nullable=True)
+    horario_id: Mapped[int] = mapped_column(
+        ForeignKey("horario.id"), nullable=True)
     horario: Mapped["Horario"] = relationship(back_populates="users")
 
-    reuniones: Mapped[List["Reunion"]] = relationship(secondary="reunion_user", back_populates="users")
-    
+    reuniones: Mapped[List["Reunion"]] = relationship(
+        secondary="reunion_user", back_populates="users")
+
     fichajes: Mapped[List["Fichaje"]] = relationship(back_populates="user")
+
+    proyectos: Mapped[List["Proyecto"]] = relationship(
+        secondary="proyecto_user", back_populates="users")
 
     def serialize(self):
         return {
@@ -54,6 +71,7 @@ class User(db.Model):
             "horario_id": self.horario_id
         }
 
+
 class Rol(db.Model):
     __tablename__ = "rol"
 
@@ -61,13 +79,15 @@ class Rol(db.Model):
     nombre: Mapped[str] = mapped_column(String(50), nullable=False)
     es_admin: Mapped[bool] = mapped_column(Boolean())
     puede_crear_reunion: Mapped[bool] = mapped_column(Boolean(), default=False)
-    puede_compartir_reunion: Mapped[bool] = mapped_column(Boolean(), default=False)
-    puede_invitar_proyectos: Mapped[bool] = mapped_column(Boolean(), default=False)
+    puede_compartir_reunion: Mapped[bool] = mapped_column(
+        Boolean(), default=False)
+    puede_invitar_proyectos: Mapped[bool] = mapped_column(
+        Boolean(), default=False)
 
     users: Mapped[List["User"]] = relationship(back_populates="rol")
 
     def serialize(self):
-        return{
+        return {
             "id": self.id,
             "nombre": self.nombre,
             "es_admin": self.es_admin,
@@ -75,7 +95,8 @@ class Rol(db.Model):
             "puede_compartir_reunion": self.puede_compartir_reunion,
             "puede_invitar_proyectos": self.puede_invitar_proyectos
         }
-    
+
+
 class Horario(db.Model):
     __tablename__ = "horario"
 
@@ -98,8 +119,11 @@ class Horario(db.Model):
 
     users: Mapped[List["User"]] = relationship(back_populates="horario")
 
+    empresa_id: Mapped[int] = mapped_column(ForeignKey("empresa.id"))
+    empresa: Mapped["Empresa"]  = relationship(back_populates="horarios")
+
     def serialize(self):
-        return{
+        return {
             "id": self.id,
             "name": self.name,
             "lunes_entrada": self.lunes_entrada,
@@ -116,8 +140,10 @@ class Horario(db.Model):
             "sabado_salida": self.sabado_salida,
             "domingo_entrada": self.domingo_entrada,
             "domingo_salida": self.domingo_salida,
+            "empresa_id": self.empresa_id
         }
-    
+
+
 class Empresa(db.Model):
     __tablename__ = "empresa"
 
@@ -127,13 +153,16 @@ class Empresa(db.Model):
 
     users: Mapped[List["User"]] = relationship(back_populates="empresa", cascade="all, delete-orphan")
 
+    horarios: Mapped[List["Horario"]] = relationship(back_populates="empresa", cascade="all, delete-orphan")
+
     def serialize(self):
-        return{
+        return {
             "id": self.id,
             "nombre": self.nombre,
             "imagen": self.imagen
         }
-    
+
+
 class Reunion(db.Model):
     __tablename__ = "reunion"
 
@@ -143,23 +172,26 @@ class Reunion(db.Model):
     hora_inicio: Mapped[datetime.time] = mapped_column(nullable=False)
     duracion: Mapped[datetime.time] = mapped_column(nullable=False)
 
-    users: Mapped[List["User"]] = relationship(secondary="reunion_user", back_populates="reuniones")
+    users: Mapped[List["User"]] = relationship(
+        secondary="reunion_user", back_populates="reuniones")
 
     def serialize(self):
-        return{
+        return {
             "id": self.id,
             "nombre": self.nombre,
             "link": self.link,
             "hora_inicio": self.hora_inicio,
             "duracion": self.duracion
         }
-    
+
+
 reunion_user = Table(
     "reunion_user",
     db.metadata,
     Column("user_id", ForeignKey("user.id")),
     Column("reunion_id", ForeignKey("reunion.id"))
 )
+
 
 class Fichaje(db.Model):
     __tablename__ = "fichaje"
@@ -173,10 +205,56 @@ class Fichaje(db.Model):
     user: Mapped["User"] = relationship(back_populates="fichajes")
 
     def serialize(self):
-        return{
+        return {
             "id": self.id,
             "entrada": self.entrada,
             "salida": self.salida,
             "fecha": self.fecha,
             "user_id": self.user_id
+        }
+
+
+class Proyecto(db.Model):
+    __tablename__ = "proyecto"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    nombre: Mapped[str] = mapped_column(String(100), nullable=False)
+    descripcion: Mapped[str] = mapped_column(String(), nullable=True)
+    estado: Mapped[Estado] = mapped_column(Enum(Estado), nullable=False, default=Estado.pendiente)
+
+    users: Mapped[List["User"]] = relationship(secondary="proyecto_user", back_populates="proyectos")
+
+    tareas: Mapped[List["Tarea"]] = relationship(back_populates="proyecto")
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "nombre": self.nombre,
+            "descripcion": self.descripcion,
+            "estado": self.estado.value
+        }
+
+proyecto_user = Table(
+    "proyecto_user",
+    db.metadata,
+    Column("user_id", ForeignKey("user.id")),
+    Column("proyecto_id", ForeignKey("proyecto.id"))
+)
+
+class Tarea(db.Model):
+    __tablename__ = "tarea"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    nombre: Mapped[str] = mapped_column(String(50), nullable=False)
+    estado: Mapped[Estado] = mapped_column(Enum(Estado), nullable=False, default=Estado.pendiente)
+
+    proyecto_id: Mapped[int] = mapped_column(ForeignKey("proyecto.id"), nullable=False)
+    proyecto: Mapped["Proyecto"] = relationship(back_populates="tareas")
+
+    def serialize(self):
+        return{
+            "id": self.id,
+            "nombre": self.nombre,
+            "estado": self.estado.value,
+            "proyecto_id": self.proyecto_id
         }
