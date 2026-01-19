@@ -56,7 +56,6 @@ export default function Navbar() {
   return (
     <div className="antialiased bg-white pt-16">
       {/*  Google Translate widget (oculto) */}
-      {/*  Google Translate widget (oculto) */}
       <div id="google_translate_element" className="hidden"></div>
 
       <nav className="fixed left-0 right-0 top-0 z-50 bg-white border-b border-gray-200 px-4 py-2.5">
@@ -72,7 +71,6 @@ export default function Navbar() {
               />
               <span className="text-2xl font-semibold text-black">TeamCore</span>
             </a>
-
           </div>
 
           {/* RIGHT */}
@@ -152,7 +150,7 @@ export default function Navbar() {
                       <span>Settings</span>
                     </li>
 
-                    {/*IDIOMAS*/}
+
                     {/*IDIOMAS*/}
                     <li className="relative border-t border-b bg-gray-50">
                       <button
@@ -161,9 +159,7 @@ export default function Navbar() {
                       >
                         <div className="flex items-center gap-2">
                           🌐 <span>{selectedLang}</span>
-                          🌐 <span>{selectedLang}</span>
                         </div>
-                        <svg className={`w-4 h-4 transition-transform ${langOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
                         <svg className={`w-4 h-4 transition-transform ${langOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
                       </button>
 
@@ -171,7 +167,6 @@ export default function Navbar() {
                       {langOpen && (
                         <div className="bg-white border-t">
                           {languages.map((lang) => (
-                            // changeLanguage
                             // changeLanguage
                             <button
                               key={lang.code}
@@ -187,12 +182,6 @@ export default function Navbar() {
 
                     {/* SIGN OUT */}
                     <li className="flex items-center gap-3 px-4 py-2 hover:bg-red-50 text-red-600 cursor-pointer">
-                      <Link to="/login">
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                        </svg>
-                        <span className="font-medium">Sign out</span>
-                      </Link>
                       <Link to="/login">
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
