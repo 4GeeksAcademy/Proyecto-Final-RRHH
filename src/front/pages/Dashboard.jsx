@@ -11,7 +11,7 @@ export default function Dashboard() {
         Panel de Control
       </h1>
       <p className="mb-6">Vista general de tu actividad</p>
-
+      
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 w-full">
         <Cards 
           titulo="Tiempo Trabajado"

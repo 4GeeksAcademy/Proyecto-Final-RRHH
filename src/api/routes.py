@@ -8,6 +8,7 @@ from flask_cors import CORS
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from sqlalchemy import select
 
+
 api = Blueprint('api', __name__)
 
 # Allow CORS requests to this API
