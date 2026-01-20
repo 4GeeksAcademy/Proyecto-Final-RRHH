@@ -7,7 +7,7 @@ export default function Fichaje() {
       <h1 className="text-3xl mb-4 text-black">
         Página de Fichaje
       </h1>
-      <p>Aquí va lo que escribiste</p>
+      <p>Aquí va lo que escribiste hola soy fichaje</p>
     </section>
   );
 }
