@@ -120,26 +120,26 @@ class Horario(db.Model):
     users: Mapped[List["User"]] = relationship(back_populates="horario")
 
     empresa_id: Mapped[int] = mapped_column(ForeignKey("empresa.id"))
-    empresa: Mapped["Empresa"]  = relationship(back_populates="horarios")
+    empresa: Mapped["Empresa"] = relationship(back_populates="horarios")
 
     def serialize(self):
         return {
             "id": self.id,
             "name": self.name,
-            "lunes_entrada": self.lunes_entrada,
-            "lunes_salida": self.lunes_salida,
-            "martes_entrada": self.martes_entrada,
-            "martes_salida": self.martes_salida,
-            "miercoles_entrada": self.miercoles_entrada,
-            "miercoles_salida": self.miercoles_salida,
-            "jueves_entrada": self.jueves_entrada,
-            "jueves_salida": self.jueves_salida,
-            "viernes_entrada": self.viernes_entrada,
-            "viernes_salida": self.viernes_salida,
-            "sabado_entrada": self.sabado_entrada,
-            "sabado_salida": self.sabado_salida,
-            "domingo_entrada": self.domingo_entrada,
-            "domingo_salida": self.domingo_salida,
+            "lunes_entrada": self.lunes_entrada.strftime("%H:%M") if self.lunes_entrada else None,
+            "lunes_salida": self.lunes_salida.strftime("%H:%M") if self.lunes_salida else None,
+            "martes_entrada": self.martes_entrada.strftime("%H:%M") if self.martes_entrada else None,
+            "martes_salida": self.martes_salida.strftime("%H:%M") if self.martes_salida else None,
+            "miercoles_entrada": self.miercoles_entrada.strftime("%H:%M") if self.miercoles_entrada else None,
+            "miercoles_salida": self.miercoles_salida.strftime("%H:%M") if self.miercoles_salida else None,
+            "jueves_entrada": self.jueves_entrada.strftime("%H:%M") if self.jueves_entrada else None,
+            "jueves_salida": self.jueves_salida.strftime("%H:%M") if self.jueves_salida else None,
+            "viernes_entrada": self.viernes_entrada.strftime("%H:%M") if self.viernes_entrada else None,
+            "viernes_salida": self.viernes_salida.strftime("%H:%M") if self.viernes_salida else None,
+            "sabado_entrada": self.sabado_entrada.strftime("%H:%M") if self.sabado_entrada else None,
+            "sabado_salida": self.sabado_salida.strftime("%H:%M") if self.sabado_salida else None,
+            "domingo_entrada": self.domingo_entrada.strftime("%H:%M") if self.domingo_entrada else None,
+            "domingo_salida": self.domingo_salida.strftime("%H:%M") if self.domingo_salida else None,
             "empresa_id": self.empresa_id
         }
 
@@ -151,9 +151,11 @@ class Empresa(db.Model):
     nombre: Mapped[str] = mapped_column(String(50), nullable=False)
     imagen: Mapped[str] = mapped_column(String(), nullable=False)
 
-    users: Mapped[List["User"]] = relationship(back_populates="empresa", cascade="all, delete-orphan")
+    users: Mapped[List["User"]] = relationship(
+        back_populates="empresa", cascade="all, delete-orphan")
 
-    horarios: Mapped[List["Horario"]] = relationship(back_populates="empresa", cascade="all, delete-orphan")
+    horarios: Mapped[List["Horario"]] = relationship(
+        back_populates="empresa", cascade="all, delete-orphan")
 
     def serialize(self):
         return {
@@ -180,10 +182,9 @@ class Reunion(db.Model):
             "id": self.id,
             "nombre": self.nombre,
             "link": self.link,
-            "hora_inicio": self.hora_inicio,
-            "duracion": self.duracion
+            "hora_inicio": self.hora_inicio.strftime("%H:%M") if self.hora_inicio else None,
+            "duracion": self.duracion.strftime("%H:%M") if self.duracion else None
         }
-
 
 reunion_user = Table(
     "reunion_user",
@@ -207,9 +208,9 @@ class Fichaje(db.Model):
     def serialize(self):
         return {
             "id": self.id,
-            "entrada": self.entrada,
-            "salida": self.salida,
-            "fecha": self.fecha,
+            "entrada": self.entrada.strftime("%H:%M") if self.entrada else None,
+            "salida": self.salida.strftime("%H:%M") if self.salida else None,
+            "fecha": self.fecha.strftime('%Y-%m-%d') if self.fecha else None,
             "user_id": self.user_id
         }
 
@@ -220,9 +221,11 @@ class Proyecto(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     nombre: Mapped[str] = mapped_column(String(100), nullable=False)
     descripcion: Mapped[str] = mapped_column(String(), nullable=True)
-    estado: Mapped[Estado] = mapped_column(Enum(Estado), nullable=False, default=Estado.pendiente)
+    estado: Mapped[Estado] = mapped_column(
+        Enum(Estado), nullable=False, default=Estado.pendiente)
 
-    users: Mapped[List["User"]] = relationship(secondary="proyecto_user", back_populates="proyectos")
+    users: Mapped[List["User"]] = relationship(
+        secondary="proyecto_user", back_populates="proyectos")
 
     tareas: Mapped[List["Tarea"]] = relationship(back_populates="proyecto")
 
@@ -231,8 +234,10 @@ class Proyecto(db.Model):
             "id": self.id,
             "nombre": self.nombre,
             "descripcion": self.descripcion,
-            "estado": self.estado.value
+            "estado": self.estado.value,
+            "tareas": [t.serialize() for t in self.tareas]
         }
+
 
 proyecto_user = Table(
     "proyecto_user",
@@ -241,18 +246,21 @@ proyecto_user = Table(
     Column("proyecto_id", ForeignKey("proyecto.id"))
 )
 
+
 class Tarea(db.Model):
     __tablename__ = "tarea"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     nombre: Mapped[str] = mapped_column(String(50), nullable=False)
-    estado: Mapped[Estado] = mapped_column(Enum(Estado), nullable=False, default=Estado.pendiente)
+    estado: Mapped[Estado] = mapped_column(
+        Enum(Estado), nullable=False, default=Estado.pendiente)
 
-    proyecto_id: Mapped[int] = mapped_column(ForeignKey("proyecto.id"), nullable=False)
+    proyecto_id: Mapped[int] = mapped_column(
+        ForeignKey("proyecto.id"), nullable=False)
     proyecto: Mapped["Proyecto"] = relationship(back_populates="tareas")
 
     def serialize(self):
-        return{
+        return {
             "id": self.id,
             "nombre": self.nombre,
             "estado": self.estado.value,
