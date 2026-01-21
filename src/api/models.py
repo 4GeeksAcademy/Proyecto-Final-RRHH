@@ -126,20 +126,20 @@ class Horario(db.Model):
         return {
             "id": self.id,
             "name": self.name,
-            "lunes_entrada": self.lunes_entrada,
-            "lunes_salida": self.lunes_salida,
-            "martes_entrada": self.martes_entrada,
-            "martes_salida": self.martes_salida,
-            "miercoles_entrada": self.miercoles_entrada,
-            "miercoles_salida": self.miercoles_salida,
-            "jueves_entrada": self.jueves_entrada,
-            "jueves_salida": self.jueves_salida,
-            "viernes_entrada": self.viernes_entrada,
-            "viernes_salida": self.viernes_salida,
-            "sabado_entrada": self.sabado_entrada,
-            "sabado_salida": self.sabado_salida,
-            "domingo_entrada": self.domingo_entrada,
-            "domingo_salida": self.domingo_salida,
+            "lunes_entrada": self.lunes_entrada.strftime("%H:%M") if self.lunes_entrada else None,
+            "lunes_salida": self.lunes_salida.strftime("%H:%M") if self.lunes_salida else None,
+            "martes_entrada": self.martes_entrada.strftime("%H:%M") if self.martes_entrada else None,
+            "martes_salida": self.martes_salida.strftime("%H:%M") if self.martes_salida else None,
+            "miercoles_entrada": self.miercoles_entrada.strftime("%H:%M") if self.miercoles_entrada else None,
+            "miercoles_salida": self.miercoles_salida.strftime("%H:%M") if self.miercoles_salida else None,
+            "jueves_entrada": self.jueves_entrada.strftime("%H:%M") if self.jueves_entrada else None,
+            "jueves_salida": self.jueves_salida.strftime("%H:%M") if self.jueves_salida else None,
+            "viernes_entrada": self.viernes_entrada.strftime("%H:%M") if self.viernes_entrada else None,
+            "viernes_salida": self.viernes_salida.strftime("%H:%M") if self.viernes_salida else None,
+            "sabado_entrada": self.sabado_entrada.strftime("%H:%M") if self.sabado_entrada else None,
+            "sabado_salida": self.sabado_salida.strftime("%H:%M") if self.sabado_salida else None,
+            "domingo_entrada": self.domingo_entrada.strftime("%H:%M") if self.domingo_entrada else None,
+            "domingo_salida": self.domingo_salida.strftime("%H:%M") if self.domingo_salida else None,
             "empresa_id": self.empresa_id
         }
 
@@ -208,9 +208,9 @@ class Fichaje(db.Model):
     def serialize(self):
         return {
             "id": self.id,
-            "entrada": self.entrada,
-            "salida": self.salida,
-            "fecha": self.fecha,
+            "entrada": self.entrada.strftime("%H:%M") if self.entrada else None,
+            "salida": self.salida.strftime("%H:%M") if self.salida else None,
+            "fecha": self.fecha.strftime('%Y-%m-%d') if self.fecha else None,
             "user_id": self.user_id
         }
 
