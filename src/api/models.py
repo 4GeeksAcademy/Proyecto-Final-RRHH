@@ -198,6 +198,8 @@ class Fichaje(db.Model):
     __tablename__ = "fichaje"
 
     id: Mapped[int] = mapped_column(primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    tipo = db.Column(db.String(20), nullable=False)
     entrada: Mapped[datetime.time] = mapped_column(nullable=True)
     salida: Mapped[datetime.time] = mapped_column(nullable=True)
     fecha: Mapped[datetime.date] = mapped_column(nullable=True)
@@ -209,6 +211,7 @@ class Fichaje(db.Model):
         return {
             "id": self.id,
             "entrada": self.entrada.strftime("%H:%M") if self.entrada else None,
+             "tipo": self.tipo,
             "salida": self.salida.strftime("%H:%M") if self.salida else None,
             "fecha": self.fecha.strftime('%Y-%m-%d') if self.fecha else None,
             "user_id": self.user_id

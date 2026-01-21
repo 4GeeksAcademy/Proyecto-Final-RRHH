@@ -83,3 +83,30 @@ def obtener_mis_fichajes():
     return{
         "fichajes": [f.serialize() for f in fichajes]
     }, 200
+
+@api.route('/fichaje' , methods=["POST"])
+@jwt_required()
+def crear_fichaje():
+    current_user_id=int(get_jwt_identity())
+    user=db.session.get(User, current_user_id)
+
+    if user is None:
+        return jsonify({"msg": "usuario no encontrado"}), 404
+    
+    tipo = request.json.get("tipo")
+
+    if tipo not in ["entrada", "salida"]:
+        return jsonify ({"msg": "tipo fichaje invalido"}), 400
+    
+    nuevo_fichaje= Fichaje(
+        user_id= current_user_id,
+        tipo=tipo
+    )
+
+    db.session.add(nuevo_fichaje)
+    db.session.commit()
+
+    return jsonify ({
+        "msg" : "fichaje creado correctamente",
+        "fichaje" : nuevo_fichaje.serialize()}),201
+    
