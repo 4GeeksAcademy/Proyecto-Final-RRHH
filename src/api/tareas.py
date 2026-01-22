@@ -5,7 +5,7 @@ from .models import Tarea, User, db
 
 tareas_bp = Blueprint('tareas', __name__)
 
-@tareas_bp.route('/tareas', methods=['GET'])  # ← sin /api
+@tareas_bp.route('/tareas', methods=['GET'])  
 @jwt_required()
 def obtener_tareas():
     try:

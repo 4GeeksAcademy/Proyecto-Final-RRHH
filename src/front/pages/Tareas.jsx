@@ -7,7 +7,7 @@ export default function Tareas() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // 1. Obtener el token de autenticación
+    // 1. Obtener el token de autenticación, debe de coincidir el token guardado de Raul con el mío
     const token = localStorage.getItem("token");
     if (!token) {
       setError("Debes iniciar sesión para ver tus tareas");
@@ -18,7 +18,7 @@ export default function Tareas() {
     // 2. URL del backend
     const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
 
-    // 3. Llamar a /api/proyectos (¡no a /api/tareas!)
+    // 3. 
     fetch(`${backendUrl}/api/proyectos`, {
       headers: {
         "Authorization": `Bearer ${token}`,
@@ -30,7 +30,7 @@ export default function Tareas() {
         return res.json();
       })
       .then(data => {
-        // 4. Extraer TODAS las tareas de todos los proyectos
+        // 4. 
         const todasLasTareas = data.proyectos.flatMap(proyecto => proyecto.tareas);
         setTareas(todasLasTareas);
         setLoading(false);
