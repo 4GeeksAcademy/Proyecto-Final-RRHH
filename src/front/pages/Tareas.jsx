@@ -8,7 +8,8 @@ export default function Tareas() {
 
   useEffect(() => {
     // 1. Obtener el token de autenticación, debe de coincidir el token guardado de Raul con el mío
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("jwt-token"); 
+    console.log(token)
     if (!token) {
       setError("Debes iniciar sesión para ver tus tareas");
       setLoading(false);
