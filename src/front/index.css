@@ -18,3 +18,29 @@ footer {
     text-align: center;
     padding: 1rem;
 }
+
+.animated-circuits {
+  background:
+    linear-gradient(
+      120deg,
+      rgba(0, 180, 255, 0.15),
+      rgba(0, 255, 255, 0.25),
+      rgba(0, 180, 255, 0.15)
+    );
+  background-size: 200% 200%;
+  animation: circuitFlow 12s ease-in-out infinite;
+  mix-blend-mode: screen;
+}
+
+@keyframes circuitFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
