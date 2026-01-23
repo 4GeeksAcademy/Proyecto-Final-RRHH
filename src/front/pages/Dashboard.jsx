@@ -6,16 +6,16 @@ import TemporizadorFichaje from "../components/Temporizador";
 
 export default function Dashboard() {
   return (
-    <section className="">
-      <h1 className="text-3xl mb-4 text-black">
-        Panel de Control
-      </h1>
+    <section>
+      <h1 className="text-3xl mb-4 text-black">Panel de Control</h1>
       <p className="mb-6">Vista general de tu actividad</p>
-      
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 w-full">
-        <Cards 
+
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 w-full">
+        <Cards
+        to="/fichaje"
           titulo="Tiempo Trabajado"
-          tiempo={<TemporizadorFichaje/>}
+          tiempo={<TemporizadorFichaje />}
           detalle=""
 
         />
@@ -48,29 +48,24 @@ export default function Dashboard() {
           detalle="Sin fichaje activo"
 
         />
-
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full mt-8 items-stretch">
+
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 w-full mt-8 items-stretch">
         <Cards2
-          to=""
+          to="/fichaje"
           titulo="Horas Trabajadas - Esta Semana"
           detalle=""
           grafico={<GraficoTrabajo />}
         />
 
         <Cards2
-          to=""
+          to="/tareas"
           titulo="Estado de Tareas"
           detalle=""
           grafico={<GraficoTareas />}
         />
-        
-
       </div>
-
-
-
     </section>
   );
 }

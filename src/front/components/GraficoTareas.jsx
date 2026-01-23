@@ -3,7 +3,7 @@ import React from "react"
 
 export default function GraficoTareas() {
     return (
-        <div className="max-w-sm w-full  rounded-xl shadow p-4 md:p-6">
+        <div className="w-full h-full rounded-xl shadow p-4 md:p-6">
             <div className="flex justify-between mb-4 md:mb-6 items-center">
                 <div className="text-xl font-semibold text-gray-900">
                 </div>

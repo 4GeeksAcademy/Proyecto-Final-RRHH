@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 import useGlobalReducer from '../hooks/useGlobalReducer';
 import { Navigate } from "react-router-dom";
 
-export default function Navbar() {
+export default function Navbar({ onMenuClick }) {
   const [notificationsOpen, setNotificationsOpen] = useState(false);
-  const [appsOpen, setAppsOpen] = useState(false);
   const [userOpen, setUserOpen] = useState(false);
   const [status, setStatus] = useState("activo");
 
@@ -20,7 +19,7 @@ export default function Navbar() {
     const fetchUser = async () => {
       const token = localStorage.getItem("jwt-token");
 
-      if(!token) return <Navigate to="/" replace />;
+      if (!token) return <Navigate to="/" replace />;
 
       const resp = await fetch("/api/reuniones", {
         headers: {
@@ -28,7 +27,7 @@ export default function Navbar() {
         }
       });
 
-      if(resp.status === 401 || resp.status === 422) {
+      if (resp.status === 401 || resp.status === 422) {
         localStorage.removeItem("jwt-token");
         return <Navigate to="/" replace />;
       }
@@ -85,7 +84,7 @@ export default function Navbar() {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
-  
+
   return (
     <div className="antialiased bg-white pt-16">
       {/*  Google Translate widget (oculto) */}
@@ -152,13 +151,13 @@ export default function Navbar() {
               {userOpen && (
                 <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-100 z-50">
                   {/* USER INFO */}
-                  <div className="p-4 border-b">
+                  <div className="p-4">
                     <p className="font-semibold text-black">Neil Sims</p>
                     <p className="text-sm text-gray-500">name@flowbite.com</p>
                   </div>
 
                   {/* STATUS SECTION */}
-                  <div className="px-4 py-2 border-b">
+                  <div className="px-4 py-2 border-y">
                     <p className="text-xs font-semibold text-gray-500 mb-2 uppercase">Estado</p>
                     <ul className="text-sm text-gray-700 space-y-1">
                       {Object.keys(statusColors).map((s) => (
@@ -230,5 +229,6 @@ export default function Navbar() {
         </div>
       </nav>
     </div>
-  );
+  )
 }
+
