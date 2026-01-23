@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User
+from api.models import db, User, Rol, Horario, Empresa, Reunion, Fichaje, Proyecto, Tarea
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
@@ -65,4 +65,22 @@ def obtener_reuniones_y_tareas():
 
     return{
         "proyectos": [p.serialize() for p in proyectos]
+    }, 200
+
+@api.route('/mis-fichajes', methods=["GET"])
+@jwt_required()
+def obtener_mis_fichajes():
+    current_user_id = int(get_jwt_identity())
+    user = db.session.get(User, current_user_id)
+
+    if user is None:
+        return jsonify({"msg": "Usuario no encontrado"}), 404
+    
+    # db.session.execute(select(Model).where(Model.name == "x"))
+    # db.session.execute(select(Model).order_by(Model.name.desc()))
+    
+    fichajes = db.session.execute(select(Fichaje).where(Fichaje.user_id == current_user_id).order_by(Fichaje.fecha.asc())).scalars().all()
+
+    return{
+        "fichajes": [f.serialize() for f in fichajes]
     }, 200
