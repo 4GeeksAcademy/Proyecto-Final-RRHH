@@ -1,54 +1,98 @@
-import React from "react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function Fichaje() {
+  const [fichajes, setFichajes] = useState([]);
+  const token = localStorage.getItem("jwt-token");
 
-  const fichar = async (tipo) => {
-    const token = localStorage.getItem("token");
+  
+  const cargarFichajes = async () => {
+    if (!token) return;
 
-    const response = await fetch(
-      process.env.BACKEND_URL + "/api/fichaje",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": "Bearer " + token
-        },
-        body: JSON.stringify({
-          tipo: tipo // "entrada" o "salida"
-        })
-      }
-    );
+    try {
+      const res = await fetch(
+        import.meta.env.VITE_BACKEND_URL + "/api/mis-fichajes",
+        {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        }
+      );
 
-    const data = await response.json();
-    console.log(data);
+      if (!res.ok) throw new Error("Error al cargar fichajes");
+
+      const data = await res.json();
+      setFichajes(data.fichajes);
+    } catch (error) {
+      console.error("Error cargando fichajes:", error);
+    }
+  };
+
+  
+  const fichar = async () => {
+    if (!token) {
+      alert("No hay token, inicia sesión");
+      return;
+    }
+
+    try {
+      const res = await fetch(
+        import.meta.env.VITE_BACKEND_URL + "/api/fichaje",
+        {
+          method: "POST",
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        }
+      );
+
+      if (!res.ok) throw new Error("Error al fichar");
+
+      await cargarFichajes();
+    } catch (error) {
+      console.error("Error fichando:", error);
+    }
   };
 
   useEffect(() => {
-  fetch(process.env.BACKEND_URL + "/api/mis-fichajes", {
-    headers: {
-      "Authorization": "Bearer " + localStorage.getItem("token")
-    }
-  })
-    .then(res => res.json())
-    .then(data => setFichajes(data.fichajes));
-}, []);
-
-
+    cargarFichajes();
+  }, []);
 
   return (
-    <section className="">
-      <h1 className="text-3xl mb-4 text-black">
-        Página de Fichaje
-      </h1>
+    <div className="container text-center mt-5">
+      <h1>Fichaje</h1>
 
-      <button onClick={() => fichar("entrada")}>
-        Fichar entrada
+      <button className="btn btn-success btn-lg my-4" onClick={fichar}>
+        Entrada
+      </button>
+      <br/>
+       <button className="btn btn-success btn-lg my-4" onClick={fichar}>
+        salida
       </button>
 
-      <button onClick={() => fichar("salida")}>
-        Fichar salida
-      </button>
-    </section>
+      <table className="table table-striped">
+        <thead>
+          <tr>
+            <th>Hora entrada</th>
+            <th>Hora salida</th>
+          </tr>
+        </thead>
+        <tbody>
+          {fichajes.map((f) => (
+            <tr key={f.id}>
+              <td>
+                {f.hora_entrada
+                  ? new Date(f.hora_entrada).toLocaleString()
+                  : "—"}
+              </td>
+              <td>
+                {f.hora_salida
+                  ? new Date(f.hora_salida).toLocaleString()
+                  : "—"}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }

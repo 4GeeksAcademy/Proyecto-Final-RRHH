@@ -7,6 +7,7 @@ from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from sqlalchemy import select
+from datetime import datetime
 
 api = Blueprint('api', __name__)
 
@@ -70,43 +71,56 @@ def obtener_reuniones_y_tareas():
 @jwt_required()
 def obtener_mis_fichajes():
     current_user_id = int(get_jwt_identity())
-    user = db.session.get(User, current_user_id)
 
-    if user is None:
-        return jsonify({"msg": "Usuario no encontrado"}), 404
-    
-    # db.session.execute(select(Model).where(Model.name == "x"))
-    # db.session.execute(select(Model).order_by(Model.name.desc()))
-    
-    fichajes = db.session.execute(select(Fichaje).where(Fichaje.user_id == current_user_id).order_by(Fichaje.fecha.asc())).scalars().all()
-
-    return{
-        "fichajes": [f.serialize() for f in fichajes]
-    }, 200
-
-@api.route('/fichaje' , methods=["POST"])
-@jwt_required()
-def crear_fichaje():
-    current_user_id=int(get_jwt_identity())
-    user=db.session.get(User, current_user_id)
-
-    if user is None:
-        return jsonify({"msg": "usuario no encontrado"}), 404
-    
-    tipo = request.json.get("tipo")
-
-    if tipo not in ["entrada", "salida"]:
-        return jsonify ({"msg": "tipo fichaje invalido"}), 400
-    
-    nuevo_fichaje= Fichaje(
-        user_id= current_user_id,
-        tipo=tipo
+    fichajes = (
+        db.session.execute(
+            select(Fichaje)
+            .where(Fichaje.user_id == current_user_id)
+            .order_by(Fichaje.hora_entrada.desc())
+        )
+        .scalars()
+        .all()
     )
 
-    db.session.add(nuevo_fichaje)
+    return jsonify({
+        "fichajes": [f.serialize() for f in fichajes]
+    }), 200
+
+@api.route('/fichaje', methods=["POST"])
+@jwt_required()
+def fichar():
+    current_user_id = int(get_jwt_identity())
+
+    ultimo_fichaje = (
+        db.session.execute(
+            select(Fichaje)
+            .where(Fichaje.user_id == current_user_id)
+            .order_by(Fichaje.hora_entrada.desc())
+        )
+        .scalars()
+        .first()
+    )
+
+    # 👉 ENTRADA
+    if ultimo_fichaje is None or ultimo_fichaje.hora_salida is not None:
+        nuevo_fichaje = Fichaje(
+            user_id=current_user_id,
+            hora_entrada=datetime.now(),
+            fecha=datetime.now().date()
+        )
+        db.session.add(nuevo_fichaje)
+        db.session.commit()
+
+        return jsonify({
+            "msg": "Entrada registrada",
+            "fichaje": nuevo_fichaje.serialize()
+        }), 201
+
+    # 👉 SALIDA
+    ultimo_fichaje.hora_salida = datetime.now()
     db.session.commit()
 
-    return jsonify ({
-        "msg" : "fichaje creado correctamente",
-        "fichaje" : nuevo_fichaje.serialize()}),201
-    
+    return jsonify({
+        "msg": "Salida registrada",
+        "fichaje": ultimo_fichaje.serialize()
+    }), 200
