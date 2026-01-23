@@ -101,7 +101,7 @@ def fichar():
         .first()
     )
 
-    # 👉 ENTRADA
+    
     if ultimo_fichaje is None or ultimo_fichaje.hora_salida is not None:
         nuevo_fichaje = Fichaje(
             user_id=current_user_id,
@@ -116,7 +116,7 @@ def fichar():
             "fichaje": nuevo_fichaje.serialize()
         }), 201
 
-    # 👉 SALIDA
+   
     ultimo_fichaje.hora_salida = datetime.now()
     db.session.commit()
 
