@@ -19,7 +19,7 @@ export default function Calendario() {
           console.log("estos son los datos recogidos", t)
 
 
-          fetch('', {
+          fetch('https://supreme-space-dollop-wrj7jwv44vgq39rvp-3001.app.github.dev/api/reunión', {
             method: "POST",
             body: JSON.stringify(t),
             headers: {
