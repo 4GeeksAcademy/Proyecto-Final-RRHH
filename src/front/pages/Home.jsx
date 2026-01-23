@@ -4,7 +4,7 @@ export default function Home() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+    <div className="min-h-screen flex items-center justify-center px-4 bg-gradient-to-br from-blue-50 via-gray-100 to-blue-100">
       <div
         className="
           bg-white 
@@ -15,34 +15,41 @@ export default function Home() {
           p-6 
           sm:p-8 
           rounded-2xl 
-          shadow-md 
+          shadow-lg 
           text-center
+          transition-transform
+          hover:scale-[1.01]
         "
       >
-        <h1
-          className="
-            text-2xl 
-            sm:text-3xl 
-            md:text-4xl 
-            font-bold 
-            text-gray-900 
-            mb-3
-          "
-        >
-          Panel de Gestión
-        </h1>
+        {/* Header */}
+        <div className="mb-6">
+          <h1
+            className="
+              text-2xl 
+              sm:text-3xl 
+              md:text-4xl 
+              font-bold 
+              text-gray-900 
+              mb-2
+            "
+          >
+            Panel de Gestión
+          </h1>
 
-        <p
-          className="
-            text-gray-500 
-            text-sm 
-            sm:text-base 
-            mb-8
-          "
-        >
-          Inicia sesión para continuar
-        </p>
+          <div className="w-16 h-1 bg-blue-600 mx-auto rounded-full mb-4" />
 
+          <p
+            className="
+              text-gray-500 
+              text-sm 
+              sm:text-base
+            "
+          >
+            Accede a tu área privada para gestionar tu trabajo
+          </p>
+        </div>
+
+        {/* Botón */}
         <button
           onClick={() => navigate("/login")}
           className="
@@ -52,11 +59,12 @@ export default function Home() {
             bg-blue-600 
             text-white 
             rounded-xl 
-            font-medium 
+            font-semibold 
             text-sm 
             sm:text-base
             hover:bg-blue-700 
-            transition-colors
+            active:scale-[0.98]
+            transition-all
             focus:outline-none 
             focus:ring-2 
             focus:ring-blue-400
@@ -64,6 +72,11 @@ export default function Home() {
         >
           Iniciar Sesión
         </button>
+
+        {/* Footer pequeño */}
+        <p className="mt-6 text-xs text-gray-400">
+          © 2026 Portal Trabajo
+        </p>
       </div>
     </div>
   );

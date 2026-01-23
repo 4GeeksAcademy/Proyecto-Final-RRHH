@@ -7,19 +7,16 @@ from typing import List
 
 db = SQLAlchemy()
 
-
 class EstadoUser(enum.Enum):
     activo = "Activo"
     ausente = "Ausente"
     ocupado = "Ocupado"
     no_molestar = "No Molestar"
 
-
 class Estado(enum.Enum):
     en_proceso = "En Proceso"
     pendiente = "Pendiente"
     finalizado = "Finalizado"
-
 
 class User(db.Model):
     __tablename__ = "user"
@@ -31,6 +28,7 @@ class User(db.Model):
         String(120), unique=True, nullable=False)
     password: Mapped[str] = mapped_column(nullable=False)
     dni: Mapped[str] = mapped_column(String(9), unique=True, nullable=False)
+    telefono: Mapped[int] = mapped_column(nullable=True)
     foto_perfil: Mapped[str] = mapped_column(
         String(), nullable=True, default="logo.png")
     estado: Mapped[EstadoUser] = mapped_column(
@@ -63,6 +61,7 @@ class User(db.Model):
             "apellidos": self.apellidos,
             "email": self.email,
             "dni": self.dni,
+            "telefono": self.telefono,
             "foto_perfil": self.foto_perfil,
             "estado": self.estado.value,
             "link_calendly": self.link_calendly,
@@ -70,7 +69,6 @@ class User(db.Model):
             "rol_id": self.rol_id,
             "horario_id": self.horario_id
         }
-
 
 class Rol(db.Model):
     __tablename__ = "rol"
@@ -95,7 +93,6 @@ class Rol(db.Model):
             "puede_compartir_reunion": self.puede_compartir_reunion,
             "puede_invitar_proyectos": self.puede_invitar_proyectos
         }
-
 
 class Horario(db.Model):
     __tablename__ = "horario"
@@ -164,7 +161,6 @@ class Empresa(db.Model):
             "imagen": self.imagen
         }
 
-
 class Reunion(db.Model):
     __tablename__ = "reunion"
 
@@ -193,7 +189,6 @@ reunion_user = Table(
     Column("reunion_id", ForeignKey("reunion.id"))
 )
 
-
 class Fichaje(db.Model):
     __tablename__ = "fichaje"
 
@@ -213,7 +208,6 @@ class Fichaje(db.Model):
             "fecha": self.fecha.strftime('%Y-%m-%d') if self.fecha else None,
             "user_id": self.user_id
         }
-
 
 class Proyecto(db.Model):
     __tablename__ = "proyecto"
