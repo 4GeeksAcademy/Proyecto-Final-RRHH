@@ -85,7 +85,7 @@ export default function Navbar() {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
-
+  
   return (
     <div className="antialiased bg-white pt-16">
       {/*  Google Translate widget (oculto) */}
