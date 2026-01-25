@@ -3,8 +3,46 @@ import Cards2 from "../components/Cards2";
 import GraficoTrabajo from "../components/GraficoTrabajo";
 import GraficoTareas from "../components/GraficoTareas";
 import TemporizadorFichaje from "../components/Temporizador";
+import { useState, useEffect } from 'react'; 
 
 export default function Dashboard() {
+  
+  const [tareasActivas, setTareasActivas] = useState(0);
+  const [tareasCompletadas, setTareasCompletadas] = useState(0);
+  const [loadingTareas, setLoadingTareas] = useState(true);
+
+   
+  useEffect(() => {
+    const cargarTareasDashboard = async () => {
+      const token = localStorage.getItem("jwt-token");
+       
+      const backendUrl = import.meta.env.VITE_BACKEND_URL || "https://supreme-space-dollop-4qjpwxgwxwr2g65-3001.app.github.dev";
+      
+      try {
+        const response = await fetch(`${backendUrl}/api/proyectos`, {
+          headers: { "Authorization": `Bearer ${token}` }
+        });
+        
+        if (!response.ok) return;
+        
+        const data = await response.json();
+        const todasLasTareas = data.proyectos.flatMap(p => p.tareas || []);
+        
+        const activas = todasLasTareas.filter(t => t.estado !== "Finalizado").length;
+        const completadas = todasLasTareas.filter(t => t.estado === "Finalizado").length;
+        
+        setTareasActivas(activas);
+        setTareasCompletadas(completadas);
+      } catch (error) {
+        console.error("Error al cargar tareas:", error);
+      } finally {
+        setLoadingTareas(false);
+      }
+    };
+    
+    cargarTareasDashboard();
+  }, []); //  FIN DEL USEEFFECT
+
   return (
     <section>
       <h1 className="text-3xl mb-4 text-black">Panel de Control</h1>
@@ -19,13 +57,15 @@ export default function Dashboard() {
           detalle=""
 
         />
+        
+         
         <Cards to="/tareas"
           titulo="Tareas Activas"
           icon={<svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 21a9 9 0 1 1 0-18c1.052 0 2.062.18 3 .512M7 9.577l3.923 3.923 8.5-8.5M17 14v6m-3-3h6" />
           </svg>}
-          total={3}
-          detalle="0 completadas"
+          total={loadingTareas ? "..." : tareasActivas}  
+          detalle={`${tareasCompletadas} completadas`} 
 
         />
 
