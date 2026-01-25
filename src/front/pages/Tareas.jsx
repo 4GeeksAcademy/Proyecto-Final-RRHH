@@ -170,7 +170,7 @@ export default function Tareas() {
         </span>
       </div>
 
-      {/* Formulario para añadir nuevas tareas */}
+      {/* Todolist para tareas*/}
       <div className="mb-8 bg-white rounded-xl shadow-md border border-gray-200 p-5">
         <form onSubmit={handleAddTarea} className="flex flex-col sm:flex-row gap-3">
           <input
