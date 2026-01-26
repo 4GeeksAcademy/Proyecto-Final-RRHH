@@ -11,6 +11,8 @@ from api.routes import api
 from api.admin import setup_admin
 from api.commands import setup_commands
 from flask_jwt_extended import JWTManager
+from flask_cors import CORS
+from datetime import timedelta
 
 # from models import Person
 
@@ -20,6 +22,7 @@ static_file_dir = os.path.join(os.path.dirname(
 app = Flask(__name__)
 app.url_map.strict_slashes = False
 app.config["JWT_SECRET_KEY"] = "super_key"
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(days=7)
 
 # database condiguration
 db_url = os.getenv("DATABASE_URL")
@@ -33,6 +36,13 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 MIGRATE = Migrate(app, db, compare_type=True)
 db.init_app(app)
 jwt = JWTManager(app)
+
+CORS(
+    app,
+    resources={r"/api/*": {"origins": "*"}},
+    expose_headers=["Authorization"],
+)
+
 
 # add the admin
 setup_admin(app)
