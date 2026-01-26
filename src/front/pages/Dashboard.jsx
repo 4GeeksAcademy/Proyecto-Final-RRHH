@@ -3,34 +3,37 @@ import Cards2 from "../components/Cards2";
 import GraficoTrabajo from "../components/GraficoTrabajo";
 import GraficoTareas from "../components/GraficoTareas";
 import TemporizadorFichaje from "../components/Temporizador";
-import { useState, useEffect } from 'react'; 
+import { useState, useEffect } from 'react';
 
 export default function Dashboard() {
-  
+
   const [tareasActivas, setTareasActivas] = useState(0);
   const [tareasCompletadas, setTareasCompletadas] = useState(0);
   const [loadingTareas, setLoadingTareas] = useState(true);
 
-   
+  const [tareasHecho, setTareasHecho] = useState(0);
+  const [tareasProgreso, setTareasProgreso] = useState(0);
+  const [tareasPorHacer, setTareasPorHacer] = useState(0);
+
   useEffect(() => {
     const cargarTareasDashboard = async () => {
       const token = localStorage.getItem("jwt-token");
-       
+
       const backendUrl = import.meta.env.VITE_BACKEND_URL || "https://supreme-space-dollop-4qjpwxgwxwr2g65-3001.app.github.dev";
-      
+
       try {
         const response = await fetch(`${backendUrl}/api/proyectos`, {
           headers: { "Authorization": `Bearer ${token}` }
         });
-        
+
         if (!response.ok) return;
-        
+
         const data = await response.json();
         const todasLasTareas = data.proyectos.flatMap(p => p.tareas || []);
-        
+
         const activas = todasLasTareas.filter(t => t.estado !== "Finalizado").length;
         const completadas = todasLasTareas.filter(t => t.estado === "Finalizado").length;
-        
+
         setTareasActivas(activas);
         setTareasCompletadas(completadas);
       } catch (error) {
@@ -39,7 +42,7 @@ export default function Dashboard() {
         setLoadingTareas(false);
       }
     };
-    
+
     cargarTareasDashboard();
   }, []); //  FIN DEL USEEFFECT
 
@@ -51,21 +54,21 @@ export default function Dashboard() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 w-full">
         <Cards
-        to="/fichaje"
+          to="/fichaje"
           titulo="Tiempo Trabajado"
           tiempo={<TemporizadorFichaje />}
           detalle=""
 
         />
-        
-         
+
+
         <Cards to="/tareas"
           titulo="Tareas Activas"
           icon={<svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 21a9 9 0 1 1 0-18c1.052 0 2.062.18 3 .512M7 9.577l3.923 3.923 8.5-8.5M17 14v6m-3-3h6" />
           </svg>}
-          total={loadingTareas ? "..." : tareasActivas}  
-          detalle={`${tareasCompletadas} completadas`} 
+          total={loadingTareas ? "..." : tareasActivas}
+          detalle={`${tareasCompletadas} completadas`}
 
         />
 
