@@ -5,26 +5,33 @@ import { getCalApi } from "@calcom/embed-react";
 
 
 export default function Calendario() {
+
+  const token = localStorage.getItem("jwt-token");
   useEffect(() => {
     getCalApi().then((cal) => {
       cal("on", {
         action: "bookingSuccessful",
         callback: (e) => {
-
-
           console.log(e);
 
-          const t = { fecha: e.detail.data.date, duración: e.detail.data.duration, organizador: e.detail.data.organizer.name }
+          const t = {
+            "nombre": "",
+            "link": e.detail.data.booking.videoCallUrl,
+            "fecha": e.detail.data.date,
+            "duracion": e.detail.data.duration,
+            "organizador": e.detail.data.organizer.name,
+            "usuarios": e.detail.data.booking.attendees
+          };
 
-          console.log("estos son los datos recogidos", t)
+          console.log("Reunion: ", t)
 
-
-          fetch('https://supreme-space-dollop-wrj7jwv44vgq39rvp-3001.app.github.dev/api/reunión', {
+          fetch(import.meta.env.VITE_BACKEND_URL + "/api/reunion", {
             method: "POST",
             body: JSON.stringify(t),
             headers: {
-              "Content-Type": "application/json"
-            }
+              "Content-Type": "application/json",
+              "Authorization": "Bearer " + token,
+            },
           })
             .then(resp => {
               console.log(resp.ok); // Será true si la respuesta es exitosa
@@ -39,21 +46,17 @@ export default function Calendario() {
               // Manejo de errores
               console.log(error);
             });
-
-
         },
 
       });
     });
   }, []);
 
-  
-
   return (
     <section className="">
       <div className="contenedor-calendly">
         <p>
-          <Cal calLink="lazaro-fillaux/15min" config={{ theme: "light" }}></Cal>
+          <Cal calLink="raul-arroyo/30min" config={{ theme: "light" }}></Cal>
         </p>
       </div>
     </section>

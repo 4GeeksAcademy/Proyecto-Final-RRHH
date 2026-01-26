@@ -22,7 +22,7 @@ export default function Login() {
       const data = await resp.json();
       localStorage.setItem("jwt-token", data.token);
       dispatch({ type: "login" });
-      navigate("/dashboard");
+      navigate("/");
     } catch (err) {
       console.error(err);
     }

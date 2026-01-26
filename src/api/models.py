@@ -47,7 +47,9 @@ class User(db.Model):
     horario: Mapped["Horario"] = relationship(back_populates="users")
 
     reuniones: Mapped[List["Reunion"]] = relationship(
-        secondary="reunion_user", back_populates="users")
+        secondary="reunion_user", back_populates="usuarios")
+
+    organizador_reunion: Mapped["Reunion"] = relationship(back_populates="organizador")
 
     fichajes: Mapped[List["Fichaje"]] = relationship(back_populates="user")
 
@@ -165,12 +167,15 @@ class Reunion(db.Model):
     __tablename__ = "reunion"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    nombre: Mapped[str] = mapped_column(String(80), nullable=False)
+    nombre: Mapped[str] = mapped_column(String(80), nullable=True)
     link: Mapped[str] = mapped_column(String(), nullable=False)
-    hora_inicio: Mapped[datetime.time] = mapped_column(nullable=False)
-    duracion: Mapped[datetime.time] = mapped_column(nullable=False)
+    fecha: Mapped[datetime.datetime] = mapped_column(nullable=False)
+    duracion: Mapped[int] = mapped_column(nullable=False)
 
-    users: Mapped[List["User"]] = relationship(
+    organizador_id: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=False)
+    organizador: Mapped["User"] = relationship(back_populates="organizador_reunion")
+
+    usuarios: Mapped[List["User"]] = relationship(
         secondary="reunion_user", back_populates="reuniones")
 
     def serialize(self):
@@ -178,8 +183,10 @@ class Reunion(db.Model):
             "id": self.id,
             "nombre": self.nombre,
             "link": self.link,
-            "hora_inicio": self.hora_inicio.strftime("%H:%M") if self.hora_inicio else None,
-            "duracion": self.duracion.strftime("%H:%M") if self.duracion else None
+            "fecha": self.fecha.isoformat() if self.fecha else None,
+            "duracion": self.duracion,
+            "organizador_id": self.organizador_id,
+            "usuarios": [u.serialize() for u in self.usuarios]
         }
 
 reunion_user = Table(
