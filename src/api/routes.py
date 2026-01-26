@@ -27,6 +27,8 @@ def handle_hello():
     return jsonify(response_body), 200
 
 # CREAR TOKEN PARA INICIAR SESIÓN
+
+
 @api.route('/token', methods=["POST"])
 def create_token():
     email = request.json.get("email", None)
@@ -74,24 +76,24 @@ def crear_reunion():
         nombre=data.get("nombre"),
         link=data.get("link"),
         fecha=datetime.fromisoformat(data.get("fecha")),
-        duracion=data.get("duracion"),
+        duracion=int(data.get("duracion")),
         organizador_id=current_user_id
     )
 
     db.session.add(nueva_reunion)
     db.session.commit()
 
-    # nueva_reunion.usuarios.append(organizador)
+    nueva_reunion.usuarios.append(organizador)
 
-    # for u in data.get("usuarios", []):
-    #     user = db.session.execute(
-    #         select(User).where(User.email == u.get("email"))
-    #     ).scalar_one_or_none()
+    for u in data.get("usuarios", []):
+        user = db.session.execute(
+            select(User).where(User.email == u.get("email"))
+        ).scalar_one_or_none()
 
-        # if user and user not in nueva_reunion.usuarios:
-        #     nueva_reunion.usuarios.append(user)
+        if user and user not in nueva_reunion.usuarios:
+            nueva_reunion.usuarios.append(user)
 
-    # db.session.commit()
+    db.session.commit()
 
     return jsonify({
         "msg": "Reunión creada con éxito",
@@ -110,11 +112,28 @@ def obtener_reuniones_y_tareas():
     if user is None:
         return jsonify({"msg": "Usuario no encontrado"}), 404
 
-    proyectos = user.proyectos
+    proyectos = db.session.execute(select(Proyecto)).scalars().all()
 
     return {
         "proyectos": [p.serialize() for p in proyectos]
     }, 200
+
+# OBTENER UN SOLO PROYECTO CON SUS TAREAS
+@api.route('/proyecto/<int:proyecto_id>', methods=["GET"])
+@jwt_required()
+def obtener_proyecto(proyecto_id):
+    current_user_id = int(get_jwt_identity())
+    user = db.session.get(User, current_user_id)
+
+    proyecto = db.session.get(Proyecto, proyecto_id)
+
+    if user is None:
+        return jsonify({"msg": "Usuario no encontrado"}), 404
+
+    if proyecto is None:
+        return jsonify({"msg": "Proyecto no encontrado"}), 501
+    
+    return jsonify(proyecto.serialize()), 200
 
 # FICHAJES
 # OBTENER TODOS LOS FICHAJES DEL USUARIO
