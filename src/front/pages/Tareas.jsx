@@ -212,12 +212,12 @@ export default function Tareas() {
         <div className="text-center py-16 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-300">
           <div className="text-5xl mb-4 text-gray-300">📋</div>
           <h2 className="text-2xl font-semibold text-gray-700 mb-2">No tienes tareas</h2>
-          <p className="text-gray-500 mb-6">¡Empieza añadiendo tu primera tarea arriba!</p>
+          <p className="text-gray-500 mb-6"></p>
           <button
             onClick={() => document.querySelector('input').focus()}
             className="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
           >
-            Añadir primera tarea
+            Añadir
           </button>
         </div>
       ) : (
