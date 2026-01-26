@@ -39,30 +39,46 @@ export default function Navbar({ onMenuClick }) {
     fetchUser();
   }, []);
 
+  // 🔴 AÑADIDO: Verificar que Google Translate se cargó
+  useEffect(() => {
+    const checkGoogleTranslate = setInterval(() => {
+      if (window.google && window.google.translate) {
+        console.log('✅ Google Translate cargado correctamente');
+        clearInterval(checkGoogleTranslate);
+      }
+    }, 500);
 
+    return () => clearInterval(checkGoogleTranslate);
+  }, []);
 
   // Estados para el selector de idiomas
   const [langOpen, setLangOpen] = useState(false);
   const [selectedLang, setSelectedLang] = useState('English (US)');
   const dropdownRef = useRef(null);
 
-
-
   const languages = [
     { name: 'English (US)', code: 'en' },
     { name: 'Deutsch', code: 'de' },
     { name: 'Italiano', code: 'it' },
-    { name: '中文 (繁體)', code: 'zh-TW' }, // se le añade TW, sinó google lo traduce al chino simplificado. solo zh:simplificado + TH = chino tradicional
+    { name: '中文 (繁體)', code: 'zh-TW' },
   ];
 
   const changeLanguage = (langCode) => {
+    console.log('Cambiando idioma a:', langCode);
+
     setSelectedLang(languages.find(l => l.code === langCode)?.name || 'English (US)');
     setLangOpen(false);
 
     const select = document.querySelector('select.goog-te-combo');
+    console.log('Selector encontrado:', select);
+
     if (select) {
+      console.log('Valor actual del selector:', select.value);
       select.value = langCode;
       select.dispatchEvent(new Event('change'));
+      console.log('✅ Evento change disparado');
+    } else {
+      console.error('❌ Selector de Google Translate no encontrado');
     }
   };
 
@@ -87,8 +103,11 @@ export default function Navbar({ onMenuClick }) {
 
   return (
     <div className="antialiased bg-white pt-16">
-      {/*  Google Translate widget (oculto) */}
-      <div id="google_translate_element" className="hidden"></div>
+      {/* Widget oculto visualmente pero accesible para Google Translate */}
+      <div
+        id="google_translate_element"
+        style={{ position: 'absolute', left: '-9999px', top: '-9999px' }}
+      ></div>
 
       <nav className="fixed left-0 right-0 top-0 z-50 bg-white border-b border-gray-200 px-4 py-2.5">
         <div className="flex justify-between items-center">
@@ -142,7 +161,7 @@ export default function Navbar({ onMenuClick }) {
               >
                 <img
                   className="w-8 h-8 rounded-full"
-                  src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/michael-gough.png"
+                  src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/michael-gough.png  "
                   alt="user"
                 />
                 <span className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white ${statusColors[status]}`}></span>
@@ -184,6 +203,7 @@ export default function Navbar({ onMenuClick }) {
 
 
                     {/*IDIOMAS*/}
+                    {/*IDIOMAS*/}
                     <li className="relative border-t border-b bg-gray-50">
                       <button
                         onClick={() => setLangOpen(!langOpen)}
@@ -195,14 +215,19 @@ export default function Navbar({ onMenuClick }) {
                         <svg className={`w-4 h-4 transition-transform ${langOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
                       </button>
 
-
                       {langOpen && (
                         <div className="bg-white border-t">
                           {languages.map((lang) => (
-                            // changeLanguage
                             <button
                               key={lang.code}
-                              onClick={() => changeLanguage(lang.code)}
+                              onClick={() => {
+                                setSelectedLang(lang.name);
+                                setLangOpen(false);
+                                // Redirigir a Google Translate
+                                const currentUrl = window.location.href;
+                                const googleTranslateUrl = `https://translate.google.com/translate?hl=${lang.code}&sl=auto&tl=${lang.code}&u=${encodeURIComponent(currentUrl)}`;
+                                window.open(googleTranslateUrl, '_blank');
+                              }}
                               className="flex items-center w-full px-8 py-2 text-xs hover:bg-blue-50 text-left"
                             >
                               {lang.name}
@@ -211,7 +236,6 @@ export default function Navbar({ onMenuClick }) {
                         </div>
                       )}
                     </li>
-
                     {/* SIGN OUT */}
                     <li className="flex items-center gap-3 px-4 py-2 hover:bg-red-50 text-red-600 cursor-pointer">
                       <Link to="/" onClick={logout}>
@@ -231,4 +255,3 @@ export default function Navbar({ onMenuClick }) {
     </div>
   )
 }
-
