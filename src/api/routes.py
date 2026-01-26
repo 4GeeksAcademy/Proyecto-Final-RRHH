@@ -124,3 +124,4 @@ def fichar():
         "msg": "Salida registrada",
         "fichaje": ultimo_fichaje.serialize()
     }), 200
+

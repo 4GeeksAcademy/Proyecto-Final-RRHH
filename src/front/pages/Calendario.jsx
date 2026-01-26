@@ -4,6 +4,7 @@ import { getCalApi } from "@calcom/embed-react";
 
 
 
+
 export default function Calendario() {
   useEffect(() => {
     getCalApi().then((cal) => {
@@ -14,32 +15,18 @@ export default function Calendario() {
 
           console.log(e);
 
-          const t = { fecha: e.detail.data.date, duración: e.detail.data.duration, organizador: e.detail.data.organizer.name }
+          const t = { FECHA: e.detail.data.date, TIEMPO_REUNION: e.detail.data.duration, EMAIL_ORGANIZADOR: e.detail.data.organizer.email,EMAIL_INVITADO: e.detail.data.booking.attendees[1].email }
 
           console.log("estos son los datos recogidos", t)
 
 
-          fetch('https://supreme-space-dollop-wrj7jwv44vgq39rvp-3001.app.github.dev/api/reunión', {
+          fetch('https://api.sheetbest.com/sheets/e953b3bf-6eb2-424a-93b9-9e272aab7e92', {
             method: "POST",
             body: JSON.stringify(t),
             headers: {
               "Content-Type": "application/json"
             }
           })
-            .then(resp => {
-              console.log(resp.ok); // Será true si la respuesta es exitosa
-              console.log(resp.status); // El código de estado 201, 300, 400, etc.
-              return resp.json(); // Intentará parsear el resultado a JSON y retornará una promesa donde puedes usar .then para seguir con la lógica
-            })
-            .then(data => {
-              // Aquí es donde debe comenzar tu código después de que finalice la búsqueda
-              console.log(data); // Esto imprimirá en la consola el objeto exacto recibido del servidor
-            })
-            .catch(error => {
-              // Manejo de errores
-              console.log(error);
-            });
-
 
         },
 
@@ -53,7 +40,7 @@ export default function Calendario() {
     <section className="">
       <div className="contenedor-calendly">
         <p>
-          <Cal calLink="lazaro-fillaux/15min" config={{ theme: "light" }}></Cal>
+          <Cal calLink="lazaro-fillaux" config={{ theme: "light" }}></Cal>
         </p>
       </div>
     </section>
