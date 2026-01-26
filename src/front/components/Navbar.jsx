@@ -21,8 +21,8 @@ export default function Navbar({ onMenuClick }) {
   const estaLogeado = () => {
     if (store.is_active === true) {
       return (
-        <div className="flex items-center space-x-4">
-          {/* Aquí puedes poner avatar, notificaciones, etc */}
+        <div className="flex items-center gap-3 relative">
+
           {/* Notifications */}
           <div className="relative">
             <button>
@@ -93,6 +93,11 @@ export default function Navbar({ onMenuClick }) {
                   <li className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 cursor-pointer">
                     <span>My profile</span>
                   </li>
+                  <li className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 cursor-pointer">
+                    <span>Settings</span>
+                  </li>
+
+
                   {/*IDIOMAS*/}
                   <li className="relative border-t border-b bg-gray-50">
                     <button
@@ -109,7 +114,6 @@ export default function Navbar({ onMenuClick }) {
                     {langOpen && (
                       <div className="bg-white border-t">
                         {languages.map((lang) => (
-                          // changeLanguage
                           // changeLanguage
                           <button
                             key={lang.code}
@@ -155,12 +159,61 @@ export default function Navbar({ onMenuClick }) {
     { name: '中文 (繁體)', code: 'zh-TW' }, // se le añade TW, sinó google lo traduce al chino simplificado. solo zh:simplificado + TH = chino tradicional
   ];
 
+  useEffect(() => {
+    const fetchUser = async () => {
+      const token = localStorage.getItem("jwt-token");
+
+      if (!token) return <Navigate to="/" replace />;
+
+      const resp = await fetch("/api/reuniones", {
+        headers: {
+          Authorization: "Bearer " + token
+        }
+      });
+
+      if (resp.status === 401 || resp.status === 422) {
+        localStorage.removeItem("jwt-token");
+        return <Navigate to="/" replace />;
+      }
+
+      const data = await resp.json();
+      setUser(data);
+    };
+
+    fetchUser();
+  }, []);
+
+  const changeLanguage = (langCode) => {
+    setSelectedLang(languages.find(l => l.code === langCode)?.name || 'English (US)');
+    setLangOpen(false);
+
+    const select = document.querySelector('select.goog-te-combo');
+    if (select) {
+      select.value = langCode;
+      select.dispatchEvent(new Event('change'));
+    }
+  };
+
+  // Cerrar menús al hacer clic fuera
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setUserOpen(false);
+        setLangOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 h-14 bg-white border-b border-gray-200 flex items-center justify-between px-4">
-      {/* IZQUIERDA */}
-      <div className="flex justify-between items-center space-x-2">
-        {/* Botón hamburguesa SOLO en móvil */}
-        <button
+    <div className="antialiased bg-white pt-16">
+      {/*  Google Translate widget (oculto) */}
+      <div id="google_translate_element" className="hidden"></div>
+
+      <nav className="fixed left-0 right-0 top-0 z-50 bg-white border-b border-gray-200 px-4 py-2.5">
+        <div className="flex justify-between items-center">
+          <button
           className="md:hidden p-2 rounded hover:bg-gray-100"
           onClick={onMenuClick}
         >
@@ -179,18 +232,23 @@ export default function Navbar({ onMenuClick }) {
           </svg>
         </button>
 
-        <Link to="/" className="flex items-center mr-6">
-          <img
-            src="https://trello.com/1/cards/6961547834f03e8a22cd95e9/attachments/69615640be59c35fab4ed930/download/Gemini_Generated_Image_ly6h57ly6h57ly6h.png"
-            className="mr-3 h-8 rounded-full"
-            alt="Logo"
-          />
-          <span className="text-2xl font-semibold text-black">TeamCore</span>
-        </Link>
-      </div>
+          {/* LEFT */}
+          <div className="flex items-center">
+            <a href="/" className="flex items-center mr-6">
+              <img
+                src="src/front/assets/img/logo.png"
+                className="mr-3 h-8 rounded-full"
+                alt="Logo"
+              />
+              <span className="text-2xl font-semibold text-black">TeamCore</span>
+            </a>
+          </div>
 
-      {/* DERECHA */}
-      {estaLogeado()}
-    </nav>
-  );
+          {/* RIGHT */}
+          {estaLogeado()}
+        </div>
+      </nav>
+    </div>
+  )
 }
+
