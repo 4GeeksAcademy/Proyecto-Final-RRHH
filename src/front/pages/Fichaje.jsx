@@ -73,7 +73,7 @@ export default function Fichaje() {
         <thead>
           <tr>
             <th>Hora entrada</th>
-            <th>Hora salida</th>
+            <th>Hor hola</th>
           </tr>
         </thead>
         <tbody>
