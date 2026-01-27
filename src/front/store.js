@@ -2,6 +2,7 @@ export const initialStore=()=>{
   return{
     is_active: !!localStorage.getItem("jwt-token"),
     usuarios: [],
+    
   };
 };
 
