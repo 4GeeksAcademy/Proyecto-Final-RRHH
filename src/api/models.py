@@ -241,9 +241,9 @@ class Proyecto(db.Model):
             "nombre": self.nombre,
             "descripcion": self.descripcion,
             "estado": self.estado.value,
-            "tareas": [t.serialize() for t in self.tareas]
+            "tareas": [t.serialize() for t in self.tareas],
+            "users": [u.serialize() for u in self.users]
         }
-
 
 proyecto_user = Table(
     "proyecto_user",
