@@ -1,14 +1,8 @@
 """empty message
 
-<<<<<<<< HEAD:migrations/versions/53923a028800_.py
-Revision ID: 53923a028800
+Revision ID: 71da12887eec
 Revises: 
-Create Date: 2026-01-26 19:28:25.211807
-========
-Revision ID: 22c93af4c527
-Revises: 
-Create Date: 2026-01-26 19:44:01.125998
->>>>>>>> 65ccc8ba7b1a133bd40f2ca9ee2f5864c1158871:migrations/versions/22c93af4c527_.py
+Create Date: 2026-01-27 15:51:17.994108
 
 """
 from alembic import op
@@ -16,11 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-<<<<<<<< HEAD:migrations/versions/53923a028800_.py
-revision = '53923a028800'
-========
-revision = '22c93af4c527'
->>>>>>>> 65ccc8ba7b1a133bd40f2ca9ee2f5864c1158871:migrations/versions/22c93af4c527_.py
+revision = '71da12887eec'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -41,15 +31,6 @@ def upgrade():
     sa.Column('estado', sa.Enum('en_proceso', 'pendiente', 'finalizado', name='estado'), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_table('rol',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('nombre', sa.String(length=50), nullable=False),
-    sa.Column('es_admin', sa.Boolean(), nullable=False),
-    sa.Column('puede_crear_reunion', sa.Boolean(), nullable=False),
-    sa.Column('puede_compartir_reunion', sa.Boolean(), nullable=False),
-    sa.Column('puede_invitar_proyectos', sa.Boolean(), nullable=False),
-    sa.PrimaryKeyConstraint('id')
-    )
     op.create_table('horario',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(length=100), nullable=False),
@@ -67,6 +48,17 @@ def upgrade():
     sa.Column('sabado_salida', sa.Time(), nullable=True),
     sa.Column('domingo_entrada', sa.Time(), nullable=True),
     sa.Column('domingo_salida', sa.Time(), nullable=True),
+    sa.Column('empresa_id', sa.Integer(), nullable=False),
+    sa.ForeignKeyConstraint(['empresa_id'], ['empresa.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('rol',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('nombre', sa.String(length=50), nullable=False),
+    sa.Column('es_admin', sa.Boolean(), nullable=False),
+    sa.Column('puede_crear_reunion', sa.Boolean(), nullable=False),
+    sa.Column('puede_compartir_reunion', sa.Boolean(), nullable=False),
+    sa.Column('puede_invitar_proyectos', sa.Boolean(), nullable=False),
     sa.Column('empresa_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['empresa_id'], ['empresa.id'], ),
     sa.PrimaryKeyConstraint('id')
@@ -142,8 +134,8 @@ def downgrade():
     op.drop_table('fichaje')
     op.drop_table('user')
     op.drop_table('tarea')
-    op.drop_table('horario')
     op.drop_table('rol')
+    op.drop_table('horario')
     op.drop_table('proyecto')
     op.drop_table('empresa')
     # ### end Alembic commands ###

@@ -83,6 +83,9 @@ class Rol(db.Model):
         Boolean(), default=False)
     puede_invitar_proyectos: Mapped[bool] = mapped_column(
         Boolean(), default=False)
+    
+    empresa_id: Mapped[int] = mapped_column(ForeignKey("empresa.id"), nullable=False)
+    empresa: Mapped["Empresa"] = relationship(back_populates="roles")
 
     users: Mapped[List["User"]] = relationship(back_populates="rol")
 
@@ -93,7 +96,8 @@ class Rol(db.Model):
             "es_admin": self.es_admin,
             "puede_crear_reunion": self.puede_crear_reunion,
             "puede_compartir_reunion": self.puede_compartir_reunion,
-            "puede_invitar_proyectos": self.puede_invitar_proyectos
+            "puede_invitar_proyectos": self.puede_invitar_proyectos,
+            "empresa_id": self.empresa_id
         }
 
 class Horario(db.Model):
@@ -148,13 +152,15 @@ class Empresa(db.Model):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     nombre: Mapped[str] = mapped_column(String(50), nullable=False)
-    imagen: Mapped[str] = mapped_column(String(), nullable=False)
+    imagen: Mapped[str] = mapped_column(String(), nullable=False, default="logo.jpg")
 
     users: Mapped[List["User"]] = relationship(
         back_populates="empresa", cascade="all, delete-orphan")
 
     horarios: Mapped[List["Horario"]] = relationship(
         back_populates="empresa", cascade="all, delete-orphan")
+
+    roles: Mapped[List["Rol"]] = relationship(back_populates="empresa")
 
     def serialize(self):
         return {

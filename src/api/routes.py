@@ -203,13 +203,13 @@ def obtener_usuarios():
     current_user_id = int(get_jwt_identity())
     admin = db.session.get(User, current_user_id)
 
-    usuarios = db.session.execute(select(User).where(User.empresa_id == admin.empresa_id)).scalars().all()
+    usuarios = db.session.execute(select(User).where(User.empresa_id == admin.empresa_id).order_by(User.id.asc())).scalars().all()
 
     if admin is None:
         return jsonify({"msg": "Usuario no encontrado"}), 404
     
     return {
-        "Usuarios": [u.serialize() for u in usuarios]
+        "usuarios": [u.serialize() for u in usuarios]
     }, 200
 
 @api.route('/usuario', methods=["GET"])
@@ -222,3 +222,57 @@ def obtener_usuario_actual():
         return jsonify({"msg": "Usuario no encontrado"}), 404
     
     return jsonify({"usuario": user.serialize()}), 200
+
+
+# ROLES
+# OBTENER TODOS LOS ROLES DE LA MISMA EMPRESA
+@api.route('/roles', methods=["GET"])
+@jwt_required()
+def obtener_roles():
+    current_user_id = int(get_jwt_identity())
+    user = db.session.get(User, current_user_id)
+
+    if user is None:
+        return jsonify({"msg": "Usuario no encontrado"}), 404
+    
+    roles = db.session.execute(select(Rol).where(Rol.empresa_id == user.empresa_id).order_by(Rol.id.asc())).scalars().all()
+
+    return {
+        "roles": [r.serialize() for r in roles]
+    }, 200
+
+# HORARIOS
+# OBTENER TODOS LOS HORARIOS DE LA MISMA EMPRESA
+@api.route('/horarios', methods=["GET"])
+@jwt_required()
+def obtener_horarios():
+    current_user_id = int(get_jwt_identity())
+    user = db.session.get(User, current_user_id)
+
+    if user is None:
+        return jsonify({"msg": "Usuario no encontrado"}), 404
+    
+    horarios = db.session.execute(select(Horario).where(Horario.empresa_id == user.empresa_id).order_by(Horario.id.asc())).scalars().all()
+
+    return {
+        "horarios": [h.serialize() for h in horarios]
+    }, 200
+
+# ELIMINAR UN HORARIO
+@api.route('/horario/<int:horario_id>', methods=["DELETE"])
+@jwt_required()
+def eliminar_horario(horario_id):
+    current_user_id = int(get_jwt_identity())
+    user = db.session.get(User, current_user_id)
+
+    if user is None:
+        return jsonify({"msg": "Usuario no encontrado"}), 404
+
+    horario = db.session.execute(select(Horario).where(Horario.id == horario_id)).scalar_one_or_none()
+    # horario = db.session.get(Horario, horario_id)
+    db.session.delete(horario)
+    db.session.commit()
+
+    return jsonify({
+        "msg": "Horario eliminado correctamente"
+    }), 200
