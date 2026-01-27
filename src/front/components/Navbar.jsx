@@ -223,7 +223,7 @@ export default function Navbar({ onMenuClick }) {
                               onClick={() => {
                                 setSelectedLang(lang.name);
                                 setLangOpen(false);
-                                // Redirigir a Google Translate
+                                // Redirigir a Google Translate, una vez con recel deberia de traducirlo directamente 
                                 const currentUrl = window.location.href;
                                 const googleTranslateUrl = `https://translate.google.com/translate?hl=${lang.code}&sl=auto&tl=${lang.code}&u=${encodeURIComponent(currentUrl)}`;
                                 window.open(googleTranslateUrl, '_blank');
