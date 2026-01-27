@@ -211,3 +211,14 @@ def obtener_usuarios():
     return {
         "Usuarios": [u.serialize() for u in usuarios]
     }, 200
+
+@api.route('/usuario', methods=["GET"])
+@jwt_required()
+def obtener_usuario_actual():
+    current_user_id = int(get_jwt_identity())
+    user = db.session.get(User, current_user_id)
+    
+    if user is None:
+        return jsonify({"msg": "Usuario no encontrado"}), 404
+    
+    return jsonify({"usuario": user.serialize()}), 200

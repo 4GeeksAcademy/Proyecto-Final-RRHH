@@ -11,12 +11,36 @@ export default function Navbar({ onMenuClick }) {
   const [langOpen, setLangOpen] = useState(false);
   const [selectedLang, setSelectedLang] = useState('English (US)');
 
+  const [user, setUser] = useState(null);
+
   const { store, dispatch } = useGlobalReducer();
 
   const logout = () => {
     dispatch({ type: "logout" });
     return <Navigate to="/" replace />;
   };
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const token = localStorage.getItem("jwt-token");
+      if (!token) return;
+
+      try {
+        const resp = await fetch(import.meta.env.VITE_BACKEND_URL + "/api/usuario", {
+          headers: { Authorization: "Bearer " + token }
+        });
+
+        if (!resp.ok) throw new Error("No se pudo cargar el usuario");
+
+        const data = await resp.json();
+        setUser(data.usuario); // Ajusta según la estructura que devuelva tu backend
+      } catch (error) {
+        console.error("Error cargando usuario:", error);
+      }
+    };
+
+    fetchUser();
+  }, []);
 
   const estaLogeado = () => {
     if (store.is_active === true) {
@@ -57,7 +81,7 @@ export default function Navbar({ onMenuClick }) {
             >
               <img
                 className="w-8 h-8 rounded-full"
-                src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/michael-gough.png"
+                src={user?.avatar || "https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/michael-gough.png"}
                 alt="user"
               />
               <span className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white ${statusColors[status]}`}></span>
@@ -67,8 +91,8 @@ export default function Navbar({ onMenuClick }) {
               <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-100 z-50">
                 {/* USER INFO */}
                 <div className="p-4">
-                  <p className="font-semibold text-black">Neil Sims</p>
-                  <p className="text-sm text-gray-500">name@flowbite.com</p>
+                  <p className="font-semibold text-black">{user?.nombre || "Cargando..."}</p>
+                  <p className="text-sm text-gray-500">{user?.email || "Cargando..."}</p>
                 </div>
 
                 {/* STATUS SECTION */}
@@ -214,23 +238,23 @@ export default function Navbar({ onMenuClick }) {
       <nav className="fixed left-0 right-0 top-0 z-50 bg-white border-b border-gray-200 px-4 py-2.5">
         <div className="flex justify-between items-center">
           <button
-          className="md:hidden p-2 rounded hover:bg-gray-100"
-          onClick={onMenuClick}
-        >
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
+            className="md:hidden p-2 rounded hover:bg-gray-100"
+            onClick={onMenuClick}
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M4 6h16M4 12h16M4 18h16"
-            />
-          </svg>
-        </button>
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M4 6h16M4 12h16M4 18h16"
+              />
+            </svg>
+          </button>
 
           {/* LEFT */}
           <div className="flex items-center">
