@@ -8,6 +8,12 @@ export default function Navbar({ onMenuClick }) {
   const [userOpen, setUserOpen] = useState(false);
   const [status, setStatus] = useState("activo");
 
+  //pantalla en negro
+  const [darkMode, setDarkMode] = useState(() => {
+    const saved = localStorage.getItem('darkMode');
+    return saved ? JSON.parse(saved) : false;
+  });
+
   const { store, dispatch } = useGlobalReducer();
 
   const logout = () => {
@@ -39,6 +45,7 @@ export default function Navbar({ onMenuClick }) {
     fetchUser();
   }, []);
 
+
   //Verifica que Google Translate se cargó
   useEffect(() => {
     const checkGoogleTranslate = setInterval(() => {
@@ -50,6 +57,16 @@ export default function Navbar({ onMenuClick }) {
 
     return () => clearInterval(checkGoogleTranslate);
   }, []);
+  // pantalla dark
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+
+    localStorage.setItem('darkMode', JSON.stringify(darkMode));
+  }, [darkMode]);
 
   // Estados para el selector de idiomas
   const [langOpen, setLangOpen] = useState(false);
@@ -202,7 +219,26 @@ export default function Navbar({ onMenuClick }) {
                     </li>
 
 
-                    
+                    <li className="px-4 py-2 border-t border-b bg-gray-50">
+                      <button
+                        onClick={() => setDarkMode(!darkMode)}
+                        className="flex items-center justify-between w-full text-sm font-medium"
+                      >
+                        <div className="flex items-center gap-2">
+                          {darkMode ? (
+                            <i className="bi bi-brightness-high text-yellow-400"></i>
+                          ) : (
+                            <i className="bi bi-moon text-gray-700"></i>
+                          )}
+                          <span>{darkMode ? 'Modo Claro' : 'Modo Oscuro'}</span>
+                        </div>
+                        <div className={`relative inline-block w-10 h-6 rounded-full transition-colors ${darkMode ? 'bg-blue-600' : 'bg-gray-300'
+                          }`}>
+                          <div className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transform transition-transform ${darkMode ? 'translate-x-5' : 'translate-x-0'
+                            }`}></div>
+                        </div>
+                      </button>
+                    </li>
                     {/*IDIOMAS*/}
                     <li className="relative border-t border-b bg-gray-50">
                       <button
