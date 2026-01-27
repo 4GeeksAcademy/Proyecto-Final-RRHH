@@ -39,7 +39,7 @@ export default function Navbar({ onMenuClick }) {
     fetchUser();
   }, []);
 
-  // 🔴 AÑADIDO: Verificar que Google Translate se cargó
+  //Verifica que Google Translate se cargó
   useEffect(() => {
     const checkGoogleTranslate = setInterval(() => {
       if (window.google && window.google.translate) {
@@ -103,7 +103,7 @@ export default function Navbar({ onMenuClick }) {
 
   return (
     <div className="antialiased bg-white pt-16">
-      {/* Widget oculto visualmente pero accesible para Google Translate */}
+      {/* Widget oculto */}
       <div
         id="google_translate_element"
         style={{ position: 'absolute', left: '-9999px', top: '-9999px' }}
@@ -202,7 +202,7 @@ export default function Navbar({ onMenuClick }) {
                     </li>
 
 
-                    {/*IDIOMAS*/}
+                    
                     {/*IDIOMAS*/}
                     <li className="relative border-t border-b bg-gray-50">
                       <button
