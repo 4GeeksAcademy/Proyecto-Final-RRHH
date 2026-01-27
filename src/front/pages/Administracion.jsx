@@ -5,24 +5,81 @@ import useGlobalReducer from "../hooks/useGlobalReducer";
 export default function Administracion() {
 
   const { store, dispatch } = useGlobalReducer();
+  const token = localStorage.getItem("jwt-token");
+
+  const getDataUsers = async () => {
+    const token = localStorage.getItem("jwt-token");
+
+    const response = await fetch(
+      import.meta.env.VITE_BACKEND_URL + "/api/usuarios",
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log("Usuarios:", data);
+      return data;
+    } else {
+      console.log("Error: ", response.status, response.statusText);
+      return null;
+    }
+  };
 
   useEffect(() => {
-    const getDataUsers = async () => {
-      const response = await fetch(import.meta.env.VITE_BACKEND_URL + "/api/usuarios");
-      if (response.ok) {
-        const data = await response.json();
-        console.log("Usuarios:", data);
-        return data;
-      } else {
-        console.log("Error: ", response.status, response.statusText);
-        return { error: { status: response.status, statusText: response.statusText } }
-      }
-    };
-
     getDataUsers().then(data => {
-      dispatch({ type: 'get_users', payload: { usuarios: data } });
+      if (data && data.Usuarios) {
+        dispatch({
+          type: "get_users",
+          payload: { usuarios: data.Usuarios }
+        });
+      }
     });
   }, []);
+
+  const dataTable = () => {
+    return store.usuarios.map((usuario) => {
+      return (
+        <tr className="bg-white hover:bg-gray-50">
+          <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+            <div className="relative w-8 h-8 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600">
+              <img
+                className="w-8 h-8 rounded-full"
+                src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/michael-gough.png"
+                alt="user"
+              />
+            </div>
+          </th>
+          <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+            {usuario.nombre}
+          </th>
+          <td className="px-6 py-4">
+            {usuario.email}
+          </td>
+          <td className="px-6 py-4">
+            12345678TA
+          </td>
+          <td className="px-6 py-4">
+            123456789
+          </td>
+          <td className="px-6 py-4">
+            Jefe IT
+          </td>
+          <td className="px-6 py-4">
+            Intensivo Verano
+          </td>
+          <td className="px-6 py-4 text-right flex">
+            <a href="#" className="font-medium text-blue-600 hover:underline"><i class="fa-regular fa-pen-to-square"></i></a>
+            <a href="#" className="ml-3 font-medium text-red-600 hover:underline"><i class="fa-solid fa-trash-can"></i></a>
+          </td>
+        </tr>
+      )
+    })
+  }
 
   return (
     <section className="p-4 md:p-8">
@@ -86,43 +143,7 @@ export default function Administracion() {
                 </tr>
               </thead>
               <tbody>
-                {store.usuarios.map((usuario) => {
-                  return (
-                    <tr className="bg-white hover:bg-gray-50">
-                      <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
-                        <div className="relative w-8 h-8 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600">
-                          <img
-                            className="w-8 h-8 rounded-full"
-                            src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/michael-gough.png"
-                            alt="user"
-                          />
-                        </div>
-                      </th>
-                      <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
-                        Pere Ayats
-                      </th>
-                      <td className="px-6 py-4">
-                        pereayats@gmail.com
-                      </td>
-                      <td className="px-6 py-4">
-                        12345678TA
-                      </td>
-                      <td className="px-6 py-4">
-                        123456789
-                      </td>
-                      <td className="px-6 py-4">
-                        Jefe IT
-                      </td>
-                      <td className="px-6 py-4">
-                        Intensivo Verano
-                      </td>
-                      <td className="px-6 py-4 text-right flex">
-                        <a href="#" className="font-medium text-blue-600 hover:underline"><i class="fa-regular fa-pen-to-square"></i></a>
-                        <a href="#" className="ml-3 font-medium text-red-600 hover:underline"><i class="fa-solid fa-trash-can"></i></a>
-                      </td>
-                    </tr>
-                  )
-                })}
+                {dataTable()}
               </tbody>
             </table>
           </div>
