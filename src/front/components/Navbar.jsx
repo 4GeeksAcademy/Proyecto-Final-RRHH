@@ -50,7 +50,7 @@ export default function Navbar({ onMenuClick }) {
   useEffect(() => {
     const checkGoogleTranslate = setInterval(() => {
       if (window.google && window.google.translate) {
-        console.log('✅ Google Translate cargado correctamente');
+        console.log('Google Translate cargado correctamente');
         clearInterval(checkGoogleTranslate);
       }
     }, 500);
@@ -93,9 +93,9 @@ export default function Navbar({ onMenuClick }) {
       console.log('Valor actual del selector:', select.value);
       select.value = langCode;
       select.dispatchEvent(new Event('change'));
-      console.log('✅ Evento change disparado');
+      console.log('Evento change disparado');
     } else {
-      console.error('❌ Selector de Google Translate no encontrado');
+      console.error('Selector de Google Translate no encontrado');
     }
   };
 
