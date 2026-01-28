@@ -8,7 +8,6 @@ export default function Tareas() {
   const [error, setError] = useState(null);
   const [loadingAction, setLoadingAction] = useState(false);
   
-  // 🔴 CORREGIDO: Declaraciones MOVIDAS aquí (después de hooks, antes de useEffect)
   const token = localStorage.getItem("jwt-token");
   const backendUrl = import.meta.env.VITE_BACKEND_URL || "https://supreme-space-dollop-4qjpwxgwxwr2g65-3001.app.github.dev";
 
