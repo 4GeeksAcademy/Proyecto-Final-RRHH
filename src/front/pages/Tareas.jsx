@@ -1,4 +1,3 @@
-// src/pages/Tareas.jsx
 import { useState, useEffect } from 'react';
 
 export default function Tareas() {

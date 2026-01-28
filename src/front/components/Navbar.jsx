@@ -215,7 +215,7 @@ export default function Navbar({ onMenuClick }) {
                       <span>Settings</span>
                     </li>
 
-
+                    {/* Dark mode */}
                     <li className="px-4 py-2 border-t border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
                       <button
                         onClick={() => setDarkMode(!darkMode)}
