@@ -1,3 +1,5 @@
+@custom-variant dark (&:where(.dark, .dark *));
+
 nav {
     background-color:white;
     color: black;

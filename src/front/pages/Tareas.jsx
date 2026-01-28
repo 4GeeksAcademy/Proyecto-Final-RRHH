@@ -160,6 +160,7 @@ export default function Tareas() {
       </div>
     );
   }
+  
 
   return (
     <section className="p-6 max-w-4xl mx-auto dark:bg-gray-900 dark:text-white">
@@ -169,6 +170,8 @@ export default function Tareas() {
           {tareas.length} tareas
         </span>
       </div>
+      
+      
 
       {/* Todolist para tareas*/}
       <div className="mb-8 bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 p-5">
