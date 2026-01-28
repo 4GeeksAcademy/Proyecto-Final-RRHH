@@ -1,3 +1,5 @@
+import React from 'react';
+import { Link } from 'react-router-dom';
 export default function Cards2({ to, titulo, detalle, grafico }) {
   return (
     <Link 
