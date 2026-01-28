@@ -5,7 +5,11 @@ import SidebarLayout from "../components/Sidebar";
 
 export const Layout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-
+  //dark mode
+  const [darkMode, setDarkMode] = useState(() => {
+    const saved = localStorage.getItem('darkMode');
+    return saved ? JSON.parse(saved) : false;
+  });
   return (
     <div className="min-h-screen flex flex-col">
       {/* Navbar */}
