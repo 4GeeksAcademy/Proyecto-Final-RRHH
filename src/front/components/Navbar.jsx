@@ -119,7 +119,7 @@ export default function Navbar({ onMenuClick }) {
   }, []);
 
   return (
-    <div className="antialiased bg-white dark:bg-gray-900 pt-16">
+    <div className="p-6 dark:bg-gray-900 dark:text-white antialiased bg-white dark:bg-gray-900 pt-16">
       {/* Widget oculto */}
       <div
         id="google_translate_element"

@@ -50,7 +50,7 @@ export default function Calendario() {
   
 
   return (
-    <section className="">
+    <section className="p-6 dark:bg-gray-900 dark:text-white">
       <div className="contenedor-calendly">
         <p>
           <Cal calLink="lazaro-fillaux/15min" config={{ theme: "light" }}></Cal>
