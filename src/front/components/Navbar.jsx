@@ -30,7 +30,7 @@ export default function Navbar({ onMenuClick }) {
     const fetchUser = async () => {
       const token = localStorage.getItem("jwt-token");
       if (!token) return;
-
+      //* no es la ruta api/usuario
       try {
         const resp = await fetch(import.meta.env.VITE_BACKEND_URL + "/api/usuario", {
           headers: { Authorization: "Bearer " + token }
