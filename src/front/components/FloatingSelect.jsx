@@ -1,9 +1,10 @@
-export default function FloatingSelect({ id, label, children }) {
+export default function FloatingSelect({ id, label, children, onChange }) {
   return (
     <div className="relative">
       <select
         id={id}
         required
+        onChange={onChange}
         className="peer w-full px-4 py-3 text-sm text-neutral-800 bg-neutral-50
                    border border-neutral-300 rounded-xl
                    focus:outline-none focus:ring-2 focus:ring-indigo-500"

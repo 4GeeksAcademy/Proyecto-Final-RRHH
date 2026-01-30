@@ -33,7 +33,7 @@ export default function Administracion() {
       import.meta.env.VITE_BACKEND_URL + "/api/roles",
       {
         headers: {
-
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
       }
@@ -109,10 +109,49 @@ export default function Administracion() {
     })
       .then(response => response.json())
       .then(data => {
-        dispatch({ type: 'eliminar_horario', payload: { id: id } });
+        dispatch({ type: 'eliminar_horario', payload: { id_horario: id } });
         console.log("Estado eliminar horario:", data);
       })
       .catch(error => console.log("Error en eliminar horario:", error));
+  };
+
+  function eliminarRol(id) {
+    fetch(import.meta.env.VITE_BACKEND_URL + `/api/rol/${id}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      }
+    })
+      .then(response => response.json())
+      .then(data => {
+        dispatch({ type: 'eliminar_rol', payload: { id_rol: id } });
+        console.log("Estado de eliminar rol:", data)
+      })
+      .catch(error => console.log("Error en eliminar horario:", error))
+  };
+
+  function eliminarUsuario(id) {
+    fetch(import.meta.env.VITE_BACKEND_URL + `/api/usuario/${id}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      }
+    })
+      .then(async response => {
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.message || 'No se pudo eliminar el usuario');
+        }
+
+        return response.json();
+      })
+      .then(data => {
+        dispatch({ type: 'eliminar_usuario', payload: { id_usuario: id } });
+        console.log("Estado de eliminar usuario:", data);
+      })
+      .catch(error => console.log("·Error en eliminar usuario:", error))
   };
 
   const dataTablesuarios = () => {
@@ -120,12 +159,8 @@ export default function Administracion() {
       return (
         <tr className="bg-white hover:bg-gray-50">
           <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
-            <div className="relative w-8 h-8 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600">
-              <img
-                className="w-8 h-8 rounded-full"
-                src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/michael-gough.png"
-                alt="user"
-              />
+            <div className="relative inline-flex items-center justify-center w-10 h-10 overflow-hidden bg-gray-100 rounded-full">
+              <span className="font-medium text-body">{usuario.nombre.charAt(0)}{usuario.apellidos.charAt(0)}</span>
             </div>
           </th>
           <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
@@ -135,20 +170,20 @@ export default function Administracion() {
             {usuario.email}
           </td>
           <td className="px-6 py-4">
-            12345678TA
+            {usuario.email}
           </td>
           <td className="px-6 py-4">
-            123456789
+            {usuario.telefono}
           </td>
           <td className="px-6 py-4">
-            Jefe IT
+            {usuario.rol}
           </td>
           <td className="px-6 py-4">
-            Intensivo Verano
+            {usuario.horario}
           </td>
           <td className="px-6 py-4 text-right flex">
-            <a href="#" className="font-medium text-blue-600 hover:underline"><i class="fa-regular fa-pen-to-square"></i></a>
-            <a href="#" className="ml-3 font-medium text-red-600 hover:underline"><i class="fa-solid fa-trash-can"></i></a>
+            <Link to={`/editar-usuario/${usuario.id}`} className="font-medium text-blue-600 hover:underline"><i className="fa-regular fa-pen-to-square"></i></Link>
+            <a href="#" onClick={() => eliminarUsuario(usuario.id)} className="ml-3 font-medium text-red-600 hover:underline"><i className="fa-solid fa-trash-can"></i></a>
           </td>
         </tr>
       )
@@ -184,8 +219,8 @@ export default function Administracion() {
             {horario.domingo_entrada && horario.domingo_salida ? `${horario.domingo_entrada} - ${horario.domingo_salida}` : '-'}
           </td>
           <td className="px-6 py-4 text-right flex">
-            <a href="#" className="font-medium text-blue-600 hover:underline"><i class="fa-regular fa-pen-to-square"></i></a>
-            <a href="#" onClick={() => eliminarHorario(horario.id)} className="ml-3 font-medium text-red-600 hover:underline"><i class="fa-solid fa-trash-can"></i></a>
+            <a href="#" className="font-medium text-blue-600 hover:underline"><i className="fa-regular fa-pen-to-square"></i></a>
+            <a href="#" onClick={() => eliminarHorario(horario.id)} className="ml-3 font-medium text-red-600 hover:underline"><i className="fa-solid fa-trash-can"></i></a>
           </td>
         </tr>
       )
@@ -220,8 +255,8 @@ export default function Administracion() {
             </div>
           </td>
           <td className="px-6 py-4 text-right flex">
-            <a href="#" className="font-medium text-blue-600 hover:underline"><i class="fa-regular fa-pen-to-square"></i></a>
-            <a href="#" className="ml-3 font-medium text-red-600 hover:underline"><i class="fa-solid fa-trash-can"></i></a>
+            <a href="#" className="font-medium text-blue-600 hover:underline"><i className="fa-regular fa-pen-to-square"></i></a>
+            <a href="#" onClick={() => eliminarRol(rol.id)} className="ml-3 font-medium text-red-600 hover:underline"><i className="fa-solid fa-trash-can"></i></a>
           </td>
         </tr>
       )

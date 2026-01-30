@@ -69,7 +69,9 @@ class User(db.Model):
             "link_calendly": self.link_calendly,
             "empresa_id": self.empresa_id,
             "rol_id": self.rol_id,
-            "horario_id": self.horario_id
+            "rol": self.rol.nombre,
+            "horario_id": self.horario_id,
+            "horario": self.horario.name
         }
 
 class Rol(db.Model):
@@ -104,7 +106,7 @@ class Horario(db.Model):
     __tablename__ = "horario"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[int] = mapped_column(String(100), nullable=False)
+    name: Mapped[str] = mapped_column(String(100), nullable=False)
     lunes_entrada: Mapped[datetime.time] = mapped_column(nullable=False)
     lunes_salida: Mapped[datetime.time] = mapped_column(nullable=False)
     martes_entrada: Mapped[datetime.time] = mapped_column(nullable=False)

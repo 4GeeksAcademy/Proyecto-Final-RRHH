@@ -18,6 +18,7 @@ import Login from "./pages/Login";
 import Home from "./pages/Home";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import CrearUsuario from "./pages/CrearUsuario";
+import EditarUsuario from "./pages/EditarUsuario";
 
 
 export const router = createBrowserRouter(
@@ -47,8 +48,7 @@ export const router = createBrowserRouter(
         <Route path= "/notificaciones" element={<ProtectedRoute><Notificaciones /></ProtectedRoute>} />
         <Route path= "/administracion" element={<ProtectedRoute><Administracion /></ProtectedRoute>} />
         <Route path= "/crear-usuario" element={<ProtectedRoute><CrearUsuario /></ProtectedRoute>} />
-        
-
+        <Route path="/editar-usuario/:id" element={<ProtectedRoute><EditarUsuario /></ProtectedRoute>} />
       </Route>
     </>
     )
