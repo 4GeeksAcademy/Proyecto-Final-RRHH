@@ -1,6 +1,6 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
-nav {
+/*nav {
     background-color:white;
     color: black;
     padding: 1rem;
@@ -17,7 +17,7 @@ footer {
     color: black;
     text-align: center;
     padding: 1rem;
-}
+} */
 
 .animated-circuits {
   background:

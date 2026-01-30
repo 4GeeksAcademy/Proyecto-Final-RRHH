@@ -166,7 +166,7 @@ export default function SidebarLayout({ isOpen, onClose }) {
           pt-20 
           p-6 
           min-h-screen 
-          bg-gray-50
+          ${darkMode ? 'bg-gray-900' : 'bg-gray-50'}
           transition-all
           md:ml-64
         "
