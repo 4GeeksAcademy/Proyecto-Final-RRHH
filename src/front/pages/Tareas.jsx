@@ -164,9 +164,9 @@ export default function Tareas() {
   return (
     <section className="p-6 max-w-4xl mx-auto dark:bg-gray-900 dark:text-white">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Gestión de Tareas</h1>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Gestión de Proyectos</h1>
         <span className="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full dark:bg-blue-900/30 dark:text-blue-200">
-          {tareas.length} tareas
+          {tareas.length} proyectos
         </span>
       </div>
       
@@ -179,7 +179,7 @@ export default function Tareas() {
             type="text"
             value={nuevaTarea}
             onChange={(e) => setNuevaTarea(e.target.value)}
-            placeholder="Nueva tarea..."
+            placeholder="Nuevo proyecto..."
             className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg 
                        bg-white dark:bg-gray-700 text-gray-900 dark:text-white
                        focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
@@ -200,7 +200,7 @@ export default function Tareas() {
                 Creando...
               </span>
             ) : (
-              "Añadir Tarea"
+              "Añadir Proyecto"
             )}
           </button>
         </form>
@@ -215,7 +215,7 @@ export default function Tareas() {
       {tareas.length === 0 ? (
         <div className="text-center py-16 bg-gray-50 dark:bg-gray-800 rounded-2xl border-2 border-dashed border-gray-300 dark:border-gray-700">
           <div className="text-5xl mb-4 text-gray-300 dark:text-gray-600">📋</div>
-          <h2 className="text-2xl font-semibold text-gray-700 dark:text-white mb-2">No tienes tareas</h2>
+          <h2 className="text-2xl font-semibold text-gray-700 dark:text-white mb-2">No tienes proyectos</h2>
           <p className="text-gray-500 dark:text-gray-400 mb-6"></p>
           <button
             onClick={() => document.querySelector('input').focus()}

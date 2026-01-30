@@ -47,7 +47,9 @@ class User(db.Model):
     horario: Mapped["Horario"] = relationship(back_populates="users")
 
     reuniones: Mapped[List["Reunion"]] = relationship(
-        secondary="reunion_user", back_populates="users")
+        secondary="reunion_user", back_populates="usuarios")
+
+    organizador_reunion: Mapped["Reunion"] = relationship(back_populates="organizador")
 
     fichajes: Mapped[List["Fichaje"]] = relationship(back_populates="user")
 
@@ -67,7 +69,9 @@ class User(db.Model):
             "link_calendly": self.link_calendly,
             "empresa_id": self.empresa_id,
             "rol_id": self.rol_id,
-            "horario_id": self.horario_id
+            "rol": self.rol.nombre,
+            "horario_id": self.horario_id,
+            "horario": self.horario.name
         }
 
 class Rol(db.Model):
@@ -81,6 +85,9 @@ class Rol(db.Model):
         Boolean(), default=False)
     puede_invitar_proyectos: Mapped[bool] = mapped_column(
         Boolean(), default=False)
+    
+    empresa_id: Mapped[int] = mapped_column(ForeignKey("empresa.id"), nullable=False)
+    empresa: Mapped["Empresa"] = relationship(back_populates="roles")
 
     users: Mapped[List["User"]] = relationship(back_populates="rol")
 
@@ -91,14 +98,15 @@ class Rol(db.Model):
             "es_admin": self.es_admin,
             "puede_crear_reunion": self.puede_crear_reunion,
             "puede_compartir_reunion": self.puede_compartir_reunion,
-            "puede_invitar_proyectos": self.puede_invitar_proyectos
+            "puede_invitar_proyectos": self.puede_invitar_proyectos,
+            "empresa_id": self.empresa_id
         }
 
 class Horario(db.Model):
     __tablename__ = "horario"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[int] = mapped_column(String(100), nullable=False)
+    name: Mapped[str] = mapped_column(String(100), nullable=False)
     lunes_entrada: Mapped[datetime.time] = mapped_column(nullable=False)
     lunes_salida: Mapped[datetime.time] = mapped_column(nullable=False)
     martes_entrada: Mapped[datetime.time] = mapped_column(nullable=False)
@@ -146,13 +154,15 @@ class Empresa(db.Model):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     nombre: Mapped[str] = mapped_column(String(50), nullable=False)
-    imagen: Mapped[str] = mapped_column(String(), nullable=False)
+    imagen: Mapped[str] = mapped_column(String(), nullable=False, default="logo.jpg")
 
     users: Mapped[List["User"]] = relationship(
         back_populates="empresa", cascade="all, delete-orphan")
 
     horarios: Mapped[List["Horario"]] = relationship(
         back_populates="empresa", cascade="all, delete-orphan")
+
+    roles: Mapped[List["Rol"]] = relationship(back_populates="empresa")
 
     def serialize(self):
         return {
@@ -165,12 +175,15 @@ class Reunion(db.Model):
     __tablename__ = "reunion"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    nombre: Mapped[str] = mapped_column(String(80), nullable=False)
+    nombre: Mapped[str] = mapped_column(String(80), nullable=True)
     link: Mapped[str] = mapped_column(String(), nullable=False)
-    hora_inicio: Mapped[datetime.time] = mapped_column(nullable=False)
-    duracion: Mapped[datetime.time] = mapped_column(nullable=False)
+    fecha: Mapped[datetime.datetime] = mapped_column(nullable=False)
+    duracion: Mapped[int] = mapped_column(nullable=False)
 
-    users: Mapped[List["User"]] = relationship(
+    organizador_id: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=False)
+    organizador: Mapped["User"] = relationship(back_populates="organizador_reunion")
+
+    usuarios: Mapped[List["User"]] = relationship(
         secondary="reunion_user", back_populates="reuniones")
 
     def serialize(self):
@@ -178,8 +191,10 @@ class Reunion(db.Model):
             "id": self.id,
             "nombre": self.nombre,
             "link": self.link,
-            "hora_inicio": self.hora_inicio.strftime("%H:%M") if self.hora_inicio else None,
-            "duracion": self.duracion.strftime("%H:%M") if self.duracion else None
+            "fecha": self.fecha.isoformat() if self.fecha else None,
+            "duracion": self.duracion,
+            "organizador_id": self.organizador_id,
+            "usuarios": [u.serialize() for u in self.usuarios]
         }
 
 reunion_user = Table(
@@ -234,9 +249,9 @@ class Proyecto(db.Model):
             "nombre": self.nombre,
             "descripcion": self.descripcion,
             "estado": self.estado.value,
-            "tareas": [t.serialize() for t in self.tareas]
+            "tareas": [t.serialize() for t in self.tareas],
+            "users": [u.serialize() for u in self.users]
         }
-
 
 proyecto_user = Table(
     "proyecto_user",

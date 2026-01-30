@@ -1,10 +1,48 @@
 import FloatingInput from "../components/InputForm.jsx";
 import FloatingSelect from "../components/FloatingSelect.jsx";
+import useGlobalReducer from "../hooks/useGlobalReducer";
+import { useNavigate } from "react-router-dom";
 
 export default function CrearUsuario() {
+
+  const { store, dispatch } = useGlobalReducer();
+  const navigate = useNavigate();
+  const token = localStorage.getItem("jwt-token");
+
+  function crearUsuario(event) {
+    event.preventDefault();
+
+    fetch(import.meta.env.VITE_BACKEND_URL + "/api/usuario", {
+      method: 'POST',
+      body: JSON.stringify({
+        "nombre": store.inputNameUsuario,
+        "apellidos": store.inputApellidosUsuario,
+        "password": store.inputPasswordUsuario,
+        "email": store.inputEmailUsuario,
+        "dni": store.inputDniUsuario,
+        "telefono": store.inputTelefonoUsuario,
+        "foto_perfil": "logo.png",
+        "link_calendly": "",
+        "empresa_id": "",
+        "horario_id": store.selectHorarioUsuario,
+        "rol_id": store.selectRolUsuario,
+      }),
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      }
+    })
+      .then(response => response.json())
+      .then(data => {
+        dispatch({ type: 'crear_usuario', payload: { usuario: data.usuario } });
+        window.location.replace("/administracion");
+      })
+      .catch(error => console.log(error))
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-sky-50 via-white to-indigo-50 px-4">
-      <form className="w-full max-w-2xl bg-white rounded-2xl shadow-xl border border-neutral-200 p-8 space-y-6">
+      <form className="w-full max-w-2xl bg-white rounded-2xl shadow-xl border border-neutral-200 p-8 space-y-6" onSubmit={crearUsuario}>
 
         <h2 className="text-3xl font-bold text-neutral-800 text-center">
           Crear Usuario
@@ -13,68 +51,39 @@ export default function CrearUsuario() {
           Completa el formulario para registrarte
         </p>
 
-        {/* Email */}
-        <FloatingInput id="email" label="Correo electrónico" type="email" />
-
-        {/* Passwords */}
         <div className="grid md:grid-cols-2 gap-6">
-          <FloatingInput id="password" label="Contraseña" type="password" />
-          <FloatingInput id="repeat_password" label="Confirmar contraseña" type="password" />
+          <FloatingInput id="email" label="Correo electrónico" type="email" onChange={(event) => dispatch({ type: 'set_input_emailUsuario', payload: { inputEmailUsuario: event.target.value } })} />
+          <FloatingInput id="password" label="Contraseña" type="password" onChange={(event) => dispatch({ type: 'set_input_passwordUsuario', payload: { inputPasswordUsuario: event.target.value } })} />
         </div>
 
         {/* Name */}
         <div className="grid md:grid-cols-2 gap-6">
-          <FloatingInput id="first_name" label="Nombre" />
-          <FloatingInput id="last_name" label="Apellidos" />
+          <FloatingInput id="first_name" label="Nombre" onChange={(event) => dispatch({ type: 'set_input_nameUsuario', payload: { inputNameUsuario: event.target.value } })} />
+          <FloatingInput id="last_name" label="Apellidos" onChange={(event) => dispatch({ type: 'set_input_apellidosUsuario', payload: { inputApellidosUsuario: event.target.value } })} />
         </div>
 
         {/* Extra */}
         <div className="grid md:grid-cols-2 gap-6">
-          <FloatingInput id="phone" label="Teléfono" type="tel" />
-          <FloatingInput id="dni" label="DNI" />
+          <FloatingInput id="phone" label="Teléfono" type="tel" onChange={(event) => dispatch({ type: 'set_input_telefonoUsuario', payload: { inputTelefonoUsuario: event.target.value } })} />
+          <FloatingInput id="dni" label="DNI" onChange={(event) => dispatch({ type: 'set_input_dniUsuario', payload: { inputDniUsuario: event.target.value } })} />
         </div>
 
         {/* Selects */}
         <div className="grid md:grid-cols-2 gap-6">
-          <FloatingSelect id="horario" label="Horario">
+          <FloatingSelect id="horario" label="Horario" onChange={(event) => dispatch({ type: 'set_select_HorarioUsuario', payload: { selectHorarioUsuario: event.target.value } })}>
             <option value="">Selecciona horario</option>
-            <option value="mañana">Mañana</option>
-            <option value="tarde">Tarde</option>
+            {store.horarios.map((horario) => {
+              return <option value={horario.id}>{horario.name}</option>
+            })}
           </FloatingSelect>
 
-          <FloatingSelect id="rol" label="Rol">
+          <FloatingSelect id="rol" label="Rol" onChange={(event) => dispatch({ type: 'set_select_RolUsuario', payload: { selectRolUsuario: event.target.value } })}>
             <option value="">Selecciona rol</option>
-            <option value="admin">Administrador</option>
-            <option value="user">Usuario</option>
+            {store.roles.map((rol) => {
+              return <option value={rol.id}>{rol.nombre}</option>
+            })}
           </FloatingSelect>
         </div>
-
-        <div className="grid md:grid-cols-1 gap-6">
-          <FloatingSelect id="empresa" label="Empresa">
-            <option value="">Selecciona empresa</option>
-            <option value="google">Google</option>
-            <option value="amazon">Amazon</option>
-            <option value="meta">Meta</option>
-          </FloatingSelect>
-        </div>
-
-        <div className="grid md:grid-cols-1 gap-6">
-          {/* File upload */}
-          <div className="relative">
-            <label className="block text-sm font-medium text-neutral-600 mb-2">
-              Foto de Perfil
-            </label>
-            <input
-              type="file"
-              className="w-full text-sm text-neutral-700 file:mr-4 pl-3 file:py-2 file:px-4
-                         file:rounded-lg file:border-0
-                         file:bg-indigo-50 file:text-indigo-700
-                         hover:file:bg-indigo-100
-                         border border-neutral-300 rounded-xl cursor-pointer"
-            />
-          </div>
-        </div>
-
         <button
           type="submit"
           className="w-full py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-sky-500 text-white font-semibold text-lg hover:opacity-90 transition shadow-md"
