@@ -15,6 +15,12 @@ export default function Calendario() {
 
           console.log(e);
 
+          // const g = e.detail.data.booking.attendees
+          // for i in g {
+                
+
+          // }
+
           const t = { FECHA: e.detail.data.date, TIEMPO_REUNION: e.detail.data.duration, EMAIL_ORGANIZADOR: e.detail.data.organizer.email,EMAIL_INVITADO: e.detail.data.booking.attendees[1].email }
 
           console.log("estos son los datos recogidos", t)

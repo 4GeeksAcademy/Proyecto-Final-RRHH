@@ -2,7 +2,7 @@
 
 export default function GraficoTrabajo() {
     return (
-        <div className="max-w-sm w-full  rounded-xl shadow p-4 md:p-6">
+        <div className="w-full h-full rounded-xl shadow p-4 md:p-6">
 
             {/* Header */}
             <div className="flex justify-between mb-4 md:mb-6 items-center">

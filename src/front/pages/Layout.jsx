@@ -1,25 +1,26 @@
-import { Outlet } from "react-router-dom";
+import { useState } from "react";
 import Navbar from "../components/Navbar";
-import SidebarLayout from "../components/Sidebar";
 import Footer from "../components/Footer";
-import Dashboard from "./Dashboard";
+import SidebarLayout from "../components/Sidebar";
 
 export const Layout = () => {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Navbar siempre arriba */}
-      <Navbar />
+      {/* Navbar */}
+      <Navbar onMenuClick={() => setSidebarOpen(true)} />
 
-      {/* Zona central: sidebar + contenido */}
-      <div className="flex flex-1 overflow-hidden">
-        <SidebarLayout />
-        
-    
+      {/* Zona central */}
+      <div className="flex flex-1 pt-14">
+        <SidebarLayout
+          isOpen={sidebarOpen}
+          onClose={() => setSidebarOpen(false)}
+        />
       </div>
-      
 
-      {/* Footer  */}
-     <Footer />
+      {/* Footer */}
+      <Footer />
     </div>
   );
 };
