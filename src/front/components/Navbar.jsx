@@ -12,8 +12,11 @@ export default function Navbar({ onMenuClick }) {
   const [selectedLang, setSelectedLang] = useState('English (US)');
 
   const [user, setUser] = useState(null);
+  const [reuniones, setReuniones] = useState([]);
 
   const { store, dispatch } = useGlobalReducer();
+
+ 
 
   const logout = () => {
     dispatch({ type: "logout" });
