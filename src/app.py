@@ -47,7 +47,7 @@ CORS(
     expose_headers=["Authorization"],
 )
 
-#CONFIGURACION DE CORREO ELECTRONICO (YESSI)
+# CONFIGURACION DE CORREO ELECTRONICO (YESSI)
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 465
 app.config['MAIL_USE_SSL'] = True
@@ -67,6 +67,16 @@ app.register_blueprint(api, url_prefix='/api')
 
 # Handle/serialize errors like a JSON object
 
+
+@app.route('/email-prueba', methods=['GET'])
+def email_prueba():
+    
+    msg = Message(subject="email de prueba", sender='teamcore2026@gmail.com', recipients=['yessigarrido.work@gmail.com'])
+    msg.body = 'Hola esto es una prueba'
+    mail.send(msg)
+
+    return 'Email sent successfully!'
+    
 
 @app.errorhandler(APIException)
 def handle_invalid_usage(error):
