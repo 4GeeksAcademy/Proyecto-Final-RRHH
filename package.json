@@ -56,7 +56,10 @@
   "dependencies": {
     "@calcom/embed-react": "^1.5.3",
     "apexcharts": "^3.46.0",
+<<<<<<< HEAD
     "firebase": "^12.8.0",
+=======
+>>>>>>> 48086c647fe6705dc0a2e036b3e1da31c21d9403
     "jspdf": "^4.0.0",
     "jspdf-autotable": "^5.0.7",
     "prop-types": "^15.8.1",
