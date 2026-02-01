@@ -15,6 +15,8 @@ from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 from datetime import timedelta
 
+from flask_mail import Mail, Message
+
 # from models import Person
 
 ENV = "development" if os.getenv("FLASK_DEBUG") == "1" else "production"
@@ -45,6 +47,14 @@ CORS(
     expose_headers=["Authorization"],
 )
 
+#CONFIGURACION DE CORREO ELECTRONICO (YESSI)
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 465
+app.config['MAIL_USE_SSL'] = True
+app.config['MAIL_USERNAME'] = 'teamcore2026@gmail.com'
+app.config['MAIL_PASSWORD'] = 'frrb fhdc ybkp pnet'
+
+mail = Mail(app)
 
 # add the admin
 setup_admin(app)
