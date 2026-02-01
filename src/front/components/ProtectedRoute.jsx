@@ -13,7 +13,7 @@ export function ProtectedRoute({ children }) {
   }, [token]);
 
   if (!token || !store.is_active) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/home" replace />;
   }
 
   return children;

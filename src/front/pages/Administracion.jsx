@@ -1,10 +1,271 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import useGlobalReducer from "../hooks/useGlobalReducer";
 
 export default function Administracion() {
+
+  const { store, dispatch } = useGlobalReducer();
+  const token = localStorage.getItem("jwt-token");
+
+  const getDataUsers = async () => {
+    const response = await fetch(
+      import.meta.env.VITE_BACKEND_URL + "/api/usuarios",
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log("Usuarios:", data);
+      return data;
+    } else {
+      console.log("Error: ", response.status, response.statusText);
+      return null;
+    }
+  };
+
+  const getDataRoles = async () => {
+    const response = await fetch(
+      import.meta.env.VITE_BACKEND_URL + "/api/roles",
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log("Roles: ", data);
+      return data;
+    } else {
+      console.log("Error: ", response.status, response.statuText);
+      return null;
+    }
+  };
+
+  const getDataHorarios = async () => {
+    const response = await fetch(
+      import.meta.env.VITE_BACKEND_URL + "/api/horarios",
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log("Horarios: ", data);
+      return data;
+    } else {
+      console.log("Error: ", response.status, response.statuText);
+      return null;
+    }
+  };
+
+  useEffect(() => {
+    getDataUsers().then(data => {
+      if (data) {
+        dispatch({
+          type: "get_users",
+          payload: { usuarios: data.usuarios }
+        });
+      }
+    });
+
+    getDataRoles().then(data => {
+      if (data) {
+        dispatch({
+          type: "get_roles",
+          payload: { roles: data.roles }
+        });
+      }
+    });
+
+    getDataHorarios().then(data => {
+      if (data) {
+        dispatch({
+          type: 'get_horarios',
+          payload: { horarios: data.horarios }
+        });
+      }
+    });
+  }, []);
+
+  function eliminarHorario(id) {
+    fetch(import.meta.env.VITE_BACKEND_URL + `/api/horario/${id}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      }
+    })
+      .then(response => response.json())
+      .then(data => {
+        dispatch({ type: 'eliminar_horario', payload: { id_horario: id } });
+        console.log("Estado eliminar horario:", data);
+      })
+      .catch(error => console.log("Error en eliminar horario:", error));
+  };
+
+  function eliminarRol(id) {
+    fetch(import.meta.env.VITE_BACKEND_URL + `/api/rol/${id}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      }
+    })
+      .then(response => response.json())
+      .then(data => {
+        dispatch({ type: 'eliminar_rol', payload: { id_rol: id } });
+        console.log("Estado de eliminar rol:", data)
+      })
+      .catch(error => console.log("Error en eliminar horario:", error))
+  };
+
+  function eliminarUsuario(id) {
+    fetch(import.meta.env.VITE_BACKEND_URL + `/api/usuario/${id}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      }
+    })
+      .then(async response => {
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.message || 'No se pudo eliminar el usuario');
+        }
+
+        return response.json();
+      })
+      .then(data => {
+        dispatch({ type: 'eliminar_usuario', payload: { id_usuario: id } });
+        console.log("Estado de eliminar usuario:", data);
+      })
+      .catch(error => console.log("·Error en eliminar usuario:", error))
+  };
+
+  const dataTablesuarios = () => {
+    return store.usuarios.map((usuario) => {
+      return (
+        <tr className="bg-white hover:bg-gray-50">
+          <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+            <div className="relative inline-flex items-center justify-center w-10 h-10 overflow-hidden bg-gray-100 rounded-full">
+              <span className="font-medium text-body">{usuario.nombre.charAt(0)}{usuario.apellidos.charAt(0)}</span>
+            </div>
+          </th>
+          <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+            {usuario.nombre} {usuario.apellidos}
+          </th>
+          <td className="px-6 py-4">
+            {usuario.email}
+          </td>
+          <td className="px-6 py-4">
+            {usuario.email}
+          </td>
+          <td className="px-6 py-4">
+            {usuario.telefono}
+          </td>
+          <td className="px-6 py-4">
+            {usuario.rol}
+          </td>
+          <td className="px-6 py-4">
+            {usuario.horario}
+          </td>
+          <td className="px-6 py-4 text-right flex">
+            <Link to={`/editar-usuario/${usuario.id}`} className="font-medium text-blue-600 hover:underline"><i className="fa-regular fa-pen-to-square"></i></Link>
+            <a href="#" onClick={() => eliminarUsuario(usuario.id)} className="ml-3 font-medium text-red-600 hover:underline"><i className="fa-solid fa-trash-can"></i></a>
+          </td>
+        </tr>
+      )
+    })
+  };
+
+  const dataTableHorarios = () => {
+    return store.horarios.map((horario) => {
+      return (
+        <tr className="bg-white hover:bg-gray-50">
+          <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+            {horario.name}
+          </th>
+          <td className="px-6 py-4">
+            {horario.lunes_entrada} - {horario.lunes_salida}
+          </td>
+          <td className="px-6 py-4">
+            {horario.martes_entrada} - {horario.martes_salida}
+          </td>
+          <td className="px-6 py-4">
+            {horario.miercoles_entrada} - {horario.miercoles_salida}
+          </td>
+          <td className="px-6 py-4">
+            {horario.jueves_entrada} - {horario.jueves_salida}
+          </td>
+          <td className="px-6 py-4">
+            {horario.viernes_entrada} - {horario.viernes_salida}
+          </td>
+          <td className="px-6 py-4">
+            {horario.sabado_entrada && horario.sabado_salida ? `${horario.sabado_entrada} - ${horario.sabado_salida}` : '-'}
+          </td>
+          <td className="px-6 py-4">
+            {horario.domingo_entrada && horario.domingo_salida ? `${horario.domingo_entrada} - ${horario.domingo_salida}` : '-'}
+          </td>
+          <td className="px-6 py-4 text-right flex">
+            <a href="#" className="font-medium text-blue-600 hover:underline"><i className="fa-regular fa-pen-to-square"></i></a>
+            <a href="#" onClick={() => eliminarHorario(horario.id)} className="ml-3 font-medium text-red-600 hover:underline"><i className="fa-solid fa-trash-can"></i></a>
+          </td>
+        </tr>
+      )
+    })
+  };
+
+  const dataTableRoles = () => {
+    return store.roles.map((rol) => {
+      return (
+        <tr className="bg-white hover:bg-gray-50">
+          <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+            {rol.nombre}
+          </th>
+          <td className="px-6 py-4">
+            <div className="flex items-center">
+              <input disabled defaultChecked={rol.es_admin} id="disabled-checked-checkbox" type="checkbox" value="" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+            </div>
+          </td>
+          <td className="px-6 py-4">
+            <div className="flex items-center">
+              <input disabled defaultChecked={rol.puede_crear_reunion} id="disabled-checked-checkbox" type="checkbox" value="" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+            </div>
+          </td>
+          <td className="px-6 py-4">
+            <div className="flex items-center">
+              <input disabled defaultChecked={rol.puede_compartir_reunion} id="disabled-checked-checkbox" type="checkbox" value="" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+            </div>
+          </td>
+          <td className="px-6 py-4">
+            <div className="flex items-center">
+              <input disabled defaultChecked={rol.puede_invitar_proyectos} id="disabled-checked-checkbox" type="checkbox" value="" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+            </div>
+          </td>
+          <td className="px-6 py-4 text-right flex">
+            <a href="#" className="font-medium text-blue-600 hover:underline"><i className="fa-regular fa-pen-to-square"></i></a>
+            <a href="#" onClick={() => eliminarRol(rol.id)} className="ml-3 font-medium text-red-600 hover:underline"><i className="fa-solid fa-trash-can"></i></a>
+          </td>
+        </tr>
+      )
+    })
+  }
+
   return (
     <section className="p-4 md:p-8">
-      <h1 className="text-3xl font-bold mb-6">Administración de Usuarios</h1>
+      <h1 className="text-3xl font-bold mb-6">Gestión de Usuarios</h1>
       <div className="mb-4 border-b border-gray-400">
         <ul className="flex flex-wrap -mb-px text-sm font-medium text-center" id="default-styled-tab" data-tabs-toggle="#default-styled-tab-content" data-tabs-active-classes="text-purple-600 hover:text-purple-600 border-purple-600" data-tabs-inactive-classes="text-gray-500 hover:text-gray-600 border-none hover:border-gray-300" role="tablist">
           <li className="me-2" role="presentation">
@@ -26,6 +287,7 @@ export default function Administracion() {
         </ul>
       </div>
       <div id="default-styled-tab-content">
+        {/* CONTENIDO DE USUARIOS */}
         <div id="styled-profile" role="tabpanel" aria-labelledby="profile-tab">
           <div className="w-full flex justify-end mb-5">
             <Link to="/crear-usuario">
@@ -63,48 +325,93 @@ export default function Administracion() {
                 </tr>
               </thead>
               <tbody>
-                <tr className="bg-white hover:bg-gray-50">
-                  <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
-                    <div className="relative w-8 h-8 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600">
-                      <img
-                        className="w-8 h-8 rounded-full"
-                        src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/michael-gough.png"
-                        alt="user"
-                      />
-                    </div>
-                  </th>
-                  <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
-                    Pere Ayats
-                  </th>
-                  <td className="px-6 py-4">
-                    pereayats@gmail.com
-                  </td>
-                  <td className="px-6 py-4">
-                    12345678TA
-                  </td>
-                  <td className="px-6 py-4">
-                    123456789
-                  </td>
-                  <td className="px-6 py-4">
-                    admin
-                  </td>
-                  <td className="px-6 py-4">
-                    07:00-14:00
-                  </td>
-                  <td className="px-6 py-4 text-right flex">
-                    <a href="#" className="font-medium text-blue-600 hover:underline"><i class="fa-regular fa-pen-to-square"></i></a>
-                    <a href="#" className="ml-3 font-medium text-red-600 hover:underline"><i class="fa-solid fa-trash-can"></i></a>
-                  </td>
-                </tr>
+                {dataTablesuarios()}
               </tbody>
             </table>
           </div>
         </div>
         <div id="styled-dashboard" role="tabpanel" aria-labelledby="dashboard-tab">
-          CONTENIDO DE ROLES
+          {/* CONTENIDO DE ROLES */}
+          <div className="w-full flex justify-end mb-5">
+            <Link to="">
+              <button type="button" className="px-4 py-2 text-sm font-medium text-blue-800 bg-blue-200 border border-blue-200 rounded-lg hover:bg-blue-300 hover:text-blue-900 focus:ring-1">Crear Rol</button>
+            </Link>
+          </div>
+          <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
+            <table className="w-full text-sm text-left rtl:text-right text-gray-500">
+              <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+                <tr>
+                  <th scope="col" className="px-6 py-3">
+                    Nombre
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                    Es Admin
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                    Crear Reuniones
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                    Compartir Reuniones
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                    Invitar Proyectos
+                  </th>
+                  <th scope="col" className="w-10 px-6 py-3 text-right">
+                    <span className="sr-only">Edit</span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {dataTableRoles()}
+              </tbody>
+            </table>
+          </div>
         </div>
         <div id="styled-settings" role="tabpanel" aria-labelledby="settings-tab">
-          CONTENIDO DE HORARIOS
+          {/* CONTENIDO DE HORARIOS */}
+          <div className="w-full flex justify-end mb-5">
+            <Link to="">
+              <button type="button" className="px-4 py-2 text-sm font-medium text-blue-800 bg-blue-200 border border-blue-200 rounded-lg hover:bg-blue-300 hover:text-blue-900 focus:ring-1">Crear Horario</button>
+            </Link>
+          </div>
+          <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
+            <table className="w-full text-sm text-left rtl:text-right text-gray-500">
+              <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+                <tr>
+                  <th scope="col" className="px-6 py-3">
+                    Nombre
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                    Lunes
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                    Martes
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                    Miercoles
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                    Jueves
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                    Viernes
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                    Sábado
+                  </th>
+                  <th scope="col" className="px-6 py-3">
+                    Domingo
+                  </th>
+                  <th scope="col" className="w-10 px-6 py-3 text-right">
+                    <span className="sr-only">Edit</span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {dataTableHorarios()}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </section>

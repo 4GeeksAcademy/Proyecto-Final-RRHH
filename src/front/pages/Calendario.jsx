@@ -6,47 +6,58 @@ import { getCalApi } from "@calcom/embed-react";
 
 
 export default function Calendario() {
+
+  const token = localStorage.getItem("jwt-token");
   useEffect(() => {
     getCalApi().then((cal) => {
       cal("on", {
         action: "bookingSuccessful",
         callback: (e) => {
-
-
           console.log(e);
 
-          // const g = e.detail.data.booking.attendees
-          // for i in g {
-                
+          const t = {
+            "nombre": "",
+            "link": e.detail.data.booking.videoCallUrl,
+            "fecha": e.detail.data.date,
+            "duracion": e.detail.data.duration,
+            "organizador": e.detail.data.organizer.name,
+            "usuarios": e.detail.data.booking.attendees
+          };
 
-          // }
+          console.log("Reunion: ", t)
 
-          const t = { FECHA: e.detail.data.date, TIEMPO_REUNION: e.detail.data.duration, EMAIL_ORGANIZADOR: e.detail.data.organizer.email,EMAIL_INVITADO: e.detail.data.booking.attendees[1].email }
-
-          console.log("estos son los datos recogidos", t)
-
-
-          fetch('https://api.sheetbest.com/sheets/e953b3bf-6eb2-424a-93b9-9e272aab7e92', {
+          fetch(import.meta.env.VITE_BACKEND_URL + "/api/reunion", {
             method: "POST",
             body: JSON.stringify(t),
             headers: {
-              "Content-Type": "application/json"
-            }
+              "Content-Type": "application/json",
+              "Authorization": "Bearer " + token,
+            },
           })
-
+            .then(resp => {
+              console.log(resp.ok); // Será true si la respuesta es exitosa
+              console.log(resp.status); // El código de estado 201, 300, 400, etc.
+              return resp.json(); // Intentará parsear el resultado a JSON y retornará una promesa donde puedes usar .then para seguir con la lógica
+            })
+            .then(data => {
+              // Aquí es donde debe comenzar tu código después de que finalice la búsqueda
+              console.log(data); // Esto imprimirá en la consola el objeto exacto recibido del servidor
+            })
+            .catch(error => {
+              // Manejo de errores
+              console.log(error);
+            });
         },
 
       });
     });
   }, []);
 
-  
-
   return (
     <section className="">
       <div className="contenedor-calendly">
         <p>
-          <Cal calLink="lazaro-fillaux" config={{ theme: "light" }}></Cal>
+          <Cal calLink="raul-arroyo/30min" config={{ theme: "light" }}></Cal>
         </p>
       </div>
     </section>

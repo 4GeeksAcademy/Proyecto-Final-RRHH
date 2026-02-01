@@ -3,30 +3,148 @@ import Cards2 from "../components/Cards2";
 import GraficoTrabajo from "../components/GraficoTrabajo";
 import GraficoTareas from "../components/GraficoTareas";
 import TemporizadorFichaje from "../components/Temporizador";
+import { useState, useEffect } from 'react';
+
 
 export default function Dashboard() {
+  const token = localStorage.getItem("jwt-token");
+
+  const refrescarFichajes = async () => {
+    // Aquí podrías llamar a la API /mis-fichajes si quieres reflejar cambios
+    console.log("Refrescar fichajes desde Dashboard");
+  };
+
+
+
+  // todos los states
+  const [tareasActivas, setTareasActivas] = useState(0);
+  const [tareasCompletadas, setTareasCompletadas] = useState(0);
+  const [tareasHecho, setTareasHecho] = useState(0);
+  const [tareasProgreso, setTareasProgreso] = useState(0);
+  const [tareasPorHacer, setTareasPorHacer] = useState(0);
+  const [loadingTareas, setLoadingTareas] = useState(true);
+
+  const [horasSemana, setHorasSemana] = useState([]);
+  const [totalHoras, setTotalHoras] = useState(0);
+
+  useEffect(() => {
+    const cargarTareasDashboard = async () => {
+      const token = localStorage.getItem("jwt-token");
+      const backendUrl = import.meta.env.VITE_BACKEND_URL || "https://supreme-space-dollop-4qjpwxgwxwr2g65-3001.app.github.dev";
+
+      try {
+        const response = await fetch(`${backendUrl}/api/proyectos`, {
+          headers: { "Authorization": `Bearer ${token}` }
+        });
+
+        if (!response.ok) return;
+
+        const data = await response.json();
+        const todasLasTareas = data.proyectos.flatMap(p => p.tareas || []);
+
+
+        const hecho = todasLasTareas.filter(t => t.estado === "Finalizado").length;
+        const progreso = todasLasTareas.filter(t => t.estado === "En Proceso").length;
+        const porHacer = todasLasTareas.filter(t => t.estado === "Pendiente").length;
+
+        // Actualizar todos los estados
+        setTareasActivas(progreso + porHacer); // Activas = En Proceso + Pendiente
+        setTareasCompletadas(hecho);
+        setTareasHecho(hecho);
+        setTareasProgreso(progreso);
+        setTareasPorHacer(porHacer);
+      } catch (error) {
+        console.error("Error al cargar tareas:", error);
+      } finally {
+        setLoadingTareas(false);
+      }
+    };
+
+    cargarTareasDashboard();
+  }, []);
+
+  const calcularHorasPorDia = (fichajes) => {
+    const diasSemana = ["L", "M", "X", "J", "V"];
+    const resultado = {
+      L: 0,
+      M: 0,
+      X: 0,
+      J: 0,
+      V: 0,
+    };
+
+    fichajes.forEach((f) => {
+      if (!f.hora_entrada || !f.hora_salida) return;
+
+      const entrada = new Date(f.hora_entrada);
+      const salida = new Date(f.hora_salida);
+
+      const horas = (salida - entrada) / (1000 * 60 * 60);
+
+      const dia = entrada.getDay(); // 1=Lunes ... 5=Viernes
+      const letra = diasSemana[dia - 1];
+
+      if (letra) resultado[letra] += horas;
+    });
+
+    return Object.entries(resultado).map(([day, hours]) => ({
+      day,
+      hours: Math.round(hours * 100) / 100,
+    }));
+  };
+
+  const cargarFichajesDashboard = async () => {
+    try {
+      const res = await fetch(
+        import.meta.env.VITE_BACKEND_URL + "/api/mis-fichajes",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (!res.ok) return;
+
+      const data = await res.json();
+
+      const horasPorDia = calcularHorasPorDia(data.fichajes);
+      setHorasSemana(horasPorDia);
+
+      const total = horasPorDia.reduce((acc, d) => acc + d.hours, 0);
+      setTotalHoras(total);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  useEffect(() => {
+    cargarFichajesDashboard();
+  }, []);
+
+
   return (
     <section>
       <h1 className="text-3xl mb-4 text-black">Panel de Control</h1>
       <p className="mb-6">Vista general de tu actividad</p>
 
-
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 w-full">
         <Cards
-        to="/fichaje"
           titulo="Tiempo Trabajado"
-          tiempo={<TemporizadorFichaje />}
+          tiempo={
+            <TemporizadorFichaje
+              token={token}
+              refrescarFichajes={refrescarFichajes}
+            />
+          }
           detalle=""
-
         />
+
         <Cards to="/tareas"
-          titulo="Tareas Activas"
+          titulo="Proyectos Activos"
           icon={<svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 21a9 9 0 1 1 0-18c1.052 0 2.062.18 3 .512M7 9.577l3.923 3.923 8.5-8.5M17 14v6m-3-3h6" />
           </svg>}
-          total={3}
-          detalle="0 completadas"
-
+          total={loadingTareas ? "..." : tareasActivas}
+          detalle={`${tareasCompletadas} completados`}
         />
 
         <Cards to="/reuniones"
@@ -36,7 +154,6 @@ export default function Dashboard() {
           </svg>}
           total={1}
           detalle="Esta semana"
-
         />
 
         <Cards to="/fichaje"
@@ -46,24 +163,24 @@ export default function Dashboard() {
           </svg>}
           total="Inactivo"
           detalle="Sin fichaje activo"
-
         />
       </div>
 
-
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 w-full mt-8 items-stretch">
         <Cards2
-          to="/fichaje"
           titulo="Horas Trabajadas - Esta Semana"
-          detalle=""
-          grafico={<GraficoTrabajo />}
+          grafico={
+            <GraficoTrabajo data={horasSemana} totalHoras={totalHoras}
+            />
+          }
         />
+
 
         <Cards2
           to="/tareas"
           titulo="Estado de Tareas"
           detalle=""
-          grafico={<GraficoTareas />}
+          grafico={<GraficoTareas hecho={tareasHecho} progreso={tareasProgreso} porHacer={tareasPorHacer} />}
         />
       </div>
     </section>

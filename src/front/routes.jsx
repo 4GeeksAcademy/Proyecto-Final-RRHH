@@ -18,6 +18,7 @@ import Login from "./pages/Login";
 import Home from "./pages/Home";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import CrearUsuario from "./pages/CrearUsuario";
+import EditarUsuario from "./pages/EditarUsuario";
 
 
 export const router = createBrowserRouter(
@@ -37,8 +38,8 @@ export const router = createBrowserRouter(
       <Route path="/" element={<Layout />} errorElement={<h1>Not found!</h1>} >
 
         {/* Nested Routes: Defines sub-routes within the BaseHome component. */}
-        <Route path="/" element={<Home />} />
-        <Route path= "/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+        <Route path="/home" element={<Home />} />
+        <Route path= "/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
         <Route path= "/fichaje" element={<ProtectedRoute><Fichaje /></ProtectedRoute>} />
         <Route path= "/mensajes" element={<ProtectedRoute><Mensajes /></ProtectedRoute>} />
         <Route path= "/reuniones" element={<ProtectedRoute><Reuniones /></ProtectedRoute>} />
@@ -47,8 +48,7 @@ export const router = createBrowserRouter(
         <Route path= "/notificaciones" element={<ProtectedRoute><Notificaciones /></ProtectedRoute>} />
         <Route path= "/administracion" element={<ProtectedRoute><Administracion /></ProtectedRoute>} />
         <Route path= "/crear-usuario" element={<ProtectedRoute><CrearUsuario /></ProtectedRoute>} />
-        
-
+        <Route path="/editar-usuario/:id" element={<ProtectedRoute><EditarUsuario /></ProtectedRoute>} />
       </Route>
     </>
     )
