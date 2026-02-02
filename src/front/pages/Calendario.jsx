@@ -25,7 +25,7 @@ export default function Calendario() {
           };
 
           console.log("Reunion: ", t)
-          
+
 
           fetch(import.meta.env.VITE_BACKEND_URL + "/api/reunion", {
             method: "POST",
@@ -55,7 +55,7 @@ export default function Calendario() {
   }, []);
 
   return (
-    <section className="p-6 dark:bg-gray-900 dark:text-white">
+    <section className="p-6 bg-gray-900 text-white">
       <div className="contenedor-calendly">
         <p>
           <Cal calLink="raul-arroyo/30min" config={{ theme: "light" }}></Cal>

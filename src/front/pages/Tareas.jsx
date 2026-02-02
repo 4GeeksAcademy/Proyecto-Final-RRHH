@@ -6,7 +6,7 @@ export default function Tareas() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [loadingAction, setLoadingAction] = useState(false);
-  
+
   const token = localStorage.getItem("jwt-token");
 
   // Cargar tareas iniciales
@@ -35,7 +35,7 @@ export default function Tareas() {
         }
 
         const data = await response.json();
-        const todasLasTareas = data.proyectos.flatMap(proyecto => 
+        const todasLasTareas = data.proyectos.flatMap(proyecto =>
           proyecto.tareas ? proyecto.tareas : []
         );
         setTareas(todasLasTareas);
@@ -94,7 +94,7 @@ export default function Tareas() {
       const tareaCreada = await response.json();
       setTareas([...tareas, tareaCreada]);
       setNuevaTarea("");
-      
+
     } catch (err) {
       console.error("Error al crear tarea:", err);
       setError(`Error al crear tarea: ${err.message}`);
@@ -125,7 +125,7 @@ export default function Tareas() {
       }
 
       setTareas(tareas.filter(t => t.id !== tareaId));
-      
+
     } catch (err) {
       console.error("Error al eliminar tarea:", err);
       setError(`Error al eliminar tarea: ${err.message}`);
@@ -136,7 +136,7 @@ export default function Tareas() {
 
   if (!token) {
     return (
-      <div className="p-6 max-w-2xl mx-auto dark:bg-gray-900 dark:text-white">
+      <div className="p-6 max-w-2xl mx-auto bg-gray-900 text-white">
         <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
           <p className="font-medium">Error de autenticación</p>
           <p>Debes iniciar sesión para gestionar tus tareas. Por favor, ve a la página de login.</p>
@@ -147,44 +147,43 @@ export default function Tareas() {
 
   if (loading) {
     return (
-      <div className="p-6 text-center dark:bg-gray-900 dark:text-white">
-        <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 dark:border-white"></div>
-        <p className="mt-2 text-gray-600 dark:text-gray-400">Cargando tareas...</p>
+      <div className="p-6 text-center bg-gray-900 text-white">
+        <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 border-white"></div>
+        <p className="mt-2 text-gray-600 text-gray-400">Cargando tareas...</p>
       </div>
     );
   }
-  
+
 
   return (
-    <section className="p-6 max-w-4xl mx-auto dark:bg-gray-900 dark:text-white">
+    <section className="p-6 max-w-4xl mx-auto bg-gray-900 text-white">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Gestión de Tareas</h1>
-        <span className="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full dark:bg-blue-900/30 dark:text-blue-200">
+        <h1 className="text-3xl font-bold text-gray-900 text-white">Gestión de Tareas</h1>
+        <span className="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full bg-blue-900/30 text-blue-200">
           {tareas.length} tareas
         </span>
       </div>
-      
+
       {/* Todolist para tareas*/}
-      <div className="mb-8 bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 p-5">
+      <div className="mb-8 bg-white bg-gray-800 rounded-xl shadow-md border border-gray-200 border-gray-700 p-5">
         <form onSubmit={handleAddTarea} className="flex flex-col sm:flex-row gap-3">
           <input
             type="text"
             value={nuevaTarea}
             onChange={(e) => setNuevaTarea(e.target.value)}
             placeholder="Nueva tarea..."
-            className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg 
-                       bg-white dark:bg-gray-700 text-gray-900 dark:text-white
+            className="flex-1 px-4 py-3 border border-gray-300 border-gray-600 rounded-lg 
+                       bg-white bg-gray-700 text-gray-900 text-white
                        focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
             disabled={loadingAction}
           />
           <button
             type="submit"
             disabled={loadingAction || !nuevaTarea.trim()}
-            className={`px-6 py-3 rounded-lg font-medium text-white transition-colors ${
-              loadingAction || !nuevaTarea.trim() 
-                ? "bg-gray-400 cursor-not-allowed dark:bg-gray-600" 
-                : "bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800"
-            }`}
+            className={`px-6 py-3 rounded-lg font-medium text-white transition-colors ${loadingAction || !nuevaTarea.trim()
+                ? "bg-gray-400 cursor-not-allowed bg-gray-600"
+                : "bg-blue-600 hover:bg-blue-700 bg-blue-700 hover:bg-blue-800"
+              }`}
           >
             {loadingAction ? (
               <span className="flex items-center justify-center">
@@ -197,7 +196,7 @@ export default function Tareas() {
           </button>
         </form>
         {error && (
-          <p className="mt-3 text-red-600 bg-red-50 p-3 rounded-lg text-sm dark:text-red-400 dark:bg-red-900/20">
+          <p className="mt-3 text-red-600 bg-red-50 p-3 rounded-lg text-sm text-red-400 bg-red-900/20">
             {error}
           </p>
         )}
@@ -205,13 +204,13 @@ export default function Tareas() {
 
       {/* Lista de tareas */}
       {tareas.length === 0 ? (
-        <div className="text-center py-16 bg-gray-50 dark:bg-gray-800 rounded-2xl border-2 border-dashed border-gray-300 dark:border-gray-700">
-          <div className="text-5xl mb-4 text-gray-300 dark:text-gray-600">📋</div>
-          <h2 className="text-2xl font-semibold text-gray-700 dark:text-white mb-2">No tienes tareas</h2>
-          <p className="text-gray-500 dark:text-gray-400 mb-6"></p>
+        <div className="text-center py-16 bg-gray-50 bg-gray-800 rounded-2xl border-2 border-dashed border-gray-300 border-gray-700">
+          <div className="text-5xl mb-4 text-gray-300 text-gray-600">📋</div>
+          <h2 className="text-2xl font-semibold text-gray-700 text-white mb-2">No tienes tareas</h2>
+          <p className="text-gray-500 text-gray-400 mb-6"></p>
           <button
             onClick={() => document.querySelector('input').focus()}
-            className="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors dark:bg-blue-700 dark:hover:bg-blue-800"
+            className="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors bg-blue-700 hover:bg-blue-800"
           >
             Añadir
           </button>
@@ -219,34 +218,32 @@ export default function Tareas() {
       ) : (
         <div className="space-y-3">
           {tareas.map(tarea => (
-            <div 
-              key={tarea.id} 
-              className="flex items-center justify-between p-5 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-shadow border border-gray-100 dark:border-gray-700"
+            <div
+              key={tarea.id}
+              className="flex items-center justify-between p-5 bg-white bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-shadow border border-gray-100 border-gray-700"
             >
               <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-lg text-gray-900 dark:text-white truncate">{tarea.nombre}</h3>
+                <h3 className="font-semibold text-lg text-gray-900 text-white truncate">{tarea.nombre}</h3>
                 <div className="mt-2 flex items-center gap-4">
-                  <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${
-                    tarea.estado === "Finalizado" 
-                      ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-200" 
-                      : tarea.estado === "En Proceso" 
-                        ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-200" 
-                        : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-200"
-                  }`}>
+                  <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${tarea.estado === "Finalizado"
+                      ? "bg-green-100 text-green-800 bg-green-900/30 text-green-200"
+                      : tarea.estado === "En Proceso"
+                        ? "bg-blue-100 text-blue-800 bg-blue-900/30 text-blue-200"
+                        : "bg-yellow-100 text-yellow-800 bg-yellow-900/30 text-yellow-200"
+                    }`}>
                     {tarea.estado}
                   </span>
-                  <span className="text-sm text-gray-500 dark:text-gray-400">Proyecto ID: {tarea.proyecto_id}</span>
+                  <span className="text-sm text-gray-500 text-gray-400">Proyecto ID: {tarea.proyecto_id}</span>
                 </div>
               </div>
-              
+
               <button
                 onClick={() => handleDeleteTarea(tarea.id)}
                 disabled={loadingAction}
-                className={`ml-4 p-2 rounded-lg transition-colors ${
-                  loadingAction 
-                    ? "text-gray-400 cursor-not-allowed dark:text-gray-600" 
-                    : "text-red-500 hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-900/20 dark:text-red-400"
-                }`}
+                className={`ml-4 p-2 rounded-lg transition-colors ${loadingAction
+                    ? "text-gray-400 cursor-not-allowed text-gray-600"
+                    : "text-red-500 hover:bg-red-50 hover:text-red-700 hover:bg-red-900/20 text-red-400"
+                  }`}
                 title="Eliminar tarea"
               >
                 <i className="bi bi-trash text-xl"></i>

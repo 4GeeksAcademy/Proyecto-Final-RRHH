@@ -254,7 +254,7 @@ export default function Administracion() {
   }
 
   return (
-    <section className="p-6 dark:bg-gray-900 dark:text-white p-4 md:p-8">
+    <section className="p-6 p-4 md:p-8">
       <h1 className="text-3xl font-bold mb-6">Gestión de Usuarios</h1>
       <div className="mb-4 border-b border-gray-400">
         <ul className="flex flex-wrap -mb-px text-sm font-medium text-center" id="default-styled-tab" data-tabs-toggle="#default-styled-tab-content" data-tabs-active-classes="text-purple-600 hover:text-purple-600 border-purple-600" data-tabs-inactive-classes="text-gray-500 hover:text-gray-600 border-none hover:border-gray-300" role="tablist">
