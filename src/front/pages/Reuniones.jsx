@@ -129,8 +129,8 @@ export default function Reuniones() {
               >
                 <td className="p-3">{fila.FECHA_BUENA}</td>
                 <td className="p-3">{fila.TIEMPO_BUENO}</td>
-                <td className="p-3">{fila.ORGANIZADOR_BUENO}</td>
                 <td className="p-3">{fila.INVITADO_BUENO}</td>
+                <td className="p-3">{fila.ORGANIZADOR_BUENO}</td>
               </tr>
             ))
           )}
