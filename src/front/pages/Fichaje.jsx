@@ -113,8 +113,6 @@ export default function Fichaje() {
         <table className="w-full text-sm text-left text-body">
           <thead className="text-sm bg-neutral-secondary-medium border-b border-t">
             <tr>
-              <th className="px-6 py-3 text-left">Nombre</th>
-              <th className="px-6 py-3 text-left">Rol</th>
               <th className="px-6 py-3 text-left">Fecha</th>
               <th className="px-6 py-3 text-left">Entrada</th>
               <th className="px-6 py-3 text-left">Salida</th>
@@ -125,26 +123,16 @@ export default function Fichaje() {
             {fichajes.length > 0 ? (
               fichajes.map((f) => (
                 <tr key={f.id} className="border-b hover:bg-neutral-secondary-medium">
-                  {/* Nombre */}
-                  <td className="px-6 py-4">
-                    <div className="flex flex-col">
-                      <span className="font-semibold">{usuario?.nombre || "Cargando..."}</span>
-                      <span className="text-sm text-body">{usuario?.email || "Cargando..."}</span>
-                    </div>
-                  </td>
-
-                  {/* Rol */}
-                  <td className="px-6 py-4">{usuario?.puesto || "—"}</td>
 
                   {/* Fecha */}
-                  <td className="px-6 py-4">
+                  <td className="px-3 py-6">
                     {f.hora_entrada
                       ? new Date(f.hora_entrada).toLocaleDateString()
                       : "—"}
                   </td>
 
                   {/* Entrada */}
-                  <td className="px-6 py-4">
+                  <td className="px-3 py-6">
                     <div className="flex items-center gap-2">
                       <div className="h-2.5 w-2.5 rounded-full bg-success"></div>
                       <span>
@@ -156,7 +144,7 @@ export default function Fichaje() {
                   </td>
 
                   {/* Salida */}
-                  <td className="px-6 py-4">
+                  <td className="px-3 py-6">
                     <div className="flex items-center gap-2">
                       <div className="h-2.5 w-2.5 rounded-full bg-danger"></div>
                       <span>

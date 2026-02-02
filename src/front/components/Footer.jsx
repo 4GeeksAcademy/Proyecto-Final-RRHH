@@ -4,7 +4,7 @@ export default function Footer({ darkMode = false }) {
       <div className="flex justify-center items-center">
         <a href="/" className="flex items-center">
           <img
-            src="/assets/logo.png"
+            src="src/front/assets/img/logo.png"
             className="mr-3 h-8 rounded-full"
             alt="Logo"
           />

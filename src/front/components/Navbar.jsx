@@ -11,6 +11,7 @@ export default function Navbar({ onMenuClick }) {
   const [langOpen, setLangOpen] = useState(false);
   const [selectedLang, setSelectedLang] = useState('English (US)');
   const [user, setUser] = useState(null);
+  const [reuniones, setReuniones] = useState([]);
 
   // pantalla en negro
   const [darkMode, setDarkMode] = useState(() => {
@@ -19,6 +20,8 @@ export default function Navbar({ onMenuClick }) {
   });
 
   const { store, dispatch } = useGlobalReducer();
+
+ 
 
   const logout = () => {
     dispatch({ type: "logout" });
@@ -285,7 +288,7 @@ export default function Navbar({ onMenuClick }) {
           <div className="flex items-center">
             <a href="/" className="flex items-center mr-6">
               <img
-                src="/assets/logo.png"
+                src="src/front/assets/img/logo.png"
                 className="mr-3 h-8 rounded-full"
                 alt="Logo"
               />
