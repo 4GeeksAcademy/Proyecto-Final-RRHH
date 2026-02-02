@@ -25,6 +25,7 @@ export default function Calendario() {
           };
 
           console.log("Reunion: ", t)
+          
 
           fetch(import.meta.env.VITE_BACKEND_URL + "/api/reunion", {
             method: "POST",
