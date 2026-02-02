@@ -8,7 +8,6 @@ export default function Tareas() {
   const [loadingAction, setLoadingAction] = useState(false);
   
   const token = localStorage.getItem("jwt-token");
-  const backendUrl = import.meta.env.VITE_BACKEND_URL || "https://supreme-space-dollop-4qjpwxgwxwr2g65-3001.app.github.dev";
 
   // Cargar tareas iniciales
   useEffect(() => {
@@ -20,7 +19,8 @@ export default function Tareas() {
 
     const cargarTareas = async () => {
       try {
-        const response = await fetch(`${backendUrl}/api/proyectos`, {
+        // ✅ RUTA RELATIVA - El proxy manejará el resto
+        const response = await fetch("/api/proyectos", {
           headers: {
             "Authorization": `Bearer ${token}`,
             "Content-Type": "application/json"
@@ -48,7 +48,7 @@ export default function Tareas() {
     };
 
     cargarTareas();
-  }, [token, backendUrl]);
+  }, [token]);
 
   // Añadir nueva tarea
   const handleAddTarea = async (e) => {
@@ -59,8 +59,7 @@ export default function Tareas() {
     setError(null);
 
     try {
-      // Primero, obtener los proyectos del usuario para usar un proyecto_id válido
-      const proyectosResponse = await fetch(`${backendUrl}/api/proyectos`, {
+      const proyectosResponse = await fetch("/api/proyectos", {
         headers: {
           "Authorization": `Bearer ${token}`,
           "Content-Type": "application/json"
@@ -70,13 +69,11 @@ export default function Tareas() {
       if (!proyectosResponse.ok) throw new Error("No se pudieron obtener proyectos");
 
       const proyectosData = await proyectosResponse.json();
-      
-      // Usar el primer proyecto del usuario (o el que prefieras)
       const primerProyecto = proyectosData.proyectos[0];
       if (!primerProyecto) throw new Error("No tienes proyectos asignados");
 
-      // Crear la tarea en el backend
-      const response = await fetch(`${backendUrl}/api/tareas`, {
+      // ✅ Ruta correcta para crear tareas
+      const response = await fetch("/api/tareas", {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${token}`,
@@ -95,8 +92,6 @@ export default function Tareas() {
       }
 
       const tareaCreada = await response.json();
-      
-      // Actualizar la lista local
       setTareas([...tareas, tareaCreada]);
       setNuevaTarea("");
       
@@ -116,7 +111,7 @@ export default function Tareas() {
     setError(null);
 
     try {
-      const response = await fetch(`${backendUrl}/api/tareas/${tareaId}`, {
+      const response = await fetch(`/api/tareas/${tareaId}`, {
         method: "DELETE",
         headers: {
           "Authorization": `Bearer ${token}`,
@@ -129,7 +124,6 @@ export default function Tareas() {
         throw new Error(errorData.msg || `Error ${response.status}`);
       }
 
-      // Actualizar la lista local
       setTareas(tareas.filter(t => t.id !== tareaId));
       
     } catch (err) {
@@ -164,14 +158,12 @@ export default function Tareas() {
   return (
     <section className="p-6 max-w-4xl mx-auto dark:bg-gray-900 dark:text-white">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Gestión de Proyectos</h1>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Gestión de Tareas</h1>
         <span className="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full dark:bg-blue-900/30 dark:text-blue-200">
-          {tareas.length} proyectos
+          {tareas.length} tareas
         </span>
       </div>
       
-      
-
       {/* Todolist para tareas*/}
       <div className="mb-8 bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 p-5">
         <form onSubmit={handleAddTarea} className="flex flex-col sm:flex-row gap-3">
@@ -179,7 +171,7 @@ export default function Tareas() {
             type="text"
             value={nuevaTarea}
             onChange={(e) => setNuevaTarea(e.target.value)}
-            placeholder="Nuevo proyecto..."
+            placeholder="Nueva tarea..."
             className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg 
                        bg-white dark:bg-gray-700 text-gray-900 dark:text-white
                        focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
@@ -200,7 +192,7 @@ export default function Tareas() {
                 Creando...
               </span>
             ) : (
-              "Añadir Proyecto"
+              "Añadir Tarea"
             )}
           </button>
         </form>
@@ -215,7 +207,7 @@ export default function Tareas() {
       {tareas.length === 0 ? (
         <div className="text-center py-16 bg-gray-50 dark:bg-gray-800 rounded-2xl border-2 border-dashed border-gray-300 dark:border-gray-700">
           <div className="text-5xl mb-4 text-gray-300 dark:text-gray-600">📋</div>
-          <h2 className="text-2xl font-semibold text-gray-700 dark:text-white mb-2">No tienes proyectos</h2>
+          <h2 className="text-2xl font-semibold text-gray-700 dark:text-white mb-2">No tienes tareas</h2>
           <p className="text-gray-500 dark:text-gray-400 mb-6"></p>
           <button
             onClick={() => document.querySelector('input').focus()}

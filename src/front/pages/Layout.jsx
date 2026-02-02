@@ -5,18 +5,19 @@ import SidebarLayout from "../components/Sidebar";
 
 export const Layout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  //dark mode
-  const [darkMode, setDarkMode] = useState(() => {
-    const saved = localStorage.getItem('darkMode');
-    return saved ? JSON.parse(saved) : false;
-  });
+  
+  // Nota: El Navbar ya se encarga de poner la clase 'dark' en el <html>
+  // pero este contenedor necesita tener el fondo correcto.
+  
   return (
-    <div className="min-h-screen flex flex-col">
+    /* 1. Fondo dinámico a toda la pantalla */
+    <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900 transition-colors duration-300">
+      
       {/* Navbar */}
       <Navbar onMenuClick={() => setSidebarOpen(true)} />
 
-      {/* Zona central */}
-      <div className="flex flex-1 pt-14">
+      {/* 2. La Zona central también necesita el fondo para no dejar huecos */}
+      <div className="flex flex-1 pt-14 bg-white dark:bg-gray-900">
         <SidebarLayout
           isOpen={sidebarOpen}
           onClose={() => setSidebarOpen(false)}
