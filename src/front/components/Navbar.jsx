@@ -13,8 +13,11 @@ export default function Navbar({ onMenuClick }) {
   const token = localStorage.getItem("jwt-token");
 
   const [user, setUser] = useState(null);
+  const [reuniones, setReuniones] = useState([]);
 
   const { store, dispatch } = useGlobalReducer();
+
+ 
 
   const logout = () => {
     dispatch({ type: "logout" });
