@@ -164,19 +164,19 @@ export default function Administracion() {
             </div>
           </th>
           <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
-            {usuario.nombre} {usuario.apellidos}
+            {usuario?.nombre} {usuario.apellidos}
           </th>
           <td className="px-6 py-4">
             {usuario.email}
           </td>
           <td className="px-6 py-4">
-            {usuario.email}
+            {usuario.dni}
           </td>
           <td className="px-6 py-4">
-            {usuario.telefono}
+            {usuario.telefono ? usuario.telefono : '-'}
           </td>
           <td className="px-6 py-4">
-            {usuario.rol}
+            {usuario.rol.nombre}
           </td>
           <td className="px-6 py-4">
             {usuario.horario}
@@ -219,7 +219,7 @@ export default function Administracion() {
             {horario.domingo_entrada && horario.domingo_salida ? `${horario.domingo_entrada} - ${horario.domingo_salida}` : '-'}
           </td>
           <td className="px-6 py-4 text-right flex">
-            <a href="#" className="font-medium text-blue-600 hover:underline"><i className="fa-regular fa-pen-to-square"></i></a>
+            <Link to={`/editar-horario/${horario.id}`} className="font-medium text-blue-600 hover:underline"><i className="fa-regular fa-pen-to-square"></i></Link>
             <a href="#" onClick={() => eliminarHorario(horario.id)} className="ml-3 font-medium text-red-600 hover:underline"><i className="fa-solid fa-trash-can"></i></a>
           </td>
         </tr>
@@ -244,18 +244,8 @@ export default function Administracion() {
               <input disabled defaultChecked={rol.puede_crear_reunion} id="disabled-checked-checkbox" type="checkbox" value="" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
             </div>
           </td>
-          <td className="px-6 py-4">
-            <div className="flex items-center">
-              <input disabled defaultChecked={rol.puede_compartir_reunion} id="disabled-checked-checkbox" type="checkbox" value="" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
-            </div>
-          </td>
-          <td className="px-6 py-4">
-            <div className="flex items-center">
-              <input disabled defaultChecked={rol.puede_invitar_proyectos} id="disabled-checked-checkbox" type="checkbox" value="" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
-            </div>
-          </td>
           <td className="px-6 py-4 text-right flex">
-            <a href="#" className="font-medium text-blue-600 hover:underline"><i className="fa-regular fa-pen-to-square"></i></a>
+            <Link to={`/editar-rol/${rol.id}`} className="font-medium text-blue-600 hover:underline"><i className="fa-regular fa-pen-to-square"></i></Link>
             <a href="#" onClick={() => eliminarRol(rol.id)} className="ml-3 font-medium text-red-600 hover:underline"><i className="fa-solid fa-trash-can"></i></a>
           </td>
         </tr>
@@ -333,7 +323,7 @@ export default function Administracion() {
         <div id="styled-dashboard" role="tabpanel" aria-labelledby="dashboard-tab">
           {/* CONTENIDO DE ROLES */}
           <div className="w-full flex justify-end mb-5">
-            <Link to="">
+            <Link to="/crear-rol">
               <button type="button" className="px-4 py-2 text-sm font-medium text-blue-800 bg-blue-200 border border-blue-200 rounded-lg hover:bg-blue-300 hover:text-blue-900 focus:ring-1">Crear Rol</button>
             </Link>
           </div>
@@ -350,12 +340,6 @@ export default function Administracion() {
                   <th scope="col" className="px-6 py-3">
                     Crear Reuniones
                   </th>
-                  <th scope="col" className="px-6 py-3">
-                    Compartir Reuniones
-                  </th>
-                  <th scope="col" className="px-6 py-3">
-                    Invitar Proyectos
-                  </th>
                   <th scope="col" className="w-10 px-6 py-3 text-right">
                     <span className="sr-only">Edit</span>
                   </th>
@@ -370,7 +354,7 @@ export default function Administracion() {
         <div id="styled-settings" role="tabpanel" aria-labelledby="settings-tab">
           {/* CONTENIDO DE HORARIOS */}
           <div className="w-full flex justify-end mb-5">
-            <Link to="">
+            <Link to="/crear-horario">
               <button type="button" className="px-4 py-2 text-sm font-medium text-blue-800 bg-blue-200 border border-blue-200 rounded-lg hover:bg-blue-300 hover:text-blue-900 focus:ring-1">Crear Horario</button>
             </Link>
           </div>

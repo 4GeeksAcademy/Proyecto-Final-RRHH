@@ -7,12 +7,6 @@ from typing import List
 
 db = SQLAlchemy()
 
-class EstadoUser(enum.Enum):
-    activo = "Activo"
-    ausente = "Ausente"
-    ocupado = "Ocupado"
-    no_molestar = "No Molestar"
-
 class Estado(enum.Enum):
     en_proceso = "En Proceso"
     pendiente = "Pendiente"
@@ -29,21 +23,16 @@ class User(db.Model):
     password: Mapped[str] = mapped_column(nullable=False)
     dni: Mapped[str] = mapped_column(String(9), unique=True, nullable=False)
     telefono: Mapped[int] = mapped_column(nullable=True)
-    foto_perfil: Mapped[str] = mapped_column(
-        String(), nullable=True, default="logo.png")
-    estado: Mapped[EstadoUser] = mapped_column(
-        Enum(EstadoUser), nullable=False, default=EstadoUser.activo)
-    link_calendly: Mapped[str] = mapped_column(String(), nullable=True)
 
     empresa_id: Mapped[int] = mapped_column(
         ForeignKey("empresa.id"), nullable=False)
     empresa: Mapped["Empresa"] = relationship(back_populates="users")
 
-    rol_id: Mapped[int] = mapped_column(ForeignKey("rol.id"), nullable=True)
+    rol_id: Mapped[int] = mapped_column(ForeignKey("rol.id"), nullable=False)
     rol: Mapped["Rol"] = relationship(back_populates="users")
 
     horario_id: Mapped[int] = mapped_column(
-        ForeignKey("horario.id"), nullable=True)
+        ForeignKey("horario.id"), nullable=False)
     horario: Mapped["Horario"] = relationship(back_populates="users")
 
     reuniones: Mapped[List["Reunion"]] = relationship(
@@ -64,12 +53,9 @@ class User(db.Model):
             "email": self.email,
             "dni": self.dni,
             "telefono": self.telefono,
-            "foto_perfil": self.foto_perfil,
-            "estado": self.estado.value,
-            "link_calendly": self.link_calendly,
             "empresa_id": self.empresa_id,
             "rol_id": self.rol_id,
-            "rol": self.rol.nombre,
+            "rol": self.rol.serialize(),
             "horario_id": self.horario_id,
             "horario": self.horario.name
         }
@@ -81,10 +67,6 @@ class Rol(db.Model):
     nombre: Mapped[str] = mapped_column(String(50), nullable=False)
     es_admin: Mapped[bool] = mapped_column(Boolean())
     puede_crear_reunion: Mapped[bool] = mapped_column(Boolean(), default=False)
-    puede_compartir_reunion: Mapped[bool] = mapped_column(
-        Boolean(), default=False)
-    puede_invitar_proyectos: Mapped[bool] = mapped_column(
-        Boolean(), default=False)
     
     empresa_id: Mapped[int] = mapped_column(ForeignKey("empresa.id"), nullable=False)
     empresa: Mapped["Empresa"] = relationship(back_populates="roles")
@@ -97,8 +79,6 @@ class Rol(db.Model):
             "nombre": self.nombre,
             "es_admin": self.es_admin,
             "puede_crear_reunion": self.puede_crear_reunion,
-            "puede_compartir_reunion": self.puede_compartir_reunion,
-            "puede_invitar_proyectos": self.puede_invitar_proyectos,
             "empresa_id": self.empresa_id
         }
 
@@ -147,7 +127,6 @@ class Horario(db.Model):
             "domingo_salida": self.domingo_salida.strftime("%H:%M") if self.domingo_salida else None,
             "empresa_id": self.empresa_id
         }
-
 
 class Empresa(db.Model):
     __tablename__ = "empresa"

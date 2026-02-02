@@ -10,6 +10,7 @@ export default function Navbar({ onMenuClick }) {
   const [status, setStatus] = useState("activo");
   const [langOpen, setLangOpen] = useState(false);
   const [selectedLang, setSelectedLang] = useState('English (US)');
+  const token = localStorage.getItem("jwt-token");
 
   const [user, setUser] = useState(null);
 
@@ -22,7 +23,6 @@ export default function Navbar({ onMenuClick }) {
 
   useEffect(() => {
     const fetchUser = async () => {
-      const token = localStorage.getItem("jwt-token");
       if (!token) return;
 
       try {
@@ -33,7 +33,7 @@ export default function Navbar({ onMenuClick }) {
         if (!resp.ok) throw new Error("No se pudo cargar el usuario");
 
         const data = await resp.json();
-        setUser(data.usuario); // Ajusta según la estructura que devuelva tu backend
+        setUser(data.usuario);
       } catch (error) {
         console.error("Error cargando usuario:", error);
       }

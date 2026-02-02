@@ -1,6 +1,36 @@
 import { Link, Outlet } from "react-router-dom";
+import { useState, useEffect, useRef } from 'react';
 
 export default function SidebarLayout({ isOpen, onClose }) {
+    const token = localStorage.getItem("jwt-token");
+    const [user, setUser] = useState(null);
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            if (!token) return;
+
+            try {
+                const resp = await fetch(import.meta.env.VITE_BACKEND_URL + "/api/usuario", {
+                    headers: { Authorization: "Bearer " + token }
+                });
+
+                if (!resp.ok) throw new Error("No se pudo cargar el usuario");
+
+                const data = await resp.json();
+                setUser(data.usuario);
+                console.log("Usuario logueado:", data.usuario);
+            } catch (error) {
+                console.error("Error cargando usuario:", error);
+            }
+        };
+
+        fetchUser();
+    }, []);
+
+    function es_admin() {
+        if()
+    }
+
     return (
         <>
             {/* OVERLAY oscuro en móvil */}
@@ -142,7 +172,7 @@ export default function SidebarLayout({ isOpen, onClose }) {
                             </Link>
                         </li>
 
-                        {/* ADMIN */}
+                            {/* ADMIN */ }
                         <li>
                             <a href="/administracion"
                                 className="flex items-center p-2 rounded-lg text-gray-900 hover:bg-gray-100"

@@ -1,4 +1,4 @@
-export default function FloatingInput({ id, label, type = "text", onChange }) {
+export default function FloatingInput({ id, label, type = "text", onChange, value, disabled, required }) {
   return (
     <div className="flex flex-col gap-1 group">
       <label
@@ -12,7 +12,9 @@ export default function FloatingInput({ id, label, type = "text", onChange }) {
       <input
         id={id}
         type={type}
-        required
+        value={value}
+        required={required}
+        disabled={disabled}
         onChange={onChange}
         className="w-full px-4 py-3 text-sm text-neutral-800 bg-neutral-50
                    border border-neutral-300 rounded-xl

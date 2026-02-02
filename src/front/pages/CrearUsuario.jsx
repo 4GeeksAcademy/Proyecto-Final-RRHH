@@ -1,12 +1,10 @@
 import FloatingInput from "../components/InputForm.jsx";
 import FloatingSelect from "../components/FloatingSelect.jsx";
 import useGlobalReducer from "../hooks/useGlobalReducer";
-import { useNavigate } from "react-router-dom";
 
 export default function CrearUsuario() {
 
   const { store, dispatch } = useGlobalReducer();
-  const navigate = useNavigate();
   const token = localStorage.getItem("jwt-token");
 
   function crearUsuario(event) {
@@ -21,8 +19,6 @@ export default function CrearUsuario() {
         "email": store.inputEmailUsuario,
         "dni": store.inputDniUsuario,
         "telefono": store.inputTelefonoUsuario,
-        "foto_perfil": "logo.png",
-        "link_calendly": "",
         "empresa_id": "",
         "horario_id": store.selectHorarioUsuario,
         "rol_id": store.selectRolUsuario,
@@ -48,36 +44,36 @@ export default function CrearUsuario() {
           Crear Usuario
         </h2>
         <p className="text-sm text-neutral-500 text-center">
-          Completa el formulario para registrarte
+          Completa el formulario para crear un usuario
         </p>
 
         <div className="grid md:grid-cols-2 gap-6">
-          <FloatingInput id="email" label="Correo electrónico" type="email" onChange={(event) => dispatch({ type: 'set_input_emailUsuario', payload: { inputEmailUsuario: event.target.value } })} />
-          <FloatingInput id="password" label="Contraseña" type="password" onChange={(event) => dispatch({ type: 'set_input_passwordUsuario', payload: { inputPasswordUsuario: event.target.value } })} />
+          <FloatingInput id="email" label="Correo electrónico" type="email" required onChange={(event) => dispatch({ type: 'set_input_emailUsuario', payload: { inputEmailUsuario: event.target.value } })} />
+          <FloatingInput id="password" label="Contraseña" type="password" required onChange={(event) => dispatch({ type: 'set_input_passwordUsuario', payload: { inputPasswordUsuario: event.target.value } })} />
         </div>
 
         {/* Name */}
         <div className="grid md:grid-cols-2 gap-6">
-          <FloatingInput id="first_name" label="Nombre" onChange={(event) => dispatch({ type: 'set_input_nameUsuario', payload: { inputNameUsuario: event.target.value } })} />
-          <FloatingInput id="last_name" label="Apellidos" onChange={(event) => dispatch({ type: 'set_input_apellidosUsuario', payload: { inputApellidosUsuario: event.target.value } })} />
+          <FloatingInput id="first_name" label="Nombre" required onChange={(event) => dispatch({ type: 'set_input_nameUsuario', payload: { inputNameUsuario: event.target.value } })} />
+          <FloatingInput id="last_name" label="Apellidos" required onChange={(event) => dispatch({ type: 'set_input_apellidosUsuario', payload: { inputApellidosUsuario: event.target.value } })} />
         </div>
 
         {/* Extra */}
         <div className="grid md:grid-cols-2 gap-6">
           <FloatingInput id="phone" label="Teléfono" type="tel" onChange={(event) => dispatch({ type: 'set_input_telefonoUsuario', payload: { inputTelefonoUsuario: event.target.value } })} />
-          <FloatingInput id="dni" label="DNI" onChange={(event) => dispatch({ type: 'set_input_dniUsuario', payload: { inputDniUsuario: event.target.value } })} />
+          <FloatingInput id="dni" label="DNI" required onChange={(event) => dispatch({ type: 'set_input_dniUsuario', payload: { inputDniUsuario: event.target.value } })} />
         </div>
 
         {/* Selects */}
         <div className="grid md:grid-cols-2 gap-6">
-          <FloatingSelect id="horario" label="Horario" onChange={(event) => dispatch({ type: 'set_select_HorarioUsuario', payload: { selectHorarioUsuario: event.target.value } })}>
+          <FloatingSelect id="horario" label="Horario" required onChange={(event) => dispatch({ type: 'set_select_HorarioUsuario', payload: { selectHorarioUsuario: event.target.value } })}>
             <option value="">Selecciona horario</option>
             {store.horarios.map((horario) => {
               return <option value={horario.id}>{horario.name}</option>
             })}
           </FloatingSelect>
 
-          <FloatingSelect id="rol" label="Rol" onChange={(event) => dispatch({ type: 'set_select_RolUsuario', payload: { selectRolUsuario: event.target.value } })}>
+          <FloatingSelect id="rol" label="Rol" required onChange={(event) => dispatch({ type: 'set_select_RolUsuario', payload: { selectRolUsuario: event.target.value } })}>
             <option value="">Selecciona rol</option>
             {store.roles.map((rol) => {
               return <option value={rol.id}>{rol.nombre}</option>

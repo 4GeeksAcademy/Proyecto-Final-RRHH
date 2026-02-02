@@ -19,6 +19,10 @@ import Home from "./pages/Home";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import CrearUsuario from "./pages/CrearUsuario";
 import EditarUsuario from "./pages/EditarUsuario";
+import CrearRol from "./pages/CrearRol";
+import EditarRol from "./pages/EditarRol";
+import CrearHorario from "./pages/CrearHorario";
+import EditarHorario from "./pages/EditarHorario";
 
 
 export const router = createBrowserRouter(
@@ -49,6 +53,10 @@ export const router = createBrowserRouter(
         <Route path= "/administracion" element={<ProtectedRoute><Administracion /></ProtectedRoute>} />
         <Route path= "/crear-usuario" element={<ProtectedRoute><CrearUsuario /></ProtectedRoute>} />
         <Route path="/editar-usuario/:id" element={<ProtectedRoute><EditarUsuario /></ProtectedRoute>} />
+        <Route path="/crear-rol" element={<ProtectedRoute><CrearRol /></ProtectedRoute>} />
+        <Route path="/editar-rol/:id" element={<ProtectedRoute><EditarRol /></ProtectedRoute>} />
+        <Route path="/crear-horario" element={<ProtectedRoute><CrearHorario /></ProtectedRoute>} />
+        <Route path="/editar-horario/:id" element={<ProtectedRoute><EditarHorario /></ProtectedRoute>} />
       </Route>
     </>
     )
