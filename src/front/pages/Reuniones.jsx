@@ -28,10 +28,12 @@ export default function Reuniones() {
 
         const data = await response.json();
         console.log("Reuniones recibidas:", data);
+        const link = data.reuniones.link
 
         // 🔥 ADAPTADOR BACKEND → FRONTEND
         const reunionesFormateadas = data.reuniones.map((r) => {
           const organizador = r.usuarios?.[0]?.email || "—";
+          
 
           const invitados =
             r.usuarios && r.usuarios.length > 1
@@ -46,6 +48,7 @@ export default function Reuniones() {
             TIEMPO_BUENO: r.duracion,
             ORGANIZADOR_BUENO: organizador,
             INVITADO_BUENO: invitados,
+            LINK: r.link, 
           };
         });
 
@@ -106,6 +109,7 @@ export default function Reuniones() {
             <th className="p-3 text-left">Tiempo (min)</th>
             <th className="p-3 text-left">Organizador</th>
             <th className="p-3 text-left">Invitados</th>
+            <th className="p-3 text-left">link</th>
           </tr>
         </thead>
 
@@ -131,6 +135,8 @@ export default function Reuniones() {
                 <td className="p-3">{fila.TIEMPO_BUENO}</td>
                 <td className="p-3">{fila.ORGANIZADOR_BUENO}</td>
                 <td className="p-3">{fila.INVITADO_BUENO}</td>
+                <td className="p-3">{fila.LINK}</td>
+
               </tr>
             ))
           )}
