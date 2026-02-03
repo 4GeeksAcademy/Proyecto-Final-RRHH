@@ -236,12 +236,12 @@ export default function Administracion() {
           </th>
           <td className="px-6 py-4">
             <div className="flex items-center">
-              <input disabled defaultChecked={rol.es_admin} id="disabled-checked-checkbox" type="checkbox" value="" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+              <input disabled defaultChecked={rol.es_admin} id="disabled-checked-checkbox" type="checkbox" value="" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 focus:ring-2" />
             </div>
           </td>
           <td className="px-6 py-4">
             <div className="flex items-center">
-              <input disabled defaultChecked={rol.puede_crear_reunion} id="disabled-checked-checkbox" type="checkbox" value="" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+              <input disabled defaultChecked={rol.puede_crear_reunion} id="disabled-checked-checkbox" type="checkbox" value="" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 focus:ring-2" />
             </div>
           </td>
           <td className="px-6 py-4 text-right flex">
@@ -255,7 +255,7 @@ export default function Administracion() {
 
   return (
     <section className="p-6 p-4 md:p-8">
-      <h1 className="text-3xl font-bold mb-6">Gestión de Usuarios</h1>
+      <h1 className="text-3xl font-bold mb-6 text-gray-900">Gestión de Usuarios</h1>
       <div className="mb-4 border-b border-gray-400">
         <ul className="flex flex-wrap -mb-px text-sm font-medium text-center" id="default-styled-tab" data-tabs-toggle="#default-styled-tab-content" data-tabs-active-classes="text-purple-600 hover:text-purple-600 border-purple-600" data-tabs-inactive-classes="text-gray-500 hover:text-gray-600 border-none hover:border-gray-300" role="tablist">
           <li className="me-2" role="presentation">

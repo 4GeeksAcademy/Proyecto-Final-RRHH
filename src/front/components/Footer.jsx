@@ -2,8 +2,7 @@
 
 export default function Footer() {
   return (
-    //variantes '' de Tailwind
-    <footer className="p-4 text-center mt-auto bg-white text-black bg-gray-800 text-white">
+    <footer className="p-4 text-center mt-auto text-black bg-gray-50">
       <div className="flex justify-center items-center">
         <a href="/" className="flex items-center">
           <img

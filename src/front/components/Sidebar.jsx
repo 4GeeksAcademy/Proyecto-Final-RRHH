@@ -27,16 +27,12 @@ export default function SidebarLayout({ isOpen, onClose }) {
         fetchUser();
     }, []);
 
-    // function es_admin() {
-    //     if()
-    // }
-
     return (
         <>
             {/* OVERLAY oscuro en móvil */}
             {isOpen && (
                 <div
-                    className="fixed inset-0 z-30 bg-black/50 md:hidden"
+                    className="fixed inset-0 z-30 md:hidden"
                     onClick={onClose}
                 />
             )}
@@ -44,8 +40,7 @@ export default function SidebarLayout({ isOpen, onClose }) {
             {/* SIDEBAR */}
             <aside
                 className={`p-6 fixed top-0 left-0 z-40 w-64 h-screen pt-14
-          bg-white border-r border-gray-200 
-          bg-gray-900 border-gray-700 text-white
+          bg-white border-r border-gray-200 text-white
           transform transition-transform duration-300 ease-in-out
           ${isOpen ? "translate-x-0" : "-translate-x-full"}
           md:translate-x-0
@@ -54,15 +49,15 @@ export default function SidebarLayout({ isOpen, onClose }) {
             >
                 <div className="overflow-y-auto py-5 px-3 h-full">
                     <ul className="space-y-2">
-                        <li className="border-b border-gray-300 border-gray-700 mb-4">
+                        <li className="border-b border-gray-300 mb-4">
                             <div className="flex items-center p-4 justify-between">
-                                <span className="font-bold text-2xl text-black text-white">
+                                <span className="font-bold text-2xl text-black">
                                     Portal Trabajo
                                 </span>
 
                                 {/* Botón cerrar SOLO en móvil */}
                                 <button
-                                    className="md:hidden p-2 rounded hover:bg-gray-100 hover:bg-gray-800 text-white"
+                                    className="md:hidden p-2 rounded hover:bg-gray-100 text-white"
                                     onClick={onClose}
                                 >
                                     ✕
@@ -74,7 +69,7 @@ export default function SidebarLayout({ isOpen, onClose }) {
                         <li>
                             <Link
                                 to="/"
-                                className="flex items-center p-2 rounded-lg text-gray-900 text-gray-200 hover:bg-gray-100 hover:bg-gray-800 transition-colors"
+                                className="flex items-center p-2 rounded-lg text-gray-900 text-gray-200 hover:bg-gray-100"
                                 onClick={onClose}
                             >
                                 <svg className="w-6 h-6 text-gray-800 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -88,7 +83,7 @@ export default function SidebarLayout({ isOpen, onClose }) {
                         <li>
                             <Link
                                 to="/fichaje"
-                                className="flex items-center p-2 rounded-lg text-gray-900 text-gray-200 hover:bg-gray-100 hover:bg-gray-800"
+                                className="flex items-center p-2 rounded-lg text-gray-900 text-gray-200 hover:bg-gray-100"
                                 onClick={onClose}
                             >
                                 <svg className="w-6 h-6 text-gray-800 text-gray-400" viewBox="0 0 24 24" fill="none">
@@ -102,7 +97,7 @@ export default function SidebarLayout({ isOpen, onClose }) {
                         <li>
                             <Link
                                 to="/reuniones"
-                                className="flex items-center p-2 rounded-lg text-gray-900 text-gray-200 hover:bg-gray-100 hover:bg-gray-800"
+                                className="flex items-center p-2 rounded-lg text-gray-900 text-gray-200 hover:bg-gray-100"
                                 onClick={onClose}
                             >
                                 <svg className="w-6 h-6 text-gray-800 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -129,7 +124,7 @@ export default function SidebarLayout({ isOpen, onClose }) {
                         {/* ADMIN */}
                         <li>
                             <a href="/administracion"
-                                className="flex items-center p-2 rounded-lg text-gray-900 text-gray-200 hover:bg-gray-100 hover:bg-gray-800"
+                                className="flex items-center p-2 rounded-lg text-gray-900 text-gray-200 hover:bg-gray-100"
                                 onClick={onClose}
                             >
                                 <svg className="w-6 h-6 text-gray-800 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -148,7 +143,7 @@ export default function SidebarLayout({ isOpen, onClose }) {
           pt-20 
           p-6 
           min-h-screen 
-          bg-gray-50 bg-gray-900 
+          bg-gray-50
           text-gray-900 text-white
           transition-colors duration-300
           md:ml-64

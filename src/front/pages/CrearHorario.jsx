@@ -83,7 +83,13 @@ export default function CrearHorario() {
                 </div>
                 <button
                     type="submit"
-                    className="w-full py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-sky-500 text-white font-semibold text-lg hover:opacity-90 transition shadow-md"
+                    className="w-full py-3
+              rounded-lg
+              bg-blue-600
+              text-white
+              font-medium
+              hover:bg-blue-700
+              transition"
                 >
                     Crear horario
                 </button>

@@ -15,14 +15,14 @@ export default function GraficoTrabajo({ data, totalHoras }) {
       <div className="flex justify-between mb-4 md:mb-6 items-center">
         <div>
           {/* Texto principal: text-heading -> text-white */}
-          <h5 className="text-2xl font-bold text-gray-900 text-white">
+          <h5 className="text-2xl font-bold text-gray-900">
             {safeTotalHoras.toFixed(1)} hrs
           </h5>
           {/* Subtexto: text-body -> text-gray-400 */}
           <p className="text-gray-600 text-gray-400">Horas trabajadas (L–V)</p>
         </div>
 
-        <span className="text-sm font-medium text-green-600 text-green-400">
+        <span className="text-sm font-medium text-green-600">
           Jornada activa
         </span>
       </div>
@@ -46,10 +46,10 @@ export default function GraficoTrabajo({ data, totalHoras }) {
                   />
                 </div>
                 {/* Etiquetas de días y horas: text-gray-600 -> text-gray-300 */}
-                <span className="mt-2 text-sm text-gray-600 text-gray-300">
+                <span className="mt-2 text-sm text-gray-600">
                   {item.day}
                 </span>
-                <span className="text-xs text-gray-500 text-gray-500">
+                <span className="text-xs text-gray-500">
                   {horas}h
                 </span>
               </div>
@@ -59,11 +59,11 @@ export default function GraficoTrabajo({ data, totalHoras }) {
       </div>
 
       {/* Footer */}
-      <div className="pt-4 md:pt-6 flex justify-between text-sm text-gray-500 text-gray-400 border-t border-gray-100 border-gray-700">
+      <div className="pt-4 md:pt-6 flex justify-between text-sm text-gray-500 border-t border-gray-100">
         <span>Horario: 8h/día</span>
         <a
           href="#"
-          className="inline-flex items-center text-blue-600 text-blue-400 hover:underline"
+          className="inline-flex items-center text-fg-brand bg-transparent box-border border border-transparent hover:bg-neutral-secondary-medium focus:ring-4 focus:ring-neutral-tertiary font-medium leading-5 rounded-base text-sm px-3 py-2 focus:outline-none"
         >
           Informe de Progresos
           <svg className="w-4 h-4 ms-1.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
