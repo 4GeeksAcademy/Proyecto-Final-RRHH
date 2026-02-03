@@ -13,6 +13,13 @@ export const initialStore = () => {
     inputPasswordUsuario: "",
     selectHorarioUsuario: "",
     selectRolUsuario: "",
+
+    tareas: [],
+    tareasResumen: {
+      hecho: 0,
+      progreso: 0,
+      porHacer: 0,
+    },
   };
 };
 
@@ -151,8 +158,26 @@ export default function storeReducer(store, action = {}) {
         selectRolUsuario: selectRolUsuario,
       };
 
+      case "set_tareas": {
+      const { tareas, resumen } = action.payload;
+      return {
+        ...store,
+        tareas: tareas || [],
+        tareasResumen: resumen || store.tareasResumen,
+      };
+    }
+
+
+      
+
     default:
       throw Error("Unknown action.");
   }
+
+  
+
+
 }
+
+
    

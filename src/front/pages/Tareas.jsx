@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import useGlobalReducer from "../hooks/useGlobalReducer";
 
 export default function Tareas({ onTareasUpdate }) {
   const [tareas, setTareas] = useState([]);
@@ -8,8 +9,30 @@ export default function Tareas({ onTareasUpdate }) {
   const [error, setError] = useState(null);
   const [editandoTarea, setEditandoTarea] = useState(null);
   const [editNombre, setEditNombre] = useState("");
+
+
   const token = localStorage.getItem("jwt-token");
-  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  const backendUrl = import.meta.env.VITE_BACKEND_URL || "https://supreme-space-dollop-4qjpwxgwxwr2g65-3001.app.github.dev";
+
+   const calcularResumen = (listaTareas) => {
+    const hecho = listaTareas.filter(t => t.estado === "Hecho").length;
+    const progreso = listaTareas.filter(t => t.estado === "En Proceso").length;
+    const porHacer = listaTareas.filter(t => t.estado === "Por Hacer").length;
+    return { hecho, progreso, porHacer };
+  };
+
+  const actualizarTareasGlobales = (listaTareas) => {
+    dispatch({
+      type: "set_tareas",
+      payload: {
+        tareas: listaTareas,
+        resumen: calcularResumen(listaTareas),
+      },
+    });
+  };
+
+
+  const { dispatch } = useGlobalReducer();
 
   // -----------------------
   // Cargar tareas
@@ -59,10 +82,13 @@ export default function Tareas({ onTareasUpdate }) {
 
       if (!res.ok) throw new Error("Error creando tarea");
 
-      const tarea = await res.json();
-      setTareas((prev) => [...prev, tarea]);
-      setNuevaTarea("");
+      setTareas((prev) => {
+        const nuevasTareas = [...prev, tarea];
+        sincronizarGlobal(nuevasTareas); 
+        return nuevasTareas;
+      });
 
+      setNuevaTarea("");
       if (onTareasUpdate) onTareasUpdate();
     } catch (err) {
       setError(err.message);
@@ -70,7 +96,6 @@ export default function Tareas({ onTareasUpdate }) {
       setLoadingAction(false);
     }
   };
-
   // -----------------------
   // Eliminar tarea
   // -----------------------
@@ -99,6 +124,47 @@ export default function Tareas({ onTareasUpdate }) {
   // -----------------------
   // Cambiar estado
   // -----------------------
+
+  const cambiarEstado = async (id, nuevoEstado) => {
+     // Implementación básica para cambio de estado
+     try {
+        const tareaActual = tareas.find(t => t.id === id);
+        const res = await fetch(`${backendUrl}/api/tareas/${id}`, {
+            method: "PUT",
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ ...tareaActual, estado: nuevoEstado }),
+        });
+        if (!res.ok) throw new Error("Error al actualizar estado");
+        
+        const tareaActualizada = await res.json();
+        
+        setTareas((prev) => {
+            const nuevas = prev.map(t => t.id === id ? tareaActualizada : t);
+            sincronizarGlobal(nuevas); // Importante: Sincronizar para mover la gráfica
+            return nuevas;
+        });
+
+     } catch (err) {
+         setError(err.message);
+     }
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   const guardarEdicion = async () => {
     if (!editandoTarea) return;
 
@@ -274,41 +340,10 @@ export default function Tareas({ onTareasUpdate }) {
 
               {/* Botones de cambio de estado */}
               <div className="flex gap-3">
-                <button
-                  onClick={() => cambiarEstado(t.id, "Hecho")}
-                  disabled={t.estado === "Hecho"}
-                  className={`px-3 py-1 rounded text-sm font-medium transition
-                      ${t.estado === "Hecho"
-                      ? "bg-green-300 text-white cursor-default"
-                      : "bg-green-100 text-green-800 hover:bg-green-300"
-                    }`}
-                >
-                  Hecho
-                </button>
-
-                <button
-                  onClick={() => cambiarEstado(t.id, "En Proceso")}
-                  disabled={t.estado === "En Proceso"}
-                  className={`px-3 py-1 rounded text-sm font-medium transition
-                      ${t.estado === "En Proceso"
-                      ? "bg-yellow-300 text-white cursor-default"
-                      : "bg-yellow-100 text-yellow-800 hover:bg-yellow-300"
-                    }`}
-                >
-                  En Proceso
-                </button>
-
-                <button
-                  onClick={() => cambiarEstado(t.id, "Por Hacer")}
-                  disabled={t.estado === "Por Hacer"}
-                  className={`px-3 py-1 rounded text-sm font-medium transition
-                      ${t.estado === "Por Hacer"
-                      ? "bg-red-300 text-white cursor-default"
-                      : "bg-red-100 text-red-800 hover:bg-red-300"
-                    }`}
-                >
-                  Por Hacer
-                </button>
+               <button onClick={() => cambiarEstado(t.id, "Hecho")} disabled={t.estado === "Hecho"} className={`px-3 py-1 rounded text-sm font-medium transition ${t.estado === "Hecho" ? "bg-green-300 text-white cursor-default" : "bg-green-100 text-green-800 hover:bg-green-300"}`}>Hecho</button>
+                <button onClick={() => cambiarEstado(t.id, "En Proceso")} disabled={t.estado === "En Proceso"} className={`px-3 py-1 rounded text-sm font-medium transition ${t.estado === "En Proceso" ? "bg-yellow-300 text-white cursor-default" : "bg-yellow-100 text-yellow-800 hover:bg-yellow-300"}`}>En Proceso</button>
+                <button onClick={() => cambiarEstado(t.id, "Por Hacer")} disabled={t.estado === "Por Hacer"} className={`px-3 py-1 rounded text-sm font-medium transition ${t.estado === "Por Hacer" ? "bg-red-300 text-white cursor-default" : "bg-red-100 text-red-800 hover:bg-red-300"}`}>Por Hacer</button>
+              
               </div>
             </div>
           ))}

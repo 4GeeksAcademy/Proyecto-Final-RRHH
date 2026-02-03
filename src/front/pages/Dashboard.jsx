@@ -5,9 +5,12 @@ import GraficoTareas from "../components/GraficoTareas";
 import TemporizadorFichaje from "../components/Temporizador";
 import { useState, useEffect } from 'react';
 
+import useGlobalReducer from "../hooks/useGlobalReducer";
+
 
 export default function Dashboard() {
   const token = localStorage.getItem("jwt-token");
+  const { store, dispatch } = useGlobalReducer();
 
   const refrescarFichajes = async () => {
     // Aquí podrías llamar a la API /mis-fichajes si quieres reflejar cambios
@@ -17,23 +20,87 @@ export default function Dashboard() {
 
 
   // todos los states
- 
+
+   const [tareasActivas, setTareasActivas] = useState(0);
+  const [tareasCompletadas, setTareasCompletadas] = useState(0);
+  const [tareasHecho, setTareasHecho] = useState(0);
+  const [tareasProgreso, setTareasProgreso] = useState(0);
+  const [tareasPorHacer, setTareasPorHacer] = useState(0);
+  const [loadingTareas, setLoadingTareas] = useState(true);
 
   const [horasSemana, setHorasSemana] = useState([]);
   const [totalHoras, setTotalHoras] = useState(0);
+
+  const calcularResumen = (listaTareas) => {
+    // Usamos los strings exactos: Hecho, En Proceso, Por Hacer
+    const hecho = listaTareas.filter(t => t.estado === "Hecho").length;
+    const progreso = listaTareas.filter(t => t.estado === "En Proceso").length;
+    const porHacer = listaTareas.filter(t => t.estado === "Por Hacer").length;
+    return { hecho, progreso, porHacer };
+  };
+
+  const actualizarResumen = (listaTareas) => {
+    const resumen = calcularResumen(listaTareas);
+    setTareasActivas(resumen.progreso + resumen.porHacer);
+    setTareasCompletadas(resumen.hecho);
+    setTareasHecho(resumen.hecho);
+    setTareasProgreso(resumen.progreso);
+    setTareasPorHacer(resumen.porHacer);
+    dispatch({
+      type: "set_tareas",
+      payload: {
+        tareas: listaTareas,
+        resumen,
+      },
+    });
+  };
+ 
+
+
 
   const [updateFlag, setUpdateFlag] = useState(false);
 
 const refrescarTareas = () => setUpdateFlag(prev => !prev);
 
-useEffect(() => {
-  const cargarTareasDashboard = async () => {
-    // tu fetch actual...
-  };
-  cargarTareasDashboard();
-}, [updateFlag]); // 
+ useEffect(() => {
+    const cargarTareasDashboard = async () => {
+      const token = localStorage.getItem("jwt-token");
+      if(store.tareas && store.tareas.length > 0) return;
+      const backendUrl = import.meta.env.VITE_BACKEND_URL || "https://supreme-space-dollop-4qjpwxgwxwr2g65-3001.app.github.dev";
 
-  
+      try {
+        const response = await fetch(`${backendUrl}/api/tareas`, {
+          headers: { "Authorization": `Bearer ${token}` }
+        });
+
+        if (!response.ok) return;
+
+        const data = await response.json();
+        const todasLasTareas = data.proyectos.flatMap(p => p.tareas || []);
+
+        actualizarResumen(todasLasTareas);
+      } catch (error) {
+        console.error("Error al cargar tareas:", error);
+      } finally {
+        setLoadingTareas(false);
+      }
+    };
+
+    cargarTareasDashboard();
+  }, [store.tareas]);
+
+   useEffect(() => {
+    if (!store.tareas) return;
+    
+    const { hecho, progreso, porHacer } = calcularResumen(store.tareas);
+    
+    setTareasHecho(hecho);
+    setTareasProgreso(progreso);
+    setTareasPorHacer(porHacer);
+    setTareasActivas(progreso + porHacer);
+
+  }, [store.tareas]);
+
   const calcularHorasPorDia = (fichajes) => {
     const diasSemana = ["L", "M", "X", "J", "V"];
     const resultado = {
@@ -142,9 +209,15 @@ useEffect(() => {
           to="/tareas"
           titulo="Estado de Tareas"
           detalle=""
-          grafico={<GraficoTareas  />}
+          grafico={
+          <GraficoTareas hecho={tareasHecho} 
+               progreso={tareasProgreso} 
+               porHacer={tareasPorHacer}
+               total={tareasActivas + tareasHecho}/>
+          }
         />
       </div>
     </section>
   );
+  
 }

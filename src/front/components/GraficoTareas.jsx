@@ -1,6 +1,6 @@
 import React from "react"
 
-export default function GraficoTareas({ hecho = 0, progreso = 0, porHacer = 0 }) {
+export default function GraficoTareas({ total = 0, progreso = 0, porHacer = 0 }) {
     return (
         <div className="w-full h-full rounded-xl shadow p-4 md:p-6">
             <div className="flex justify-between mb-4 md:mb-6 items-center">
@@ -12,7 +12,7 @@ export default function GraficoTareas({ hecho = 0, progreso = 0, porHacer = 0 })
                 <div className="grid grid-cols-3 gap-3 mb-3">
                     {/* {hecho} */}
                     <dl className="bg-green-100 border border-green-200 text-green-800 rounded-lg flex flex-col items-center justify-center h-[78px]">
-                        <dt className="w-8 h-8 rounded-full bg-green-300 text-green-900 text-sm font-medium flex items-center justify-center mb-1">{hecho}</dt>
+                        <dt className="w-8 h-8 rounded-full bg-green-300 text-green-900 text-sm font-medium flex items-center justify-center mb-1">{total}</dt>
                         <dd className="text-green-800 text-sm font-medium">Hecho</dd>
                     </dl>
                     
