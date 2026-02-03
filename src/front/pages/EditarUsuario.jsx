@@ -20,7 +20,7 @@ export default function EditarUsuario() {
     })
     .then(response => response.json())
     .then(data => {
-      usuario = data.usuario;
+      let usuario = data.usuario;
       console.log("Usuario", usuario);
       dispatch({ type: 'set_input_nameUsuario', payload: { inputNameUsuario: usuario.nombre } })
     })

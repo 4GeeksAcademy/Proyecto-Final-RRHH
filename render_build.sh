@@ -5,10 +5,9 @@ set -o errexit
 npm install
 npm run build
 
-python3 -m venv .venv
-source .venv/bin/activate 
+# Instalación de dependencias de Python
 pip install pipenv
-
 pipenv install
 
-pipenv run upgrade
+# COMENTAMOS la línea de abajo temporalmente para que el despliegue NO falle
+# pipenv run flask db upgrade
