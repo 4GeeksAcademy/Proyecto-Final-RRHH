@@ -1,14 +1,14 @@
 """
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
-from datetime import timedelta
+from datetime import datetime
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User, Rol, Horario, Empresa, Reunion, Fichaje, Proyecto, Tarea
+from api.models import db, User, Rol, Horario, Empresa, Reunion, Fichaje, Tarea
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from sqlalchemy import select
-from datetime import datetime
+
 
 
 api = Blueprint('api', __name__)
@@ -109,37 +109,37 @@ def crear_reunion():
 
 # PROYECTOS
 # OBTENER TODOS LOS PROYECTOS DEL USUARIO CON SUS TAREAS ASIGNADAS
-@api.route('/proyectos', methods=["GET"])
-@jwt_required()
-def obtener_reuniones_y_tareas():
-    current_user_id = int(get_jwt_identity())
-    user = db.session.get(User, current_user_id)
+#@api.route('/proyectos', methods=["GET"])
+#@jwt_required()
+#def obtener_reuniones_y_tareas():
+ #   current_user_id = int(get_jwt_identity())
+  #  user = db.session.get(User, current_user_id)
 
-    if user is None:
-        return jsonify({"msg": "Usuario no encontrado"}), 404
+   # if user is None:
+    #    return jsonify({"msg": "Usuario no encontrado"}), 404
 
-    proyectos = db.session.execute(select(Proyecto)).scalars().all()
+    #proyectos = db.session.execute(select(Proyecto)).scalars().all()
 
-    return {
-        "proyectos": [p.serialize() for p in proyectos]
-    }, 200
+    #return {
+     #   "proyectos": [p.serialize() for p in proyectos]
+    #}, 200
 
 # OBTENER UN SOLO PROYECTO CON SUS TAREAS
-@api.route('/proyecto/<int:proyecto_id>', methods=["GET"])
-@jwt_required()
-def obtener_proyecto(proyecto_id):
-    current_user_id = int(get_jwt_identity())
-    user = db.session.get(User, current_user_id)
+#@api.route('/proyecto/<int:proyecto_id>', methods=["GET"])
+#@jwt_required()
+#def obtener_proyecto(proyecto_id):
+ #   current_user_id = int(get_jwt_identity())
+  #  user = db.session.get(User, current_user_id)
 
-    proyecto = db.session.get(Proyecto, proyecto_id)
+   # proyecto = db.session.get(Proyecto, proyecto_id)
 
-    if user is None:
-        return jsonify({"msg": "Usuario no encontrado"}), 404
+    #if user is None:
+     #   return jsonify({"msg": "Usuario no encontrado"}), 404
 
-    if proyecto is None:
-        return jsonify({"msg": "Proyecto no encontrado"}), 501
+    #if proyecto is None:
+     #   return jsonify({"msg": "Proyecto no encontrado"}), 501
     
-    return jsonify(proyecto.serialize()), 200
+    #return jsonify(proyecto.serialize()), 200
 
 # FICHAJES
 # OBTENER TODOS LOS FICHAJES DEL USUARIO
@@ -406,3 +406,200 @@ def eliminar_horario(horario_id):
     return jsonify({
         "msg": "Horario eliminado correctamente"
     }), 200
+
+# cambios de yessi empresa
+
+@api.route('/empresa', methods=["GET"])
+@jwt_required()
+def obtener_empresa():
+    current_user_id = int(get_jwt_identity())
+    user = db.session.get(User, current_user_id)
+
+    if user is None:
+        return jsonify({"msg": "Usuario no encontrado"}), 404
+
+    empresa = db.session.get(Empresa, user.empresa_id)
+
+    if empresa is None:
+        return jsonify({"msg": "Empresa no encontrada"}), 404
+
+    return jsonify({
+        "empresa": empresa.serialize()
+    }), 200
+
+@api.route('/empresa', methods=["POST"])
+def crear_empresa():
+    data = request.get_json()
+
+    if not data.get("nombre"):
+        return jsonify({"msg": "El nombre de la empresa es obligatorio"}), 400
+
+    nueva_empresa = Empresa(
+        nombre=data.get("nombre"),
+        imagen=data.get("imagen", "logo.jpg")
+    )
+
+    db.session.add(nueva_empresa)
+    db.session.commit()
+
+    return jsonify({
+        "msg": "Empresa creada correctamente",
+        "empresa": nueva_empresa.serialize()
+    }), 201
+
+@api.route('/empresa/<int:empresa_id>', methods=['DELETE'])
+def eliminar_empresa(empresa_id):
+    empresa = Empresa.query.get(empresa_id)
+    if not empresa:
+        return jsonify({"error": "Empresa no encontrada"}), 404
+
+    try:
+        db.session.delete(empresa)
+        db.session.commit()
+        return jsonify({"mensaje": f"Empresa {empresa.nombre} eliminada correctamente"}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": "No se pudo eliminar la empresa", "detalle": str(e)}), 500
+    
+# CAMBIOS DE YESSICA DEL FETCH     
+
+# ELIMINAR UN FICHAJE (solo administrador)
+@api.route('/fichaje/<int:fichaje_id>', methods=['DELETE'])
+@jwt_required()
+def eliminar_fichaje(fichaje_id):
+    current_user_id = int(get_jwt_identity())
+    admin = db.session.get(User, current_user_id)
+
+    if admin is None:
+        return jsonify({"msg": "Usuario no encontrado"}), 404
+    
+    # Solo admin puede eliminar
+    if not admin.rol.es_admin:
+        return jsonify({"msg": "No tienes permisos para eliminar fichajes"}), 403
+
+    fichaje = db.session.get(Fichaje, fichaje_id)
+    if fichaje is None:
+        return jsonify({"msg": "Fichaje no encontrado"}), 404
+
+    db.session.delete(fichaje)
+    db.session.commit()
+    return jsonify({"msg": "Fichaje eliminado correctamente"}), 200
+
+
+# EDITAR UN FICHAJE (solo administrador)
+@api.route('/fichaje/<int:fichaje_id>', methods=['PUT'])
+@jwt_required()
+def editar_fichaje(fichaje_id):
+    current_user_id = int(get_jwt_identity())
+    admin = db.session.get(User, current_user_id)
+
+    if admin is None:
+        return jsonify({"msg": "Usuario no encontrado"}), 404
+
+    if not admin.rol.es_admin:
+        return jsonify({"msg": "No tienes permisos para editar fichajes"}), 403
+
+    data = request.get_json()
+    fichaje = db.session.get(Fichaje, fichaje_id)
+    if fichaje is None:
+        return jsonify({"msg": "Fichaje no encontrado"}), 404
+
+    # Actualizamos solo si vienen los campos
+    if "hora_entrada" in data:
+        fichaje.hora_entrada = datetime.fromisoformat(data["hora_entrada"]) if data["hora_entrada"] else None
+    if "hora_salida" in data:
+        fichaje.hora_salida = datetime.fromisoformat(data["hora_salida"]) if data["hora_salida"] else None
+    if "fecha" in data:
+        fichaje.fecha = datetime.fromisoformat(data["fecha"]).date() if data["fecha"] else fichaje.fecha
+
+    db.session.commit()
+    return jsonify({"msg": "Fichaje actualizado correctamente", "fichaje": fichaje.serialize()}), 200
+
+#CAMBIOS DE YESSICA DE TAREAS Y PROYECTO
+
+# -----------------------------
+# TAREAS
+# -----------------------------
+
+# GET todas las tareas del usuario
+@api.route('/tareas', methods=['GET'])
+@jwt_required()
+def get_tareas():
+    user_id = int(get_jwt_identity())
+
+    tareas = Tarea.query.filter_by(user_id=user_id).all()
+    return jsonify([tarea_serialize(t) for t in tareas]), 200
+
+
+@api.route('/tareas', methods=['POST'])
+@jwt_required()
+def create_tarea():
+    user_id = int(get_jwt_identity())
+    data = request.get_json() or {}
+
+    nombre = data.get("nombre")
+    estado = data.get("estado", "Por Hacer")
+
+    if not nombre:
+        return jsonify({"msg": "El nombre es requerido"}), 400
+
+    nueva_tarea = Tarea(
+        nombre=nombre,
+        estado=estado,
+        user_id=user_id
+    )
+
+    db.session.add(nueva_tarea)
+    db.session.commit()
+
+    return jsonify(tarea_serialize(nueva_tarea)), 201
+
+@api.route('/tareas/<int:tarea_id>', methods=['PUT', 'PATCH'])
+@jwt_required()
+def update_tarea(tarea_id):
+    user_id = int(get_jwt_identity())
+    tarea = db.session.get(Tarea, tarea_id)
+
+    if not tarea:
+        return jsonify({"msg": "Tarea no encontrada"}), 404
+
+    if tarea.user_id != user_id:
+        return jsonify({"msg": "No autorizado"}), 403
+
+    data = request.get_json() or {}
+
+    if "nombre" in data:
+        tarea.nombre = data["nombre"]
+    if "estado" in data:
+        tarea.estado = data["estado"]
+
+    db.session.commit()
+    return jsonify(tarea_serialize(tarea)), 200
+
+@api.route('/tareas/<int:tarea_id>', methods=['DELETE'])
+@jwt_required()
+def delete_tarea(tarea_id):
+    user_id = int(get_jwt_identity())
+    tarea = db.session.get(Tarea, tarea_id)
+
+    if not tarea:
+        return jsonify({"msg": "Tarea no encontrada"}), 404
+
+    if tarea.user_id != user_id:
+        return jsonify({"msg": "No autorizado"}), 403
+
+    db.session.delete(tarea)
+    db.session.commit()
+    return jsonify({"msg": "Tarea eliminada"}), 200
+
+def tarea_serialize(tarea):
+    return {
+        "id": tarea.id,
+        "nombre": tarea.nombre,
+        "estado": tarea.estado,
+        "user_id": tarea.user_id
+    }
+
+#Mensajes Yessica
+
+

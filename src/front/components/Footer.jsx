@@ -7,12 +7,21 @@ export default function Footer() {
       <footer className="bg-neutral-secondary py-4 text-center mt-auto">
         <div className="flex justify-center items-center">
           <a href="/" className="flex items-center">
-            <img
-              src="src/front/assets/img/logo.png"
-              className="mr-3 h-8 rounded-full"
-              alt="Logo"
+            <video
+              src="public/videoTeamcoreLogo.mp4"
+              className="mr-3 h-8 w-8 rounded-full object-cover"
+              autoPlay
+              loop
+              muted
+              playsInline
             />
-            <span className="text-xl font-semibold text-black">TeamCore</span>
+
+            <div className="flex flex-col items-center">
+              <span className="text-xl font-semibold text-black">TeamCore</span>
+              <p className="text-xs font-bold text-body lg:text-xs">
+                Todo tu equipo, en un solo lugar.
+              </p>
+            </div>
           </a>
         </div>
         <p className="mt-2 text-gray-600">© 2026 Tu Compañía</p>

@@ -16,7 +16,7 @@ export default function Navbar({ onMenuClick }) {
 
   const { store, dispatch } = useGlobalReducer();
 
- 
+
 
   const logout = () => {
     dispatch({ type: "logout" });
@@ -92,7 +92,7 @@ export default function Navbar({ onMenuClick }) {
               <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-100 z-50">
                 {/* USER INFO */}
                 <div className="p-4">
-                  <p className="font-semibold text-black">{user?.nombre || "Cargando..."}</p>
+                  <p className="font-semibold text-black">{user?.nombre} {user?.apellidos|| "Cargando..."}</p>
                   <p className="text-sm text-gray-500">{user?.email || "Cargando..."}</p>
                 </div>
 
@@ -255,12 +255,18 @@ export default function Navbar({ onMenuClick }) {
           {/* LEFT */}
           <div className="flex items-center">
             <a href="/" className="flex items-center mr-6">
-              <img
-                src="src/front/assets/img/logo.png"
-                className="mr-3 h-8 rounded-full"
-                alt="Logo"
+              <video
+                src="public/videoTeamcoreLogo.mp4"
+                className="mr-3 h-9 w-9 rounded-full object-cover"
+                autoPlay
+                loop
+                muted
+                playsInline
               />
-              <span className="text-2xl font-semibold text-black">TeamCore</span>
+              <div className="flex flex-col items-start">
+                <span className="text-4xl font-semibold text-black">TeamCore</span>
+                
+              </div>
             </a>
           </div>
 

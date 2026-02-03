@@ -69,23 +69,6 @@ export default function SidebarLayout({ isOpen, onClose }) {
                             </Link>
                         </li>
 
-                        {/* MENSAJES */}
-                        <li>
-                            <Link
-                                to="/mensajes"
-                                className="flex items-center p-2 rounded-lg text-gray-900 hover:bg-gray-100"
-                                onClick={onClose}
-                            >
-                                <svg className="w-6 h-6 text-gray-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 8v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8m18 0-8.029-4.46a2 2 0 0 0-1.942 0L3 8m18 0-9 6.5L3 8" />
-                                </svg>
-                                <span className="ml-3">Mensajes</span>
-                                <span className="ml-auto text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">
-                                    4
-                                </span>
-                            </Link>
-                        </li>
-
                         {/* REUNIONES */}
                         <li>
                             <Link
@@ -110,7 +93,7 @@ export default function SidebarLayout({ isOpen, onClose }) {
                                 <svg className="w-6 h-6 text-gray-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 21a9 9 0 1 1 0-18c1.052 0 2.062.18 3 .512M7 9.577l3.923 3.923 8.5-8.5M17 14v6m-3-3h6" />
                                 </svg>
-                                <span className="ml-3">Proyectos</span>
+                                <span className="ml-3">Tareas</span>
                             </Link>
                         </li>
 
@@ -128,19 +111,6 @@ export default function SidebarLayout({ isOpen, onClose }) {
                             </Link>
                         </li>
 
-                        {/* NOTIFICACIONES */}
-                        <li>
-                            <Link
-                                to="/notificaciones"
-                                className="flex items-center p-2 rounded-lg text-gray-900 hover:bg-gray-100"
-                                onClick={onClose}
-                            >
-                                <svg className="w-6 h-6 text-gray-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5.365V3m0 2.365a5.338 5.338 0 0 1 5.133 5.368v1.8c0 2.386 1.867 2.982 1.867 4.175 0 .593 0 1.292-.538 1.292H5.538C5 18 5 17.301 5 16.708c0-1.193 1.867-1.789 1.867-4.175v-1.8A5.338 5.338 0 0 1 12 5.365ZM8.733 18c.094.852.306 1.54.944 2.112a3.48 3.48 0 0 0 4.646 0c.638-.572 1.236-1.26 1.33-2.112h-6.92Z" />
-                                </svg>
-                                <span className="ml-3">Notificaciones</span>
-                            </Link>
-                        </li>
 
                         {/* ADMIN */}
                         <li>

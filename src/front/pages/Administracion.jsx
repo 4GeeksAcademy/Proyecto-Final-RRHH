@@ -7,6 +7,9 @@ export default function Administracion() {
   const { store, dispatch } = useGlobalReducer();
   const token = localStorage.getItem("jwt-token");
 
+  
+
+
   const getDataUsers = async () => {
     const response = await fetch(
       import.meta.env.VITE_BACKEND_URL + "/api/usuarios",
@@ -153,6 +156,9 @@ export default function Administracion() {
       })
       .catch(error => console.log("·Error en eliminar usuario:", error))
   };
+
+  
+
 
   const dataTablesuarios = () => {
     return store.usuarios.map((usuario) => {

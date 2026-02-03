@@ -2,6 +2,7 @@ export const initialStore = () => {
   return {
     is_active: !!localStorage.getItem("jwt-token"),
     usuarios: [],
+    empresa: [null],
     roles: [],
     horarios: [],
     inputNameUsuario: "",
@@ -136,6 +137,12 @@ export default function storeReducer(store, action = {}) {
         selectHorarioUsuario: selectHorarioUsuario,
       };
 
+    case "set_empresa":
+  return {
+    ...store,
+    empresa: action.payload.empresa,
+  };
+
     case "set_select_RolUsuario":
       const { selectRolUsuario } = action.payload;
 
@@ -148,3 +155,4 @@ export default function storeReducer(store, action = {}) {
       throw Error("Unknown action.");
   }
 }
+   

@@ -1,203 +1,180 @@
-// src/pages/Tareas.jsx
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
-export default function Tareas() {
+export default function Tareas({ onTareasUpdate }) {
   const [tareas, setTareas] = useState([]);
   const [nuevaTarea, setNuevaTarea] = useState("");
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [loadingAction, setLoadingAction] = useState(false);
-  
+  const [error, setError] = useState(null);
+  const [editandoTarea, setEditandoTarea] = useState(null);
+  const [editNombre, setEditNombre] = useState("");
   const token = localStorage.getItem("jwt-token");
-  const backendUrl = import.meta.env.VITE_BACKEND_URL || "https://supreme-space-dollop-4qjpwxgwxwr2g65-3001.app.github.dev";
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
-  // Cargar tareas iniciales
-  useEffect(() => {
-    if (!token) {
-      setError("Debes iniciar sesión para gestionar tareas");
+  // -----------------------
+  // Cargar tareas
+  // -----------------------
+  const cargarTareas = async () => {
+    if (!token) return;
+    setLoading(true);
+    try {
+      const res = await fetch(`${backendUrl}/api/tareas`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error("Error cargando tareas");
+      const data = await res.json();
+      setTareas(data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
       setLoading(false);
-      return;
     }
+  };
 
-    const cargarTareas = async () => {
-      try {
-        const response = await fetch(`${backendUrl}/api/proyectos`, {
-          headers: {
-            "Authorization": `Bearer ${token}`,
-            "Content-Type": "application/json"
-          }
-        });
-
-        if (!response.ok) {
-          if (response.status === 401) {
-            throw new Error("Sesión expirada. Por favor, inicia sesión de nuevo.");
-          }
-          throw new Error(`Error ${response.status}: ${response.statusText}`);
-        }
-
-        const data = await response.json();
-        const todasLasTareas = data.proyectos.flatMap(proyecto => 
-          proyecto.tareas ? proyecto.tareas : []
-        );
-        setTareas(todasLasTareas);
-        setLoading(false);
-      } catch (err) {
-        console.error("Error al cargar tareas:", err);
-        setError(err.message || "Error al cargar las tareas");
-        setLoading(false);
-      }
-    };
-
+  useEffect(() => {
     cargarTareas();
-  }, [token, backendUrl]);
+  }, []);
 
-  // Añadir nueva tarea
+  // -----------------------
+  // Crear tarea
+  // -----------------------
   const handleAddTarea = async (e) => {
     e.preventDefault();
-    if (!nuevaTarea.trim() || !token) return;
+    if (!nuevaTarea.trim()) return;
 
     setLoadingAction(true);
-    setError(null);
-
     try {
-      // Primero, obtener los proyectos del usuario para usar un proyecto_id válido
-      const proyectosResponse = await fetch(`${backendUrl}/api/proyectos`, {
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json"
-        }
-      });
-
-      if (!proyectosResponse.ok) throw new Error("No se pudieron obtener proyectos");
-
-      const proyectosData = await proyectosResponse.json();
-      
-      // Usar el primer proyecto del usuario (o el que prefieras)
-      const primerProyecto = proyectosData.proyectos[0];
-      if (!primerProyecto) throw new Error("No tienes proyectos asignados");
-
-      // Crear la tarea en el backend
-      const response = await fetch(`${backendUrl}/api/tareas`, {
+      const res = await fetch(`${backendUrl}/api/tareas`, {
         method: "POST",
         headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json"
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           nombre: nuevaTarea.trim(),
-          estado: "Pendiente",
-          proyecto_id: primerProyecto.id
-        })
+          estado: "Por Hacer",
+          proyecto_id: 1, // Ajustar según backend
+        }),
       });
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.msg || `Error ${response.status}`);
-      }
+      if (!res.ok) throw new Error("Error creando tarea");
 
-      const tareaCreada = await response.json();
-      
-      // Actualizar la lista local
-      setTareas([...tareas, tareaCreada]);
+      const tarea = await res.json();
+      setTareas((prev) => [...prev, tarea]);
       setNuevaTarea("");
-      
+
+      if (onTareasUpdate) onTareasUpdate();
     } catch (err) {
-      console.error("Error al crear tarea:", err);
-      setError(`Error al crear tarea: ${err.message}`);
+      setError(err.message);
     } finally {
       setLoadingAction(false);
     }
   };
 
+  // -----------------------
   // Eliminar tarea
+  // -----------------------
   const handleDeleteTarea = async (tareaId) => {
-    if (!window.confirm("¿Seguro que quieres eliminar esta tarea?") || !token) return;
+    if (!window.confirm("¿Eliminar tarea?")) return;
 
     setLoadingAction(true);
-    setError(null);
-
     try {
-      const response = await fetch(`${backendUrl}/api/tareas/${tareaId}`, {
+      const res = await fetch(`${backendUrl}/api/tareas/${tareaId}`, {
         method: "DELETE",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json"
-        }
+        headers: { Authorization: `Bearer ${token}` },
       });
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.msg || `Error ${response.status}`);
-      }
+      if (!res.ok) throw new Error("Error eliminando tarea");
 
-      // Actualizar la lista local
-      setTareas(tareas.filter(t => t.id !== tareaId));
-      
+      setTareas((prev) => prev.filter((t) => t.id !== tareaId));
+
+      if (onTareasUpdate) onTareasUpdate();
     } catch (err) {
-      console.error("Error al eliminar tarea:", err);
-      setError(`Error al eliminar tarea: ${err.message}`);
+      setError(err.message);
     } finally {
       setLoadingAction(false);
     }
   };
 
-  if (!token) {
-    return (
-      <div className="p-6 max-w-2xl mx-auto">
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-          <p className="font-medium">Error de autenticación</p>
-          <p>Debes iniciar sesión para gestionar tus tareas. Por favor, ve a la página de login.</p>
-        </div>
-      </div>
-    );
-  }
+  // -----------------------
+  // Cambiar estado
+  // -----------------------
+  const guardarEdicion = async () => {
+    if (!editandoTarea) return;
 
-  if (loading) {
-    return (
-      <div className="p-6 text-center">
-        <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-        <p className="mt-2 text-gray-600">Cargando tareas...</p>
-      </div>
-    );
-  }
+    try {
+      const res = await fetch(
+        `${backendUrl}/api/tareas/${editandoTarea.id}`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ nombre: editNombre }),
+        }
+      );
+
+      if (!res.ok) throw new Error("Error al editar la tarea");
+
+      const tareaActualizada = await res.json();
+
+      setTareas((prev) =>
+        prev.map((t) =>
+          t.id === tareaActualizada.id ? tareaActualizada : t
+        )
+      );
+
+      setEditandoTarea(null);
+      setEditNombre("");
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+
+  // -----------------------
+  // Dashboard local (Lógica corregida)
+  // -----------------------
+  const dashboard = {
+    total: tareas.length,
+    hecho: tareas.filter((t) => t.estado === "Hecho").length,
+    proceso: tareas.filter((t) => t.estado === "En Proceso").length,
+    porhacer: tareas.filter((t) => t.estado === "Por Hacer").length,
+  };
 
   return (
     <section className="p-6 max-w-4xl mx-auto">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Gestión de Proyectos</h1>
+        <h1 className="text-3xl font-bold text-gray-900">Gestión de Tareas</h1>
         <span className="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full">
-          {tareas.length} proyectos
+          {dashboard.total} tareas
         </span>
       </div>
 
-      {/* Todolist para tareas*/}
+      {/* Formulario corregido: handleAddTarea */}
       <div className="mb-8 bg-white rounded-xl shadow-md border border-gray-200 p-5">
-        <form onSubmit={handleAddTarea} className="flex flex-col sm:flex-row gap-3">
+        <form
+          onSubmit={handleAddTarea}
+          className="flex flex-col sm:flex-row gap-3"
+        >
           <input
             type="text"
             value={nuevaTarea}
             onChange={(e) => setNuevaTarea(e.target.value)}
-            placeholder="Nuevo proyecto..."
+            placeholder="Nueva tarea..."
             className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
             disabled={loadingAction}
           />
           <button
             type="submit"
             disabled={loadingAction || !nuevaTarea.trim()}
-            className={`px-6 py-3 rounded-lg font-medium text-white transition-colors ${
-              loadingAction || !nuevaTarea.trim() 
-                ? "bg-gray-400 cursor-not-allowed" 
-                : "bg-blue-600 hover:bg-blue-700"
-            }`}
+            className={`px-6 py-3 rounded-lg font-medium text-white transition-colors ${loadingAction || !nuevaTarea.trim()
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-blue-600 hover:bg-blue-700"
+              }`}
           >
-            {loadingAction ? (
-              <span className="flex items-center justify-center">
-                <span className="inline-block animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2"></span>
-                Creando...
-              </span>
-            ) : (
-              "Añadir Proyecto"
-            )}
+            {loadingAction ? "Creando..." : "Añadir Tarea"}
           </button>
         </form>
         {error && (
@@ -207,54 +184,132 @@ export default function Tareas() {
         )}
       </div>
 
-      {/* Lista de tareas */}
       {tareas.length === 0 ? (
         <div className="text-center py-16 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-300">
           <div className="text-5xl mb-4 text-gray-300">📋</div>
-          <h2 className="text-2xl font-semibold text-gray-700 mb-2">No tienes proyectos</h2>
-          <p className="text-gray-500 mb-6"></p>
+          <h2 className="text-2xl font-semibold text-gray-700 mb-2">
+            No tienes tareas
+          </h2>
           <button
-            onClick={() => document.querySelector('input').focus()}
+            onClick={() => document.querySelector("input").focus()}
             className="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
           >
             Añadir
           </button>
         </div>
       ) : (
-        <div className="space-y-3">
-          {tareas.map(tarea => (
-            <div 
-              key={tarea.id} 
-              className="flex items-center justify-between p-5 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow border border-gray-100"
+        <div className="space-y-6">
+          {tareas.map((t) => (
+            <div
+              key={t.id}
+              className="bg-white rounded-xl shadow-md border border-gray-200 p-5"
             >
-              <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-lg text-gray-900 truncate">{tarea.nombre}</h3>
-                <div className="mt-2 flex items-center gap-4">
-                  <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${
-                    tarea.estado === "Finalizado" 
-                      ? "bg-green-100 text-green-800" 
-                      : tarea.estado === "En Proceso" 
-                        ? "bg-blue-100 text-blue-800" 
-                        : "bg-yellow-100 text-yellow-800"
-                  }`}>
-                    {tarea.estado}
-                  </span>
-                  <span className="text-sm text-gray-500">Proyecto ID: {tarea.proyecto_id}</span>
+              <div className="flex justify-between items-center mb-3">
+                {/* 👉 MODO EDICIÓN */}
+                {editandoTarea?.id === t.id ? (
+                  <input
+                    type="text"
+                    value={editNombre}
+                    onChange={(e) => setEditNombre(e.target.value)}
+                    className="border rounded px-2 py-1 w-full mr-3"
+                  />
+                ) : (
+                  <h2 className="text-xl font-semibold text-gray-900">
+                    {t.nombre}
+                  </h2>
+                )}
+
+                <div className="flex gap-2">
+                  {/* BOTONES CUANDO EDITA */}
+                  {editandoTarea?.id === t.id ? (
+                    <>
+                      <button
+                        onClick={guardarEdicion}
+                        className="px-3 py-1 text-sm bg-green-500 text-white rounded"
+                      >
+                        Guardar
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          setEditandoTarea(null);
+                          setEditNombre("");
+                        }}
+                        className="px-3 py-1 text-sm bg-gray-300 rounded"
+                      >
+                        Cancelar
+                      </button>
+                    </>
+                  ) : (
+                    /* BOTÓN EDITAR */
+                    <button
+                      onClick={() => {
+                        setEditandoTarea(t);
+                        setEditNombre(t.nombre);
+                      }}
+                      className="p-1 hover:bg-gray-100 rounded"
+                      title="Editar tarea"
+                    >
+                      <svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.779 17.779 4.36 19.918 6.5 13.5m4.279 4.279 8.364-8.643a3.027 3.027 0 0 0-2.14-5.165 3.03 3.03 0 0 0-2.14.886L6.5 13.5m4.279 4.279L6.499 13.5m2.14 2.14 6.213-6.504M12.75 7.04 17 11.28" />
+                      </svg>
+
+                    </button>
+                  )}
+
+
+
+
+
+                  <button
+                    onClick={() => handleDeleteTarea(t.id)}
+                    className="p-1 hover:bg-gray-100 rounded"
+                  >
+                    <svg className="w-6 h-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z" />
+                    </svg>
+                  </button>
                 </div>
               </div>
-              
-              <button
-                onClick={() => handleDeleteTarea(tarea.id)}
-                disabled={loadingAction}
-                className={`ml-4 p-2 rounded-lg transition-colors ${
-                  loadingAction 
-                    ? "text-gray-400 cursor-not-allowed" 
-                    : "text-red-500 hover:bg-red-50 hover:text-red-700"
-                }`}
-                title="Eliminar tarea"
-              >
-                <i className="bi bi-trash text-xl"></i>
-              </button>
+
+              {/* Botones de cambio de estado */}
+              <div className="flex gap-3">
+                <button
+                  onClick={() => cambiarEstado(t.id, "Hecho")}
+                  disabled={t.estado === "Hecho"}
+                  className={`px-3 py-1 rounded text-sm font-medium transition
+                      ${t.estado === "Hecho"
+                      ? "bg-green-300 text-white cursor-default"
+                      : "bg-green-100 text-green-800 hover:bg-green-300"
+                    }`}
+                >
+                  Hecho
+                </button>
+
+                <button
+                  onClick={() => cambiarEstado(t.id, "En Proceso")}
+                  disabled={t.estado === "En Proceso"}
+                  className={`px-3 py-1 rounded text-sm font-medium transition
+                      ${t.estado === "En Proceso"
+                      ? "bg-yellow-300 text-white cursor-default"
+                      : "bg-yellow-100 text-yellow-800 hover:bg-yellow-300"
+                    }`}
+                >
+                  En Proceso
+                </button>
+
+                <button
+                  onClick={() => cambiarEstado(t.id, "Por Hacer")}
+                  disabled={t.estado === "Por Hacer"}
+                  className={`px-3 py-1 rounded text-sm font-medium transition
+                      ${t.estado === "Por Hacer"
+                      ? "bg-red-300 text-white cursor-default"
+                      : "bg-red-100 text-red-800 hover:bg-red-300"
+                    }`}
+                >
+                  Por Hacer
+                </button>
+              </div>
             </div>
           ))}
         </div>
