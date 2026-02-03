@@ -72,6 +72,8 @@ def sitemap():
     return send_from_directory(static_file_dir, 'index.html')
 
 # any other endpoint will try to serve it like a static file
+
+
 @app.route('/<path:path>', methods=['GET'])
 def serve_any_other_file(path):
     if not os.path.isfile(os.path.join(static_file_dir, path)):
@@ -84,4 +86,23 @@ def serve_any_other_file(path):
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
     PORT = int(os.environ.get('PORT', 3001))
+    app.run(host='0.0.0.0', port=PORT, debug=True)
+
+
+if __name__ == '__main__':
+    PORT = int(os.environ.get('PORT', 3001))
+
+    # --- INICIO DEL BLOQUE DE LIMPIEZA TEMPORAL ---
+    with app.app_context():
+        try:
+            from sqlalchemy import text
+            db.session.execute(text('DROP TABLE IF EXISTS alembic_version'))
+            db.session.commit()
+            print("---------------------------------------")
+            print("¡ÉXITO! Tabla alembic_version borrada.")
+            print("---------------------------------------")
+        except Exception as e:
+            print(f"Nota: No se pudo borrar la tabla: {e}")
+    # --- FIN DEL BLOQUE TEMPORAL ---
+
     app.run(host='0.0.0.0', port=PORT, debug=True)
