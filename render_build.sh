@@ -2,12 +2,13 @@
 # exit on error
 set -o errexit
 
+# Frontend
 npm install
 npm run build
 
-# Instalación de dependencias de Python
+# Backend - Instalación
 pip install pipenv
-pipenv install
+pipenv install --deploy
 
-# COMENTAMOS la línea de abajo temporalmente para que el despliegue NO falle
-# pipenv run flask db upgrade
+# Migraciones (Quita el espacio y el comentario)
+pipenv run flask db upgrade
