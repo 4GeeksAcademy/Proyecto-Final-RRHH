@@ -129,7 +129,7 @@ export default function Navbar({ onMenuClick }) {
                 {/* ACTIONS */}
                 <ul className="text-sm text-gray-700">
                   <li className="flex items-center gap-3 border-t border-b px-4 py-2 hover:bg-gray-100 cursor-pointer">
-                    <span>Mi perfil</span>
+                    <Link to={`/mi-perfil/${user.id}`}>Mi perfil</Link>
                   </li>
 
                   {/* SIGN OUT */}

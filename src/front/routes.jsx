@@ -23,6 +23,7 @@ import CrearRol from "./pages/CrearRol";
 import EditarRol from "./pages/EditarRol";
 import CrearHorario from "./pages/CrearHorario";
 import EditarHorario from "./pages/EditarHorario";
+import MiPerfil from "./pages/MiPerfil";
 
 
 export const router = createBrowserRouter(
@@ -57,6 +58,7 @@ export const router = createBrowserRouter(
         <Route path="/editar-rol/:id" element={<ProtectedRoute><EditarRol /></ProtectedRoute>} />
         <Route path="/crear-horario" element={<ProtectedRoute><CrearHorario /></ProtectedRoute>} />
         <Route path="/editar-horario/:id" element={<ProtectedRoute><EditarHorario /></ProtectedRoute>} />
+        <Route path="/mi-perfil/:id" element={<ProtectedRoute><MiPerfil /></ProtectedRoute>}/>
       </Route>
     </>
     )

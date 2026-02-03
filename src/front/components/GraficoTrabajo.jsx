@@ -9,7 +9,7 @@ export default function GraficoTrabajo({ data, totalHoras }) {
   return (
     /* 1. Fondo del contenedor: bg-white -> bg-gray-800 */
     /* 2. Sombra y borde: shadow -> border-gray-700 */
-    <div className="w-full h-full min-h-[320px] rounded-xl shadow p-4 md:p-6 bg-white bg-gray-800 border border-transparent border-gray-700">
+    <div className="w-full h-full min-h-[320px] rounded-xl shadow p-4 md:p-6 bg-white border border-transparent border-gray-700">
 
       {/* Header */}
       <div className="flex justify-between mb-4 md:mb-6 items-center">
