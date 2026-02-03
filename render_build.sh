@@ -2,13 +2,11 @@
 # exit on error
 set -o errexit
 
-# Frontend
-npm install
-npm run build
-
-# Backend - Instalación
+# 1. Instalar dependencias
 pip install pipenv
-pipenv install --deploy
+pipenv install
 
-# Migraciones (Quita el espacio y el comentario)
-pipenv run flask db upgrade
+# 2. Ejecutar las migraciones
+# Usamos --chdir o export PYTHONPATH para que encuentre 'wsgi' o 'app'
+export PYTHONPATH=$PYTHONPATH:$(pwd)/src
+pipenv run flask --app src/wsgi db upgrade
