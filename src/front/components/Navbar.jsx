@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import useGlobalReducer from '../hooks/useGlobalReducer';
+import useTheme from '../hooks/useTheme';
 
 
 
@@ -16,6 +17,7 @@ export default function Navbar({ onMenuClick }) {
   const [reuniones, setReuniones] = useState([]);
 
   const { store, dispatch } = useGlobalReducer();
+  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
 
 
@@ -96,26 +98,26 @@ export default function Navbar({ onMenuClick }) {
             </button>
 
             {userOpen && (
-              <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-100 z-50">
+              <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 z-50">
                 {/* USER INFO */}
-                <div className="p-4">
-                  <p className="font-semibold text-black">{user?.nombre || "Cargando..."} {user?.apellidos || ""}</p>
-                  <p className="text-sm text-gray-500">{user?.email || "Cargando..."}</p>
+                <div className="p-4 border-b border-gray-100 dark:border-gray-700">
+                  <p className="font-semibold text-black dark:text-white">{user?.nombre || "Cargando..."} {user?.apellidos || ""}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">{user?.email || "Cargando..."}</p>
                 </div>
 
 
 
                 {/* ACTIONS */}
-                <ul className="text-sm text-gray-700">
-                  <li className="px-4 py-2 hover:bg-gray-50 cursor-pointer">
+                <ul className="text-sm text-gray-700 dark:text-gray-300">
+                  <li className="px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer">
                     <Link to="/mi-perfil" className="flex items-center gap-3">
-                      <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5.121 17.804A13.937 13.937 0 0112 15c2.33 0 4.52.5 6.375 1.385M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                      <svg className="w-5 h-5 text-gray-700 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5.121 17.804A13.937 13.937 0 0112 15c2.33 0 4.52.5 6.375 1.385M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
                       <span className="font-medium">Mi perfil</span>
                     </Link>
                   </li>
 
                   {/* SIGN OUT */}
-                  <li className="flex items-center gap-3 px-4 py-2 hover:bg-red-50 text-red-600 cursor-pointer">
+                  <li className="flex items-center gap-3 px-4 py-2 hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 dark:text-red-400 cursor-pointer">
                     <Link to="/" onClick={logout}>
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -193,18 +195,18 @@ export default function Navbar({ onMenuClick }) {
   }, []);
 
   return (
-    <div className="antialiased bg-white pt-16">
+    <div className="antialiased bg-white dark:bg-gray-900 pt-16">
       {/*  Google Translate widget (oculto) */}
       <div id="google_translate_element" className="hidden"></div>
 
-      <nav className="fixed left-0 right-0 top-0 z-50 bg-white border-b border-gray-200 px-4 py-2.5">
+      <nav className="fixed left-0 right-0 top-0 z-50 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-4 py-2.5">
         <div className="flex justify-between items-center">
           <button
-            className="md:hidden p-2 rounded hover:bg-gray-100"
+            className="md:hidden p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800"
             onClick={onMenuClick}
           >
             <svg
-              className="w-6 h-6"
+              className="w-6 h-6 text-gray-900 dark:text-white"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -230,14 +232,33 @@ export default function Navbar({ onMenuClick }) {
                 playsInline
               />
               <div className="flex flex-col items-start">
-                <span className="text-4xl font-semibold text-black">TeamCore</span>
+                <span className="text-4xl font-semibold text-black dark:text-white">TeamCore</span>
 
               </div>
             </a>
           </div>
 
           {/* RIGHT */}
-          {estaLogeado()}
+          <div className="flex items-center gap-3">
+            {/* Theme Toggle Button - disponible para todos */}
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              title={`Cambiar a modo ${theme === 'light' ? 'oscuro' : 'claro'}`}
+            >
+              {theme === 'light' ? (
+                <svg className="w-5 h-5 text-gray-700" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+                </svg>
+              ) : (
+                <svg className="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.536l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.828-2.828a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414l.707.707zm.464-4.536l.707-.707a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414zm-2.828 2.828a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM3 11a1 1 0 110-2 1 1 0 010 2zm7-7a1 1 0 110-2 1 1 0 010 2zm0 14a1 1 0 110-2 1 1 0 010 2zm-7-7a1 1 0 110-2 1 1 0 010 2zm14 0a1 1 0 110-2 1 1 0 010 2z" clipRule="evenodd"></path>
+                </svg>
+              )}
+            </button>
+
+            {estaLogeado()}
+          </div>
         </div>
       </nav>
     </div>

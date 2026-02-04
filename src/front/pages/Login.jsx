@@ -32,14 +32,14 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-white dark:bg-gray-950 px-4">
 
       {/* Card */}
-      <div className="w-full max-w-md bg-white border border-gray-200 rounded-xl p-8">
-        <h1 className="text-2xl font-bold text-gray-800 mb-2 text-center">
+      <div className="w-full max-w-md bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl p-8">
+        <h1 className="text-2xl font-bold text-gray-800 dark:text-white mb-2 text-center">
           Bienvenido
         </h1>
-        <p className="text-sm text-gray-500 text-center mb-8">
+        <p className="text-sm text-gray-500 dark:text-gray-400 text-center mb-8">
           Accede a tu panel de control
         </p>
 
@@ -55,12 +55,12 @@ export default function Login() {
               className="
                 w-full px-4 py-3
                 rounded-lg
-                border border-gray-300
-                bg-white text-gray-800
-                placeholder-gray-400
+                border border-gray-300 dark:border-gray-600
+                bg-white dark:bg-gray-800 text-gray-800 dark:text-white
+                placeholder-gray-400 dark:placeholder-gray-500
                 focus:outline-none
-                focus:ring-2 focus:ring-blue-500
-                focus:border-blue-500
+                focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400
+                focus:border-blue-500 dark:focus:border-blue-400
               "
             />
           </div>
@@ -76,19 +76,19 @@ export default function Login() {
               className="
                 w-full px-4 py-3
                 rounded-lg
-                border border-gray-300
-                bg-white text-gray-800
-                placeholder-gray-400
+                border border-gray-300 dark:border-gray-600
+                bg-white dark:bg-gray-800 text-gray-800 dark:text-white
+                placeholder-gray-400 dark:placeholder-gray-500
                 focus:outline-none
-                focus:ring-2 focus:ring-blue-500
-                focus:border-blue-500
+                focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400
+                focus:border-blue-500 dark:focus:border-blue-400
               "
             />
           </div>
 
           {/* Options */}
           <div className="flex justify-center text-sm">
-            <Link to="#" className="text-blue-600 hover:underline">
+            <Link to="#" className="text-blue-600 dark:text-blue-400 hover:underline">
               ¿Olvidaste tu contraseña?
             </Link>
           </div>
@@ -99,10 +99,9 @@ export default function Login() {
             className="
               w-full py-3
               rounded-lg
-              bg-blue-600
+              bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600
               text-white
               font-medium
-              hover:bg-blue-700
               transition
             "
           >
@@ -110,7 +109,7 @@ export default function Login() {
           </button>
         </form>
 
-        
+
       </div>
 
 

@@ -7,12 +7,12 @@ export const Layout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-white dark:bg-gray-950">
       {/* Navbar */}
       <Navbar onMenuClick={() => setSidebarOpen(true)} />
 
       {/* Zona central */}
-      <div className="flex flex-1 pt-14">
+      <div className="flex flex-1 pt-14 bg-white dark:bg-gray-950">
         <SidebarLayout
           isOpen={sidebarOpen}
           onClose={() => setSidebarOpen(false)}

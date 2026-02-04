@@ -12,19 +12,19 @@ export default function EditarUsuario() {
   const { store, dispatch } = useGlobalReducer();
   const token = localStorage.getItem("jwt-token");
 
-  useEffect(function() {
+  useEffect(function () {
     fetch(import.meta.env.VITE_BACKEND_URL + `/api/usuario/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
     })
-    .then(response => response.json())
-    .then(data => {
-      usuario = data.usuario;
-      console.log("Usuario", usuario);
-      dispatch({ type: 'set_input_nameUsuario', payload: { inputNameUsuario: usuario.nombre } })
-    })
-  })
+      .then(response => response.json())
+      .then(data => {
+        setUsuario(data.usuario);
+        console.log("Usuario", data.usuario);
+        dispatch({ type: 'set_input_nameUsuario', payload: { inputNameUsuario: data.usuario.nombre } })
+      })
+  }, [])
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-sky-50 via-white to-indigo-50 px-4">
