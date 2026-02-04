@@ -7,11 +7,11 @@ import {
 } from "react-router-dom";
 import { Layout } from "./pages/Layout";
 import Fichaje from "./pages/Fichaje";
-import Mensajes from "./pages/Mensajes";
+
 import Reuniones from "./pages/Reuniones";
 import Tareas from "./pages/Tareas";
 import Calendario from "./pages/Calendario";
-import Notificaciones from "./pages/Notificaciones";
+
 import Administracion from "./pages/Administracion";
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
@@ -19,6 +19,7 @@ import Home from "./pages/Home";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import CrearUsuario from "./pages/CrearUsuario";
 import EditarUsuario from "./pages/EditarUsuario";
+import EditarPerfil from "./pages/EditarPerfil";
 
 
 export const router = createBrowserRouter(
@@ -41,14 +42,15 @@ export const router = createBrowserRouter(
         <Route path="/home" element={<Home />} />
         <Route path= "/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
         <Route path= "/fichaje" element={<ProtectedRoute><Fichaje /></ProtectedRoute>} />
-        <Route path= "/mensajes" element={<ProtectedRoute><Mensajes /></ProtectedRoute>} />
+       
         <Route path= "/reuniones" element={<ProtectedRoute><Reuniones /></ProtectedRoute>} />
         <Route path= "/tareas" element={<ProtectedRoute><Tareas /></ProtectedRoute>} />
         <Route path= "/calendario" element={<ProtectedRoute><Calendario /></ProtectedRoute>} />
-        <Route path= "/notificaciones" element={<ProtectedRoute><Notificaciones /></ProtectedRoute>} />
+      
         <Route path= "/administracion" element={<ProtectedRoute><Administracion /></ProtectedRoute>} />
         <Route path= "/crear-usuario" element={<ProtectedRoute><CrearUsuario /></ProtectedRoute>} />
         <Route path="/editar-usuario/:id" element={<ProtectedRoute><EditarUsuario /></ProtectedRoute>} />
+        <Route path="/mi-perfil" element={<ProtectedRoute><EditarPerfil /></ProtectedRoute>} />
       </Route>
     </>
     )

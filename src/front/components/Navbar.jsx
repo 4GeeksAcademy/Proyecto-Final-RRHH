@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import useGlobalReducer from '../hooks/useGlobalReducer';
-import { Navigate } from "react-router-dom";
+
+
 
 export default function Navbar({ onMenuClick }) {
   const [notificationsOpen, setNotificationsOpen] = useState(false);
@@ -15,27 +16,43 @@ export default function Navbar({ onMenuClick }) {
   const [reuniones, setReuniones] = useState([]);
 
   const { store, dispatch } = useGlobalReducer();
+  const navigate = useNavigate();
 
- 
 
   const logout = () => {
     dispatch({ type: "logout" });
-    return <Navigate to="/" replace />;
+    // Limpia cualquier estado local que pueda afectar al siguiente usuario
+    localStorage.removeItem("horaInicioFichaje");
+    navigate("/", { replace: true });
   };
 
   useEffect(() => {
     const fetchUser = async () => {
       const token = localStorage.getItem("jwt-token");
-      if (!token) return;
+      console.debug("Navbar: token:", token);
+      if (!token) {
+        console.warn("Navbar: no jwt-token encontrado en localStorage");
+        return;
+      }
 
       try {
         const resp = await fetch(import.meta.env.VITE_BACKEND_URL + "/api/usuario", {
           headers: { Authorization: "Bearer " + token }
         });
 
-        if (!resp.ok) throw new Error("No se pudo cargar el usuario");
+        if (!resp.ok) {
+          const text = await resp.text().catch(() => null);
+          console.error("Navbar: /api/usuario fallo", resp.status, text);
+          if (resp.status === 401 || resp.status === 422) {
+            localStorage.removeItem("jwt-token");
+            dispatch({ type: "logout" });
+            navigate("/", { replace: true });
+          }
+          return;
+        }
 
         const data = await resp.json();
+        console.debug("Navbar: /api/usuario response:", data);
         setUser(data.usuario); // Ajusta según la estructura que devuelva tu backend
       } catch (error) {
         console.error("Error cargando usuario:", error);
@@ -45,36 +62,23 @@ export default function Navbar({ onMenuClick }) {
     fetchUser();
   }, []);
 
+  // Actualizar usuario cuando se edite el perfil en EditarPerfil.jsx
+  useEffect(() => {
+    const handler = (e) => {
+      console.debug("Navbar: recibido evento user-updated:", e.detail);
+      if (e && e.detail) setUser(e.detail);
+    };
+    window.addEventListener("user-updated", handler);
+    return () => window.removeEventListener("user-updated", handler);
+  }, []);
+
   const estaLogeado = () => {
     if (store.is_active === true) {
       return (
         <div className="flex items-center gap-3 relative">
 
           {/* Notifications */}
-          <div className="relative">
-            <button>
-              <button
-                onClick={() => setNotificationsOpen(!notificationsOpen)}
-                className="p-2 text-black rounded-lg hover:bg-gray-100"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                </svg>
-              </button>
-              {notificationsOpen}
-            </button>
-            {notificationsOpen && (
-              <div className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-lg border border-gray-100 z-50">
-                <div className="p-4 font-semibold text-center text-black border-b">Notifications</div>
-                <div className="p-4 text-sm text-gray-600">No new notifications</div>
-                <div className="p-4 font-semibold text-center text-black border-b">Notifications</div>
-                <div className="p-4 text-sm text-gray-600">No new notifications</div>
-                <div className="p-4 font-semibold text-center text-black border-b">Notifications</div>
-                <div className="p-4 text-sm text-gray-600">No new notifications</div>
-              </div>
-            )}
-          </div>
+
 
           {/* User Avatar & Dropdown */}
           <div className="relative" ref={dropdownRef}>
@@ -83,68 +87,31 @@ export default function Navbar({ onMenuClick }) {
               className="relative flex rounded-full focus:ring-2 focus:ring-gray-500"
             >
               <div className="relative inline-flex items-center justify-center w-10 h-10 overflow-hidden bg-gray-200 hover:bg-gray-400 rounded-full">
-                <span className="font-medium text-body">{user?.nombre.charAt(0)}{user?.apellidos.charAt(0)}</span>
+                {user?.foto_perfil ? (
+                  <img src={`${import.meta.env.VITE_BACKEND_URL}/uploads/${user.foto_perfil}`} alt="avatar" className="w-10 h-10 object-cover rounded-full" />
+                ) : (
+                  <span className="font-medium text-body">{user?.nombre?.charAt(0) || ""}{user?.apellidos?.charAt(0) || ""}</span>
+                )}
               </div>
-              <span className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white ${statusColors[status]}`}></span>
             </button>
 
             {userOpen && (
               <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-100 z-50">
                 {/* USER INFO */}
                 <div className="p-4">
-                  <p className="font-semibold text-black">{user?.nombre || "Cargando..."}</p>
+                  <p className="font-semibold text-black">{user?.nombre || "Cargando..."} {user?.apellidos || ""}</p>
                   <p className="text-sm text-gray-500">{user?.email || "Cargando..."}</p>
                 </div>
 
-                {/* STATUS SECTION */}
-                <div className="px-4 py-2 border-y">
-                  <p className="text-xs font-semibold text-gray-500 mb-2 uppercase">Estado</p>
-                  <ul className="text-sm text-gray-700 space-y-1">
-                    {Object.keys(statusColors).map((s) => (
-                      <li
-                        key={s}
-                        onClick={() => setStatus(s)}
-                        className="flex items-center gap-2 px-2 py-1 rounded hover:bg-gray-100 cursor-pointer capitalize"
-                      >
-                        <span className={`w-2 h-2 rounded-full ${statusColors[s]}`}></span>
-                        {s}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+
 
                 {/* ACTIONS */}
                 <ul className="text-sm text-gray-700">
-                  <li className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 cursor-pointer">
-                    <span>My profile</span>
-                  </li>
-                  {/*IDIOMAS*/}
-                  <li className="relative border-t border-b bg-gray-50">
-                    <button
-                      onClick={() => setLangOpen(!langOpen)}
-                      className="flex items-center justify-between w-full px-4 py-2 hover:bg-gray-100 text-sm font-medium"
-                    >
-                      <div className="flex items-center gap-2">
-                        🌐 <span>{selectedLang}</span>
-                      </div>
-                      <svg className={`w-4 h-4 transition-transform ${langOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                    </button>
-
-
-                    {langOpen && (
-                      <div className="bg-white border-t">
-                        {languages.map((lang) => (
-                          // changeLanguage
-                          <button
-                            key={lang.code}
-                            onClick={() => changeLanguage(lang.code)}
-                            className="flex items-center w-full px-8 py-2 text-xs hover:bg-blue-50 text-left"
-                          >
-                            {lang.name}
-                          </button>
-                        ))}
-                      </div>
-                    )}
+                  <li className="px-4 py-2 hover:bg-gray-50 cursor-pointer">
+                    <Link to="/mi-perfil" className="flex items-center gap-3">
+                      <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5.121 17.804A13.937 13.937 0 0112 15c2.33 0 4.52.5 6.375 1.385M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                      <span className="font-medium">Mi perfil</span>
+                    </Link>
                   </li>
 
                   {/* SIGN OUT */}
@@ -165,42 +132,41 @@ export default function Navbar({ onMenuClick }) {
     }
   };
 
-  const statusColors = {
-    activo: "bg-green-500",
-    ausente: "bg-yellow-400",
-    ocupado: "bg-red-500",
-    "no molestar": "bg-gray-800",
-  };
 
-  const languages = [
-    { name: 'English (US)', code: 'en' },
-    { name: 'Deutsch', code: 'de' },
-    { name: 'Italiano', code: 'it' },
-    { name: '中文 (繁體)', code: 'zh-TW' }, // se le añade TW, sinó google lo traduce al chino simplificado. solo zh:simplificado + TH = chino tradicional
-  ];
 
   useEffect(() => {
-    const fetchUser = async () => {
-      const token = localStorage.getItem("jwt-token");
+    const token = localStorage.getItem("jwt-token");
+    if (!token) return;
 
-      if (!token) return <Navigate to="/" replace />;
+    const fetchReuniones = async () => {
+      try {
+        const resp = await fetch(import.meta.env.VITE_BACKEND_URL + "/api/reuniones", {
+          headers: {
+            Authorization: "Bearer " + token
+          }
+        });
 
-      const resp = await fetch("/api/reuniones", {
-        headers: {
-          Authorization: "Bearer " + token
+        if (!resp.ok) {
+          const text = await resp.text().catch(() => null);
+          console.error("Navbar: /api/reuniones fallo", resp.status, text);
+          if (resp.status === 401 || resp.status === 422) {
+            localStorage.removeItem("jwt-token");
+            dispatch({ type: "logout" });
+            navigate("/", { replace: true });
+            return;
+          }
+          return;
         }
-      });
 
-      if (resp.status === 401 || resp.status === 422) {
-        localStorage.removeItem("jwt-token");
-        return <Navigate to="/" replace />;
+        const data = await resp.json();
+        console.debug("Navbar: /api/reuniones response:", data);
+        setReuniones(data.reuniones || data);
+      } catch (error) {
+        console.error("Error cargando reuniones:", error);
       }
-
-      const data = await resp.json();
-      setUser(data);
     };
 
-    fetchUser();
+    fetchReuniones();
   }, []);
 
   const changeLanguage = (langCode) => {
@@ -255,12 +221,18 @@ export default function Navbar({ onMenuClick }) {
           {/* LEFT */}
           <div className="flex items-center">
             <a href="/" className="flex items-center mr-6">
-              <img
-                src="src/front/assets/img/logo.png"
-                className="mr-3 h-8 rounded-full"
-                alt="Logo"
+              <video
+                src="public/videoTeamcoreLogo.mp4"
+                className="mr-3 h-9 w-9 rounded-full object-cover"
+                autoPlay
+                loop
+                muted
+                playsInline
               />
-              <span className="text-2xl font-semibold text-black">TeamCore</span>
+              <div className="flex flex-col items-start">
+                <span className="text-4xl font-semibold text-black">TeamCore</span>
+
+              </div>
             </a>
           </div>
 

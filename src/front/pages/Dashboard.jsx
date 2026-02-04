@@ -4,19 +4,24 @@ import GraficoTrabajo from "../components/GraficoTrabajo";
 import GraficoTareas from "../components/GraficoTareas";
 import TemporizadorFichaje from "../components/Temporizador";
 import { useState, useEffect } from 'react';
+import useGlobalReducer from "../hooks/useGlobalReducer";
 
 
 export default function Dashboard() {
   const token = localStorage.getItem("jwt-token");
 
+  // Refrescar lista de fichajes y estado activo
+  const [fichajeActivo, setFichajeActivo] = useState(null);
+  const [elapsedSegundos, setElapsedSegundos] = useState(0);
+
   const refrescarFichajes = async () => {
-    // Aquí podrías llamar a la API /mis-fichajes si quieres reflejar cambios
-    console.log("Refrescar fichajes desde Dashboard");
+    await cargarFichajesDashboard();
   };
 
 
 
   // todos los states
+  const { store } = useGlobalReducer();
   const [tareasActivas, setTareasActivas] = useState(0);
   const [tareasCompletadas, setTareasCompletadas] = useState(0);
   const [tareasHecho, setTareasHecho] = useState(0);
@@ -111,6 +116,17 @@ export default function Dashboard() {
 
       const total = horasPorDia.reduce((acc, d) => acc + d.hours, 0);
       setTotalHoras(total);
+
+      // Detectar fichaje activo (sin hora_salida)
+      const activo = data.fichajes.find((f) => !f.hora_salida) || null;
+      setFichajeActivo(activo);
+
+      if (activo && activo.hora_entrada) {
+        const inicioMs = new Date(activo.hora_entrada).getTime();
+        setElapsedSegundos(Math.floor((Date.now() - inicioMs) / 1000));
+      } else {
+        setElapsedSegundos(0);
+      }
     } catch (e) {
       console.error(e);
     }
@@ -119,6 +135,21 @@ export default function Dashboard() {
   useEffect(() => {
     cargarFichajesDashboard();
   }, []);
+
+  // Actualizar contador de segundos si hay fichaje activo
+  useEffect(() => {
+    let id;
+    if (fichajeActivo && fichajeActivo.hora_entrada) {
+      id = setInterval(() => {
+        const inicio = new Date(fichajeActivo.hora_entrada).getTime();
+        setElapsedSegundos(Math.floor((Date.now() - inicio) / 1000));
+      }, 1000);
+    } else {
+      setElapsedSegundos(0);
+    }
+
+    return () => clearInterval(id);
+  }, [fichajeActivo]);
 
 
   return (
@@ -161,8 +192,22 @@ export default function Dashboard() {
           icon={<svg className="w-6 h-6" viewBox="0 0 24 24" fill="none">
             <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
           </svg>}
-          total="Inactivo"
-          detalle="Sin fichaje activo"
+          total={
+            fichajeActivo ? (
+              <span className="inline-flex items-center gap-2">
+                <span className="inline-block w-3 h-3 rounded-full bg-green-500" />
+                Activo
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-2">
+                <span className="inline-block w-3 h-3 rounded-full bg-red-500" />
+                Inactivo
+              </span>
+            )
+          }
+          detalle={
+            fichajeActivo ? `Iniciado: ${new Date(fichajeActivo.hora_entrada).toLocaleString()} · ${new Date(elapsedSegundos * 1000).toISOString().substr(11, 8)}` : "Sin fichaje activo"
+          }
         />
       </div>
 
@@ -180,7 +225,7 @@ export default function Dashboard() {
           to="/tareas"
           titulo="Estado de Tareas"
           detalle=""
-          grafico={<GraficoTareas hecho={tareasHecho} progreso={tareasProgreso} porHacer={tareasPorHacer} />}
+          grafico={<GraficoTareas hecho={store.tareasResumen?.hecho || 0} progreso={store.tareasResumen?.progreso || 0} porHacer={store.tareasResumen?.porHacer || 0} />}
         />
       </div>
     </section>

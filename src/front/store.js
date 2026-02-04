@@ -1,7 +1,17 @@
-export const initialStore = () => {
+const calcularResumen = (listaTareas) => {
   return {
-    is_active: !!localStorage.getItem("jwt-token"),
+    hecho: listaTareas.filter(t => t.estado === "Hecho").length,
+    progreso: listaTareas.filter(t => t.estado === "En Proceso").length,
+    porHacer: listaTareas.filter(t => t.estado === "Por Hacer").length,
+  };
+};
+
+
+  export const initialStore = () => {
+    return {
+      is_active: !!localStorage.getItem("jwt-token"),
     usuarios: [],
+    empresa: [null],
     roles: [],
     horarios: [],
     inputNameUsuario: "",
@@ -12,8 +22,15 @@ export const initialStore = () => {
     inputPasswordUsuario: "",
     selectHorarioUsuario: "",
     selectRolUsuario: "",
-  };
-};
+
+    tareas: [],
+   tareasResumen: { hecho: 0, progreso: 0, porHacer: 0 },
+    fichajes: [],
+    }
+  }
+  
+
+
 
 export default function storeReducer(store, action = {}) {
   switch (action.type) {
@@ -136,6 +153,12 @@ export default function storeReducer(store, action = {}) {
         selectHorarioUsuario: selectHorarioUsuario,
       };
 
+    case "set_empresa":
+  return {
+    ...store,
+    empresa: action.payload.empresa,
+  };
+
     case "set_select_RolUsuario":
       const { selectRolUsuario } = action.payload;
 
@@ -144,7 +167,26 @@ export default function storeReducer(store, action = {}) {
         selectRolUsuario: selectRolUsuario,
       };
 
+      case "set_tareas": {
+      const { tareas, resumen } = action.payload;
+      return {
+        ...store,
+        tareas: tareas || [],
+        tareasResumen: resumen || store.tareasResumen,
+      };
+    }
+
+
+      
+
     default:
       throw Error("Unknown action.");
   }
+
+  
+
+
 }
+
+
+   
