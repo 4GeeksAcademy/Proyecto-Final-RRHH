@@ -88,7 +88,7 @@ export default function Login() {
 
           {/* Options */}
           <div className="flex justify-center text-sm">
-            <Link to="#" className="text-blue-600 hover:underline">
+            <Link to="/cambiar-password" className="text-blue-600 hover:underline">
               ¿Olvidaste tu contraseña?
             </Link>
           </div>
