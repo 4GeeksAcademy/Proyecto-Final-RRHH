@@ -19,6 +19,7 @@ import Home from "./pages/Home";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import CrearUsuario from "./pages/CrearUsuario";
 import EditarUsuario from "./pages/EditarUsuario";
+import EditarPerfil from "./pages/EditarPerfil";
 
 
 export const router = createBrowserRouter(
@@ -49,6 +50,7 @@ export const router = createBrowserRouter(
         <Route path= "/administracion" element={<ProtectedRoute><Administracion /></ProtectedRoute>} />
         <Route path= "/crear-usuario" element={<ProtectedRoute><CrearUsuario /></ProtectedRoute>} />
         <Route path="/editar-usuario/:id" element={<ProtectedRoute><EditarUsuario /></ProtectedRoute>} />
+        <Route path="/mi-perfil" element={<ProtectedRoute><EditarPerfil /></ProtectedRoute>} />
       </Route>
     </>
     )

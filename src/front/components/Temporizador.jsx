@@ -119,6 +119,17 @@ export default function TemporizadorFichaje({ token, refrescarFichajes }) {
     if (horaInicio) setActivo(true);
   }, [horaInicio]);
 
+  // Reiniciar temporizador cuando el token cambie (p. ej. al hacer logout o login de otro usuario)
+  useEffect(() => {
+    if (!token) {
+      setActivo(false);
+      setSegundos(0);
+      setHoraInicio(null);
+      localStorage.removeItem("horaInicioFichaje");
+      clearInterval(intervaloRef.current);
+    }
+  }, [token]);
+
   const formatearTiempo = () => {
     const hrs = Math.floor(segundos / 3600);
     const mins = Math.floor((segundos % 3600) / 60);

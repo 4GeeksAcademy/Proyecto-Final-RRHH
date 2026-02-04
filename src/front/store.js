@@ -180,7 +180,7 @@ export default function storeReducer(store, action = {}) {
       
 
     default:
-      throw store;
+      throw Error("Unknown action.");
   }
 
   

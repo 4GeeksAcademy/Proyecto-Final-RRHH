@@ -4,26 +4,25 @@ import GraficoTrabajo from "../components/GraficoTrabajo";
 import GraficoTareas from "../components/GraficoTareas";
 import TemporizadorFichaje from "../components/Temporizador";
 import { useState, useEffect } from 'react';
-
 import useGlobalReducer from "../hooks/useGlobalReducer";
 
 
 export default function Dashboard() {
   const token = localStorage.getItem("jwt-token");
-  const { store, dispatch } = useGlobalReducer();
 
-   const [fichajes, setFichajes] = useState([]);
+  // Refrescar lista de fichajes y estado activo
+  const [fichajeActivo, setFichajeActivo] = useState(null);
+  const [elapsedSegundos, setElapsedSegundos] = useState(0);
 
   const refrescarFichajes = async () => {
-    // Aquí podrías llamar a la API /mis-fichajes si quieres reflejar cambios
-    console.log("Refrescar fichajes desde Dashboard");
+    await cargarFichajesDashboard();
   };
 
 
 
   // todos los states
-
-   const [tareasActivas, setTareasActivas] = useState(0);
+  const { store } = useGlobalReducer();
+  const [tareasActivas, setTareasActivas] = useState(0);
   const [tareasCompletadas, setTareasCompletadas] = useState(0);
   const [tareasHecho, setTareasHecho] = useState(0);
   const [tareasProgreso, setTareasProgreso] = useState(0);
@@ -33,45 +32,13 @@ export default function Dashboard() {
   const [horasSemana, setHorasSemana] = useState([]);
   const [totalHoras, setTotalHoras] = useState(0);
 
-  const calcularResumen = (listaTareas) => {
-    // Usamos los strings exactos: Hecho, En Proceso, Por Hacer
-    const hecho = listaTareas.filter(t => t.estado === "Hecho").length;
-    const progreso = listaTareas.filter(t => t.estado === "En Proceso").length;
-    const porHacer = listaTareas.filter(t => t.estado === "Por Hacer").length;
-    return { hecho, progreso, porHacer };
-  };
-
-  const actualizarResumen = (listaTareas) => {
-    const resumen = calcularResumen(listaTareas);
-    setTareasActivas(resumen.progreso + resumen.porHacer);
-    setTareasCompletadas(resumen.hecho);
-    setTareasHecho(resumen.hecho);
-    setTareasProgreso(resumen.progreso);
-    setTareasPorHacer(resumen.porHacer);
-    dispatch({
-      type: "set_tareas",
-      payload: {
-        tareas: listaTareas,
-        resumen,
-      },
-    });
-  };
- 
-
-
-
-  const [updateFlag, setUpdateFlag] = useState(false);
-
-const refrescarTareas = () => setUpdateFlag(prev => !prev);
-
- useEffect(() => {
+  useEffect(() => {
     const cargarTareasDashboard = async () => {
       const token = localStorage.getItem("jwt-token");
-      if(store.tareas && store.tareas.length > 0) return;
       const backendUrl = import.meta.env.VITE_BACKEND_URL || "https://supreme-space-dollop-4qjpwxgwxwr2g65-3001.app.github.dev";
 
       try {
-        const response = await fetch(`${backendUrl}/api/tareas`, {
+        const response = await fetch(`${backendUrl}/api/proyectos`, {
           headers: { "Authorization": `Bearer ${token}` }
         });
 
@@ -80,7 +47,17 @@ const refrescarTareas = () => setUpdateFlag(prev => !prev);
         const data = await response.json();
         const todasLasTareas = data.proyectos.flatMap(p => p.tareas || []);
 
-        actualizarResumen(todasLasTareas);
+
+        const hecho = todasLasTareas.filter(t => t.estado === "Finalizado").length;
+        const progreso = todasLasTareas.filter(t => t.estado === "En Proceso").length;
+        const porHacer = todasLasTareas.filter(t => t.estado === "Pendiente").length;
+
+        // Actualizar todos los estados
+        setTareasActivas(progreso + porHacer); // Activas = En Proceso + Pendiente
+        setTareasCompletadas(hecho);
+        setTareasHecho(hecho);
+        setTareasProgreso(progreso);
+        setTareasPorHacer(porHacer);
       } catch (error) {
         console.error("Error al cargar tareas:", error);
       } finally {
@@ -89,19 +66,7 @@ const refrescarTareas = () => setUpdateFlag(prev => !prev);
     };
 
     cargarTareasDashboard();
-  }, [store.tareas]);
-
-   useEffect(() => {
-    if (!store.tareas) return;
-    
-    const { hecho, progreso, porHacer } = calcularResumen(store.tareas);
-    
-    setTareasHecho(hecho);
-    setTareasProgreso(progreso);
-    setTareasPorHacer(porHacer);
-    setTareasActivas(progreso + porHacer);
-
-  }, [store.tareas]);
+  }, []);
 
   const calcularHorasPorDia = (fichajes) => {
     const diasSemana = ["L", "M", "X", "J", "V"];
@@ -151,6 +116,17 @@ const refrescarTareas = () => setUpdateFlag(prev => !prev);
 
       const total = horasPorDia.reduce((acc, d) => acc + d.hours, 0);
       setTotalHoras(total);
+
+      // Detectar fichaje activo (sin hora_salida)
+      const activo = data.fichajes.find((f) => !f.hora_salida) || null;
+      setFichajeActivo(activo);
+
+      if (activo && activo.hora_entrada) {
+        const inicioMs = new Date(activo.hora_entrada).getTime();
+        setElapsedSegundos(Math.floor((Date.now() - inicioMs) / 1000));
+      } else {
+        setElapsedSegundos(0);
+      }
     } catch (e) {
       console.error(e);
     }
@@ -159,6 +135,21 @@ const refrescarTareas = () => setUpdateFlag(prev => !prev);
   useEffect(() => {
     cargarFichajesDashboard();
   }, []);
+
+  // Actualizar contador de segundos si hay fichaje activo
+  useEffect(() => {
+    let id;
+    if (fichajeActivo && fichajeActivo.hora_entrada) {
+      id = setInterval(() => {
+        const inicio = new Date(fichajeActivo.hora_entrada).getTime();
+        setElapsedSegundos(Math.floor((Date.now() - inicio) / 1000));
+      }, 1000);
+    } else {
+      setElapsedSegundos(0);
+    }
+
+    return () => clearInterval(id);
+  }, [fichajeActivo]);
 
 
   return (
@@ -178,6 +169,15 @@ const refrescarTareas = () => setUpdateFlag(prev => !prev);
           detalle=""
         />
 
+        <Cards to="/tareas"
+          titulo="Proyectos Activos"
+          icon={<svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 21a9 9 0 1 1 0-18c1.052 0 2.062.18 3 .512M7 9.577l3.923 3.923 8.5-8.5M17 14v6m-3-3h6" />
+          </svg>}
+          total={loadingTareas ? "..." : tareasActivas}
+          detalle={`${tareasCompletadas} completados`}
+        />
+
         <Cards to="/reuniones"
           titulo="Reuniones Proximas"
           icon={<svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
@@ -192,8 +192,22 @@ const refrescarTareas = () => setUpdateFlag(prev => !prev);
           icon={<svg className="w-6 h-6" viewBox="0 0 24 24" fill="none">
             <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
           </svg>}
-          total="Inactivo"
-          detalle="Sin fichaje activo"
+          total={
+            fichajeActivo ? (
+              <span className="inline-flex items-center gap-2">
+                <span className="inline-block w-3 h-3 rounded-full bg-green-500" />
+                Activo
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-2">
+                <span className="inline-block w-3 h-3 rounded-full bg-red-500" />
+                Inactivo
+              </span>
+            )
+          }
+          detalle={
+            fichajeActivo ? `Iniciado: ${new Date(fichajeActivo.hora_entrada).toLocaleString()} · ${new Date(elapsedSegundos * 1000).toISOString().substr(11, 8)}` : "Sin fichaje activo"
+          }
         />
       </div>
 
@@ -211,15 +225,9 @@ const refrescarTareas = () => setUpdateFlag(prev => !prev);
           to="/tareas"
           titulo="Estado de Tareas"
           detalle=""
-          grafico={
-          <GraficoTareas hecho={tareasHecho} 
-               progreso={tareasProgreso} 
-               porHacer={tareasPorHacer}
-               total={tareasActivas + tareasHecho}/>
-          }
+          grafico={<GraficoTareas hecho={store.tareasResumen?.hecho || 0} progreso={store.tareasResumen?.progreso || 0} porHacer={store.tareasResumen?.porHacer || 0} />}
         />
       </div>
     </section>
   );
-  
 }

@@ -216,6 +216,12 @@ def serve_any_other_file(path):
     response.cache_control.max_age = 0  # avoid cache memory
     return response
 
+# Serve uploaded files (user profile images)
+@app.route('/uploads/<path:filename>')
+def uploaded_file(filename):
+    uploads_folder = os.path.join(os.path.dirname(__file__), '..', 'uploads')
+    return send_from_directory(uploads_folder, filename)
+
 
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
