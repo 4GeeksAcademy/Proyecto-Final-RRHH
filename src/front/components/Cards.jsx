@@ -17,5 +17,11 @@ export default function Cards({ to, titulo, icon, total, detalle, tiempo }) {
     </div>
   );
 
-  return to ? <Link to={to} className="block h-full">{content}</Link> : <div className="h-full">{content}</div>;
+  return to ? (
+    <Link to={to} className="block h-full no-underline">
+      {content}
+    </Link>
+  ) : (
+    <div className="h-full">{content}</div>
+  );
 }

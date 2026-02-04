@@ -9,252 +9,110 @@ export default function Tareas() {
   
   const token = localStorage.getItem("jwt-token");
 
-  // Cargar tareas iniciales
   useEffect(() => {
-    if (!token) {
-      setError("Debes iniciar sesión para gestionar tareas");
-      setLoading(false);
-      return;
-    }
-
+    if (!token) return;
     const cargarTareas = async () => {
       try {
-        // ✅ RUTA RELATIVA - El proxy manejará el resto
         const response = await fetch("/api/proyectos", {
-          headers: {
-            "Authorization": `Bearer ${token}`,
-            "Content-Type": "application/json"
-          }
+          headers: { "Authorization": `Bearer ${token}` }
         });
-
-        if (!response.ok) {
-          if (response.status === 401) {
-            throw new Error("Sesión expirada. Por favor, inicia sesión de nuevo.");
-          }
-          throw new Error(`Error ${response.status}: ${response.statusText}`);
-        }
-
         const data = await response.json();
-        const todasLasTareas = data.proyectos.flatMap(proyecto => 
-          proyecto.tareas ? proyecto.tareas : []
-        );
+        const todasLasTareas = data.proyectos.flatMap(proyecto => proyecto.tareas || []);
         setTareas(todasLasTareas);
         setLoading(false);
       } catch (err) {
-        console.error("Error al cargar tareas:", err);
-        setError(err.message || "Error al cargar las tareas");
+        setError("Error al cargar tareas");
         setLoading(false);
       }
     };
-
     cargarTareas();
   }, [token]);
 
-  // Añadir nueva tarea
-  const handleAddTarea = async (e) => {
-    e.preventDefault();
-    if (!nuevaTarea.trim() || !token) return;
-
-    setLoadingAction(true);
-    setError(null);
-
-    try {
-      const proyectosResponse = await fetch("/api/proyectos", {
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json"
-        }
-      });
-
-      if (!proyectosResponse.ok) throw new Error("No se pudieron obtener proyectos");
-
-      const proyectosData = await proyectosResponse.json();
-      const primerProyecto = proyectosData.proyectos[0];
-      if (!primerProyecto) throw new Error("No tienes proyectos asignados");
-
-      // ✅ Ruta correcta para crear tareas
-      const response = await fetch("/api/tareas", {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          nombre: nuevaTarea.trim(),
-          estado: "Pendiente",
-          proyecto_id: primerProyecto.id
-        })
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.msg || `Error ${response.status}`);
-      }
-
-      const tareaCreada = await response.json();
-      setTareas([...tareas, tareaCreada]);
-      setNuevaTarea("");
-      
-    } catch (err) {
-      console.error("Error al crear tarea:", err);
-      setError(`Error al crear tarea: ${err.message}`);
-    } finally {
-      setLoadingAction(false);
-    }
-  };
-
-  // Eliminar tarea
+  // --- FUNCIÓN DE ELIMINAR CORREGIDA --
   const handleDeleteTarea = async (tareaId) => {
-    if (!window.confirm("¿Seguro que quieres eliminar esta tarea?") || !token) return;
-
+    if (!window.confirm("¿Seguro que quieres eliminar esta tarea?")) return;
     setLoadingAction(true);
-    setError(null);
-
     try {
       const response = await fetch(`/api/tareas/${tareaId}`, {
         method: "DELETE",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json"
-        }
+        headers: { "Authorization": `Bearer ${token}` }
       });
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.msg || `Error ${response.status}`);
-      }
+      if (!response.ok) throw new Error("No se pudo eliminar");
 
+      // Eliminar de la vista inmediatamente
       setTareas(tareas.filter(t => t.id !== tareaId));
-      
     } catch (err) {
-      console.error("Error al eliminar tarea:", err);
-      setError(`Error al eliminar tarea: ${err.message}`);
+      alert(err.message);
     } finally {
       setLoadingAction(false);
     }
   };
 
-  if (!token) {
-    return (
-      <div className="p-6 max-w-2xl mx-auto dark:bg-gray-900 dark:text-white">
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-          <p className="font-medium">Error de autenticación</p>
-          <p>Debes iniciar sesión para gestionar tus tareas. Por favor, ve a la página de login.</p>
-        </div>
-      </div>
-    );
-  }
+  const handleAddTarea = async (e) => {
+    e.preventDefault();
+    if (!nuevaTarea.trim()) return;
+    setLoadingAction(true);
+    try {
+      // Obtenemos el primer proyecto para asignar la tarea
+      const proyResp = await fetch("/api/proyectos", { headers: { "Authorization": `Bearer ${token}` } });
+      const proyData = await proyResp.json();
+      const proyectoId = proyData.proyectos[0]?.id;
 
-  if (loading) {
-    return (
-      <div className="p-6 text-center dark:bg-gray-900 dark:text-white">
-        <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 dark:border-white"></div>
-        <p className="mt-2 text-gray-600 dark:text-gray-400">Cargando tareas...</p>
-      </div>
-    );
-  }
-  
+      const response = await fetch("/api/tareas", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+        body: JSON.stringify({ nombre: nuevaTarea, proyecto_id: proyectoId })
+      });
+      const tareaCreada = await response.json();
+      setTareas([...tareas, tareaCreada]);
+      setNuevaTarea("");
+    } catch (err) {
+      setError("Error al crear");
+    } finally {
+      setLoadingAction(false);
+    }
+  };
+
+  if (loading) return <div className="p-6 text-center dark:text-white">Cargando...</div>;
 
   return (
-    <section className="p-6 max-w-4xl mx-auto dark:bg-gray-900 dark:text-white">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Gestión de Tareas</h1>
-        <span className="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full dark:bg-blue-900/30 dark:text-blue-200">
-          {tareas.length} tareas
-        </span>
-      </div>
+    <section className="p-6 max-w-4xl mx-auto dark:bg-gray-900">
+      <h1 className="text-3xl font-bold mb-6 dark:text-white">Gestión de Tareas</h1>
       
-      {/* Todolist para tareas*/}
-      <div className="mb-8 bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 p-5">
-        <form onSubmit={handleAddTarea} className="flex flex-col sm:flex-row gap-3">
-          <input
-            type="text"
-            value={nuevaTarea}
-            onChange={(e) => setNuevaTarea(e.target.value)}
-            placeholder="Nueva tarea..."
-            className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg 
-                       bg-white dark:bg-gray-700 text-gray-900 dark:text-white
-                       focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-            disabled={loadingAction}
-          />
-          <button
-            type="submit"
-            disabled={loadingAction || !nuevaTarea.trim()}
-            className={`px-6 py-3 rounded-lg font-medium text-white transition-colors ${
-              loadingAction || !nuevaTarea.trim() 
-                ? "bg-gray-400 cursor-not-allowed dark:bg-gray-600" 
-                : "bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800"
-            }`}
-          >
-            {loadingAction ? (
-              <span className="flex items-center justify-center">
-                <span className="inline-block animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2"></span>
-                Creando...
-              </span>
-            ) : (
-              "Añadir Tarea"
-            )}
-          </button>
-        </form>
-        {error && (
-          <p className="mt-3 text-red-600 bg-red-50 p-3 rounded-lg text-sm dark:text-red-400 dark:bg-red-900/20">
-            {error}
-          </p>
-        )}
-      </div>
+      {/* Formulario */}
+      <form onSubmit={handleAddTarea} className="flex gap-3 mb-8">
+        <input
+          type="text"
+          value={nuevaTarea}
+          onChange={(e) => setNuevaTarea(e.target.value)}
+          placeholder="Nueva tarea..."
+          className="flex-1 p-3 border rounded-lg dark:bg-gray-700 dark:text-white"
+        />
+        <button type="submit" className="bg-blue-600 text-white px-6 rounded-lg">Añadir</button>
+      </form>
 
-      {/* Lista de tareas */}
-      {tareas.length === 0 ? (
-        <div className="text-center py-16 bg-gray-50 dark:bg-gray-800 rounded-2xl border-2 border-dashed border-gray-300 dark:border-gray-700">
-          <div className="text-5xl mb-4 text-gray-300 dark:text-gray-600">📋</div>
-          <h2 className="text-2xl font-semibold text-gray-700 dark:text-white mb-2">No tienes tareas</h2>
-          <p className="text-gray-500 dark:text-gray-400 mb-6"></p>
-          <button
-            onClick={() => document.querySelector('input').focus()}
-            className="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors dark:bg-blue-700 dark:hover:bg-blue-800"
-          >
-            Añadir
-          </button>
-        </div>
-      ) : (
-        <div className="space-y-3">
-          {tareas.map(tarea => (
-            <div 
-              key={tarea.id} 
-              className="flex items-center justify-between p-5 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-shadow border border-gray-100 dark:border-gray-700"
-            >
-              <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-lg text-gray-900 dark:text-white truncate">{tarea.nombre}</h3>
-                <div className="mt-2 flex items-center gap-4">
-                  <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${
-                    tarea.estado === "Finalizado" 
-                      ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-200" 
-                      : tarea.estado === "En Proceso" 
-                        ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-200" 
-                        : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-200"
-                  }`}>
-                    {tarea.estado}
-                  </span>
-                  <span className="text-sm text-gray-500 dark:text-gray-400">Proyecto ID: {tarea.proyecto_id}</span>
-                </div>
-              </div>
-              
-              <button
-                onClick={() => handleDeleteTarea(tarea.id)}
-                disabled={loadingAction}
-                className={`ml-4 p-2 rounded-lg transition-colors ${
-                  loadingAction 
-                    ? "text-gray-400 cursor-not-allowed dark:text-gray-600" 
-                    : "text-red-500 hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-900/20 dark:text-red-400"
-                }`}
-                title="Eliminar tarea"
-              >
-                <i className="bi bi-trash text-xl"></i>
-              </button>
+      {/* Lista de Tareas */}
+      <div className="space-y-3">
+        {tareas.map(tarea => (
+          <div key={tarea.id} className="flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-xl shadow border dark:border-gray-700">
+            <div>
+              <h3 className="font-semibold dark:text-white">{tarea.nombre}</h3>
+              <span className="text-xs text-gray-500">{tarea.estado}</span>
             </div>
-          ))}
-        </div>
-      )}
+            
+            {/* BOTÓN DE ELIMINAR */}
+            <button
+              onClick={() => handleDeleteTarea(tarea.id)}
+              className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            </button>
+          </div>
+        ))}
+      </div>
     </section>
   );
 }
