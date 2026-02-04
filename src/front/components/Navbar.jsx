@@ -51,30 +51,7 @@ export default function Navbar({ onMenuClick }) {
         <div className="flex items-center gap-3 relative">
 
           {/* Notifications */}
-          <div className="relative">
-            <button>
-              <button
-                onClick={() => setNotificationsOpen(!notificationsOpen)}
-                className="p-2 text-black rounded-lg hover:bg-gray-100"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                </svg>
-              </button>
-              {notificationsOpen}
-            </button>
-            {notificationsOpen && (
-              <div className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-lg border border-gray-100 z-50">
-                <div className="p-4 font-semibold text-center text-black border-b">Notifications</div>
-                <div className="p-4 text-sm text-gray-600">No new notifications</div>
-                <div className="p-4 font-semibold text-center text-black border-b">Notifications</div>
-                <div className="p-4 text-sm text-gray-600">No new notifications</div>
-                <div className="p-4 font-semibold text-center text-black border-b">Notifications</div>
-                <div className="p-4 text-sm text-gray-600">No new notifications</div>
-              </div>
-            )}
-          </div>
+          
 
           {/* User Avatar & Dropdown */}
           <div className="relative" ref={dropdownRef}>
@@ -96,56 +73,13 @@ export default function Navbar({ onMenuClick }) {
                   <p className="text-sm text-gray-500">{user?.email || "Cargando..."}</p>
                 </div>
 
-                {/* STATUS SECTION */}
-                <div className="px-4 py-2 border-y">
-                  <p className="text-xs font-semibold text-gray-500 mb-2 uppercase">Estado</p>
-                  <ul className="text-sm text-gray-700 space-y-1">
-                    {Object.keys(statusColors).map((s) => (
-                      <li
-                        key={s}
-                        onClick={() => setStatus(s)}
-                        className="flex items-center gap-2 px-2 py-1 rounded hover:bg-gray-100 cursor-pointer capitalize"
-                      >
-                        <span className={`w-2 h-2 rounded-full ${statusColors[s]}`}></span>
-                        {s}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                
 
                 {/* ACTIONS */}
                 <ul className="text-sm text-gray-700">
-                  <li className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 cursor-pointer">
-                    <span>My profile</span>
-                  </li>
+                  
                   {/*IDIOMAS*/}
-                  <li className="relative border-t border-b bg-gray-50">
-                    <button
-                      onClick={() => setLangOpen(!langOpen)}
-                      className="flex items-center justify-between w-full px-4 py-2 hover:bg-gray-100 text-sm font-medium"
-                    >
-                      <div className="flex items-center gap-2">
-                        🌐 <span>{selectedLang}</span>
-                      </div>
-                      <svg className={`w-4 h-4 transition-transform ${langOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                    </button>
-
-
-                    {langOpen && (
-                      <div className="bg-white border-t">
-                        {languages.map((lang) => (
-                          // changeLanguage
-                          <button
-                            key={lang.code}
-                            onClick={() => changeLanguage(lang.code)}
-                            className="flex items-center w-full px-8 py-2 text-xs hover:bg-blue-50 text-left"
-                          >
-                            {lang.name}
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </li>
+                  
 
                   {/* SIGN OUT */}
                   <li className="flex items-center gap-3 px-4 py-2 hover:bg-red-50 text-red-600 cursor-pointer">

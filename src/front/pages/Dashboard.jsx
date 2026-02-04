@@ -12,6 +12,8 @@ export default function Dashboard() {
   const token = localStorage.getItem("jwt-token");
   const { store, dispatch } = useGlobalReducer();
 
+   const [fichajes, setFichajes] = useState([]);
+
   const refrescarFichajes = async () => {
     // Aquí podrías llamar a la API /mis-fichajes si quieres reflejar cambios
     console.log("Refrescar fichajes desde Dashboard");

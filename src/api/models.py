@@ -239,6 +239,7 @@ class Tarea(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(120), nullable=False)
     estado = db.Column(db.String(80), nullable=False)
+    
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     def serialize(self):
         return {
@@ -246,6 +247,7 @@ class Tarea(db.Model):
             "nombre": self.nombre,
             "estado": self.estado.value,
             "user_id": self.user_id
+            
             
         }
     

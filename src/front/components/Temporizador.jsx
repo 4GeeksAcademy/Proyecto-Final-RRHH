@@ -6,7 +6,10 @@ export default function TemporizadorFichaje({ token, refrescarFichajes }) {
   const [horaInicio, setHoraInicio] = useState(() => {
     const guardado = localStorage.getItem("horaInicioFichaje");
     return guardado ? parseInt(guardado) : null;
+
   });
+
+   
 
   const intervaloRef = useRef(null);
  useEffect(() => {

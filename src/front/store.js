@@ -1,6 +1,15 @@
-export const initialStore = () => {
+const calcularResumen = (listaTareas) => {
   return {
-    is_active: !!localStorage.getItem("jwt-token"),
+    hecho: listaTareas.filter(t => t.estado === "Hecho").length,
+    progreso: listaTareas.filter(t => t.estado === "En Proceso").length,
+    porHacer: listaTareas.filter(t => t.estado === "Por Hacer").length,
+  };
+};
+
+
+  export const initialStore = () => {
+    return {
+      is_active: !!localStorage.getItem("jwt-token"),
     usuarios: [],
     empresa: [null],
     roles: [],
@@ -15,13 +24,13 @@ export const initialStore = () => {
     selectRolUsuario: "",
 
     tareas: [],
-    tareasResumen: {
-      hecho: 0,
-      progreso: 0,
-      porHacer: 0,
-    },
-  };
-};
+   tareasResumen: { hecho: 0, progreso: 0, porHacer: 0 },
+    fichajes: [],
+    }
+  }
+  
+
+
 
 export default function storeReducer(store, action = {}) {
   switch (action.type) {
@@ -171,7 +180,7 @@ export default function storeReducer(store, action = {}) {
       
 
     default:
-      throw Error("Unknown action.");
+      throw store;
   }
 
   
