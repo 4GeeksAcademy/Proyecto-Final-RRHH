@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 
 
 export default function Reuniones() {
-  
+
   const [datos, setDatos] = useState([]);
 
   useEffect(() => {
@@ -25,8 +25,8 @@ export default function Reuniones() {
       fila.EMAIL_INVITADO?.toLowerCase() === "fillaux33@gmail.com"
   );
   return (
-    <section className="">
-      <h1 className="text-3xl mb-4 text-black">
+    <section className="text-black">
+      <h1 className="text-3xl mb-4">
         Página de Reuniones
       </h1>
       <Link
@@ -36,7 +36,7 @@ export default function Reuniones() {
     rounded-xl
     bg-gradient-to-r from-blue-600 to-indigo-600
     px-6 py-3
-    text-white font-semibold
+    text-black font-semibold
     shadow-lg shadow-blue-500/30
     transition-all duration-300
     hover:scale-105 hover:shadow-xl hover:shadow-blue-500/40
@@ -49,7 +49,7 @@ export default function Reuniones() {
       <h1
         className="
     text-4xl mb-6 font-bold
-    text-gray-900
+    text-black
     animate-fadeInGlow
     transition-all duration-300
     hover:text-blue-500
@@ -60,7 +60,7 @@ export default function Reuniones() {
       </h1>
 
       <table className="w-full text-sm rounded-lg overflow-hidden shadow-lg">
-        <thead className="bg-gradient-to-r from-blue-500 to-blue-400 text-white">
+        <thead className="bg-gradient-to-r from-blue-500 to-blue-400 text-black">
           <tr>
             <th className="p-3 text-left">FECHA</th>
             <th className="p-3 text-left">Tiempo Reunión "minutos"</th>
