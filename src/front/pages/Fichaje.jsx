@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 export default function Fichaje() {
   const [fichajes, setFichajes] = useState([]);
   const [usuario, setUsuario] = useState(null);
+  const [mensaje, setMensaje] = useState(null);
   const token = localStorage.getItem("jwt-token");
  
 
@@ -78,6 +79,7 @@ export default function Fichaje() {
       return;
     }
 
+    setMensaje(null);
     try {
       const res = await fetch(
         import.meta.env.VITE_BACKEND_URL + "/api/fichaje",
@@ -91,9 +93,13 @@ export default function Fichaje() {
 
       if (!res.ok) throw new Error("Error al fichar");
 
+      setMensaje("Fichado correctamente");
       await cargarFichajes();
+      setTimeout(() => setMensaje(null), 3000);
     } catch (error) {
+      setMensaje("Error fichando, inténtalo de nuevo");
       console.error("Error fichando:", error);
+      setTimeout(() => setMensaje(null), 3000);
     }
   };
 
@@ -104,13 +110,31 @@ export default function Fichaje() {
   }, [token]);
 
   return (
-    <section className="p-4 md:p-8 bg-white">
+    <section className="p-4 md:p-8 bg-white text-black">
+
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-lg font-semibold text-black">Fichajes</h2>
+        <div className="flex items-center gap-3">
+          {mensaje && (
+            <div className="text-sm text-black text-center px-3 py-1 rounded-base bg-neutral-secondary-medium">
+              {mensaje}
+            </div>
+          )}
+          <button
+            onClick={fichar}
+            className="text-white bg-primary px-3 py-2 rounded-base text-sm hover:opacity-90"
+            disabled={!token}
+          >
+            Fichar
+          </button>
+        </div>
+      </div>
 
       
 
 
       <div className="relative overflow-x-auto bg-neutral-primary-soft shadow-xs rounded-base border border-default">
-        <table className="w-full text-sm text-left text-body">
+        <table className="w-full text-sm text-left text-black">
           <thead className="text-sm bg-neutral-secondary-medium border-b border-t">
             <tr>
               <th className="px-6 py-3 text-left">Fecha</th>
@@ -172,14 +196,14 @@ export default function Fichaje() {
         <div className="flex justify-center mt-4 space-x-2">
           <a
             href="#"
-            className="text-body bg-neutral-secondary-medium border border-default-medium hover:bg-neutral-tertiary-medium hover:text-heading shadow-xs font-medium leading-5 rounded-base text-sm px-3 py-2 focus:outline-none"
+            className="text-black bg-neutral-secondary-medium border border-default-medium hover:bg-neutral-tertiary-medium hover:text-heading shadow-xs font-medium leading-5 rounded-base text-sm px-3 py-2 focus:outline-none"
           >
             Anterior
           </a>
 
           <a
             href="#"
-            className="text-body bg-neutral-secondary-medium border border-default-medium hover:bg-neutral-tertiary-medium hover:text-heading shadow-xs font-medium leading-5 rounded-base text-sm px-3 py-2 focus:outline-none"
+            className="text-black bg-neutral-secondary-medium border border-default-medium hover:bg-neutral-tertiary-medium hover:text-heading shadow-xs font-medium leading-5 rounded-base text-sm px-3 py-2 focus:outline-none"
           >
             Siguiente
           </a>

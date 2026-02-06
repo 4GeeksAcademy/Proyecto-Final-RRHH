@@ -239,7 +239,7 @@ export default function Tareas({ onTareasUpdate }) {
             value={nuevaTarea}
             onChange={(e) => setNuevaTarea(e.target.value)}
             placeholder="Nueva tarea..."
-            className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+            className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-black"
             disabled={loadingAction}
           />
           <button
@@ -287,7 +287,7 @@ export default function Tareas({ onTareasUpdate }) {
                     type="text"
                     value={editNombre}
                     onChange={(e) => setEditNombre(e.target.value)}
-                    className="border rounded px-2 py-1 w-full mr-3"
+                    className="border rounded px-2 py-1 w-full mr-3 text-black"
                   />
                 ) : (
                   <h2 className="text-xl font-semibold text-gray-900">
