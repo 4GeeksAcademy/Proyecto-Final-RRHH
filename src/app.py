@@ -69,120 +69,111 @@ app.register_blueprint(api, url_prefix='/api')
 # Handle/serialize errors like a JSON object
 
 
-# @app.route('/email-prueba', methods=['GET'])
-# def email_prueba():
-
-# msg = Message(subject="email de prueba", sender='teamcore2026@gmail.com', recipients=['yessigarrido.work@gmail.com'])
-# msg.body = ''
-# mail.send(msg)
-
-# return jsonify({
-# "mensaje": 'Email sent successfully!'
-# }),200
-
-
-# route de correos electronicos Yessica
-
 @app.route('/email-prueba', methods=['POST'])
 def email_prueba():
-    data = request.get_json()
-    recipient = data.get("recipient")
-    nombre = data.get("nombre")
-    apellidos = data.get("apellidos")
-    password = data.get("password")
-    empresa_nombre = data.get("empresa_nombre")
-   
+    """Endpoint para enviar correo de bienvenida a nuevos usuarios"""
+    try:
+        data = request.get_json()
+        recipient = data.get("recipient")
+        nombre = data.get("nombre")
+        apellidos = data.get("apellidos")
+        password = data.get("password")
+        empresa_nombre = data.get("empresa_nombre", "TeamCore")
+       
+        if not recipient or not nombre or not apellidos or not password:
+            return jsonify({"error": "Faltan datos para el correo"}), 400
 
-    if not recipient or not nombre or not apellidos or not password:
-        return jsonify({"error": "Faltan datos para el correo"}), 400
+        # HTML inline para correo de bienvenida
+        html_body = f"""
+        <!DOCTYPE html>
+        <html lang="es">
+        <head>
+        <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <title>Bienvenido a {empresa_nombre}</title>
+        <style>
+            body {{ margin:0; padding:0; font-family: Arial, sans-serif; background-color:#f5f7ff; }}
+            .container {{ max-width:600px; margin:auto; background:white; border-radius:10px; padding:20px; }}
+            .header {{ text-align:center; font-size:24px; font-weight:bold; margin-bottom:20px; }}
+            .image-wrapper {{ text-align:center; margin:20px 0; }}
+            .text-center {{ text-align:center; }}
+            .text-blue {{ color:#1e40af; font-weight:bold; }}
+            .text-red {{ color:#b91c1c; font-weight:bold; }}
+            .border-bottom {{ border-bottom:2px solid black; padding-bottom:5px; display:inline-block; margin-bottom:10px; }}
+            .mb-6 {{ margin-bottom:1.5rem; }}
+            .w-150 {{ width:90%; max-width:450px; margin:auto; }}
+            a {{ color:#1e40af; text-decoration:underline; }}
+            p {{ margin:5px 0; }}
+            table {{ width:100%; border-spacing:0; }}
+            td {{ padding:0; }}
+        </style>
+        </head>
+        <body>
+        <table class="bodycorreo" width="100%" cellpadding="0" cellspacing="0">
+          <tr>
+            <td>
+              <div class="container">
+                <div class="header">
+                  Bienvenido/a {nombre} {apellidos}! 🎉<br>ya formas parte de nuestro equipo🎉
+                </div>
 
-    # HTML inline basado en tu CardCorreoElectronico.jsx
-    html_body = f"""
-    <!DOCTYPE html>
-    <html lang="es">
-    <head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Bienvenido a {empresa_nombre}</title>
-    <style>
-        body {{ margin:0; padding:0; font-family: Arial, sans-serif; background-color:#f5f7ff; }}
-        .container {{ max-width:600px; margin:auto; background:white; border-radius:10px; padding:20px; }}
-        .header {{ text-align:center; font-size:24px; font-weight:bold; margin-bottom:20px; }}
-        .image-wrapper {{ text-align:center; margin:20px 0; }}
-        .text-center {{ text-align:center; }}
-        .text-blue {{ color:#1e40af; font-weight:bold; }}
-        .text-red {{ color:#b91c1c; font-weight:bold; }}
-        .border-bottom {{ border-bottom:2px solid black; padding-bottom:5px; display:inline-block; margin-bottom:10px; }}
-        .mb-6 {{ margin-bottom:1.5rem; }}
-        .w-150 {{ width:90%; max-width:450px; margin:auto; }}
-        a {{ color:#1e40af; text-decoration:underline; }}
-        p {{ margin:5px 0; }}
-        table {{ width:100%; border-spacing:0; }}
-        td {{ padding:0; }}
-    </style>
-    </head>
-    <body>
-    <table class="bodycorreo" width="100%" cellpadding="0" cellspacing="0">
-      <tr>
-        <td>
-          <div class="container">
-            <div class="header">
-              Bienvenido/a {nombre} {apellidos}! 🎉<br>ya formas parte de nuestro equipo🎉
-            </div>
+                <br>
+                <br>
 
-            <br>
-            <br>
+                <p class="text-center w-150 mb-6">
+                  <span class="border-bottom">Estamos muy felices de que te unas a nuestro equipo.</span><br>
+                  En <strong>{empresa_nombre}</strong> valoramos las ideas, el compromiso y las personas que hacen que las cosas sucedan.
+                  Aquí encontrarás un equipo dispuesto a apoyarte, aprender contigo y celebrar cada logro en el camino.<br>
+                  <span class="border-bottom">Esta es una nueva etapa, y estamos seguros de que tu aporte será clave para seguir construyendo grandes cosas juntos.
+                  ¡Gracias por sumarte, nos encanta tenerte aquí! 🚀</span>
+                </p>
 
-            <p class="text-center w-150 mb-6">
-              <span class="border-bottom">Estamos muy felices de que te unas a nuestro equipo.</span><br>
-              En <strong>{empresa_nombre}</strong> valoramos las ideas, el compromiso y las personas que hacen que las cosas sucedan.
-              Aquí encontrarás un equipo dispuesto a apoyarte, aprender contigo y celebrar cada logro en el camino.<br>
-              <span class="border-bottom">Esta es una nueva etapa, y estamos seguros de que tu aporte será clave para seguir construyendo grandes cosas juntos.
-              ¡Gracias por sumarte, nos encanta tenerte aquí! 🚀</span>
-            </p>
+                <div class="text-center w-150 mb-6">
+                  <a href="">Acceso a {empresa_nombre}</a>
+                </div>
 
-            <div class="text-center w-150 mb-6">
-              <a href="">Acceso a {empresa_nombre}</a>
-            </div>
+                <div class="text-center w-150 mb-6">
+                  <span class="text-blue">Usuario:</span>
+                  <p>{recipient}</p>
+                  <span class="text-blue">Contraseña:</span>
+                  <p>{password}</p>
+                </div>
 
-            <div class="text-center w-150 mb-6">
-              <span class="text-blue">Usuario:</span>
-              <p>{recipient}</p>
-              <span class="text-blue">Contraseña:</span>
-              <p>{password}</p>
-            </div>
+                <p class="text-center w-150 mb-6">
+                  Para cambiar tu contraseña podrás hacerlo tal y como te indicamos aquí.<br>
+                  Por favor, no olvides que debes acceder siempre desde la URL indicada en este email.
+                  <br>
+                  <br>
+                  <span class="text-red">IMPORTANTE:</span> Es obligatorio generar una nueva contraseña por motivos de seguridad.
+                  <br>
+                  <br>
+                  Gracias😊
+                </p>
 
-            <p class="text-center w-150 mb-6">
-              Para cambiar tu contraseña podrás hacerlo tal y como te indicamos aquí.<br>
-              Por favor, no olvides que debes acceder siempre desde la <a href="https://tusitio.com/login">URL indicada en este email</a>.
-              <br>
-              <br>
-              <span class="text-red">IMPORTANTE:</span> Es obligatorio generar una nueva contraseña por motivos de seguridad.
-              <br>
-              <br>
-              Gracias😊
-            </p>
+                <div class="text-center w-150 mb-6 ">
+                 <strong>{empresa_nombre}</strong>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </table>
+        </body>
+        </html>
+        """
 
-            <div class="text-center w-150 mb-6 ">
-             <strong>{empresa_nombre}</strong>
-            </div>
-          </div>
-        </td>
-      </tr>
-    </table>
-    </body>
-    </html>
-    """
+        msg = Message(
+            subject=f"Bienvenido a {empresa_nombre} 🚀",
+            sender='teamcore2026@gmail.com',
+            recipients=[recipient],
+            html=html_body
+        )
 
-    msg = Message(
-        subject=f"Bienvenido a {empresa_nombre} 🚀",
-        sender='teamcore2026@gmail.com',
-        recipients=[recipient],
-        html=html_body
-    )
-
-    mail.send(msg)
-    return jsonify({"mensaje": "Email enviado correctamente"}), 200
+        mail.send(msg)
+        return jsonify({"mensaje": "Email enviado correctamente"}), 200
+        
+    except Exception as e:
+        print(f"Error enviando correo: {str(e)}")
+        return jsonify({"error": f"Error enviando correo: {str(e)}"}), 500
 
 
 

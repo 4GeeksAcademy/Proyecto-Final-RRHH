@@ -116,7 +116,7 @@ export default function GraficoTrabajo({ data, totalHoras }) {
                   >
                     {/* Mostrar horas dentro de la barra si es suficientemente alta */}
                     {targetHeight > 25 && (
-                      <span className="text-xs text-white px-1 py-0.5">{horas}h</span>
+                      <span className="text-xs text-gray-900 px-1 py-0.5">{horas}h</span>
                     )}
                   </div>
                 </div>

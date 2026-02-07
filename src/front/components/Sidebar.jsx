@@ -27,22 +27,6 @@ export default function SidebarLayout({ isOpen, onClose }) {
         fetchUser();
     }, []);
 
-    function es_admin() {
-        if (user.rol.es_admin == true) {
-            return (<li>
-                <a href="/administracion"
-                    className="flex items-center p-2 rounded-lg text-gray-900 text-gray-200 hover:bg-gray-100"
-                    onClick={onClose}
-                >
-                    <svg className="w-6 h-6 text-gray-800 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="square" strokeLinejoin="round" strokeWidth="2" d="M10 19H5a1 1 0 0 1-1-1v-1a3 3 0 0 1 3-3h2m10 1a3 3 0 0 1-3 3m3-3a3 3 0 0 0-3-3m3 3h1m-4 3a3 3 0 0 1-3-3m3 3v1m-3-4a3 3 0 0 1 3-3m-3 3h-1m4-3v-1m-2.121 1.879-.707-.707m5.656 5.656-.707-.707m-4.242 0-.707.707m5.656-5.656-.707.707M12 8a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                    </svg>
-                    <span className="ml-3">Administración</span>
-                </a>
-            </li>)
-        }
-    }
-
     return (
         <>
             {/* OVERLAY oscuro en móvil */}
@@ -56,7 +40,7 @@ export default function SidebarLayout({ isOpen, onClose }) {
             {/* SIDEBAR */}
             <aside
                 className={`p-6 fixed top-0 left-0 z-40 w-64 h-screen pt-14
-          bg-white border-r border-gray-200 text-white
+          bg-white border-r border-gray-200 text-gray-900
           transform transition-transform duration-300 ease-in-out
           ${isOpen ? "translate-x-0" : "-translate-x-full"}
           md:translate-x-0
@@ -73,7 +57,7 @@ export default function SidebarLayout({ isOpen, onClose }) {
 
                                 {/* Botón cerrar SOLO en móvil */}
                                 <button
-                                    className="md:hidden p-2 rounded hover:bg-gray-100 text-white"
+                                    className="md:hidden p-2 rounded hover:bg-gray-100 text-gray-900"
                                     onClick={onClose}
                                 >
                                     ✕
@@ -141,7 +125,7 @@ export default function SidebarLayout({ isOpen, onClose }) {
                         {user?.rol?.es_admin && (
                             <li>
                                 <a href="/administracion"
-                                    className="flex items-center p-2 rounded-lg text-gray-900 text-gray-200 hover:bg-gray-100"
+                                    className="flex items-center p-2 rounded-lg text-gray-900 hover:bg-gray-100"
                                     onClick={onClose}
                                 >
                                     <svg className="w-6 h-6 text-gray-800 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -161,7 +145,7 @@ export default function SidebarLayout({ isOpen, onClose }) {
           p-6 
           min-h-screen
           bg-gray-50
-          text-gray-900 text-white
+          text-gray-900
           transition-colors duration-300
           md:ml-64
         "

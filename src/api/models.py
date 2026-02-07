@@ -71,7 +71,7 @@ class User(db.Model):
             "link_calendly": self.link_calendly,
             "empresa_id": self.empresa_id,
             "rol_id": self.rol_id,
-            "rol": self.rol.nombre if self.rol else None,
+            "rol": self.rol.serialize() if self.rol else None,
             "horario_id": self.horario_id,
             "horario": self.horario.name if self.horario else None,
             "tareas": [t.serialize() for t in self.tareas] if self.tareas else []

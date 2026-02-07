@@ -245,9 +245,9 @@ export default function Tareas({ onTareasUpdate }) {
           <button
             type="submit"
             disabled={loadingAction || !nuevaTarea.trim()}
-            className={`px-6 py-3 rounded-lg font-medium text-white transition-colors ${loadingAction || !nuevaTarea.trim()
+            className={`px-6 py-3 rounded-lg font-medium text-gray-900 transition-colors ${loadingAction || !nuevaTarea.trim()
               ? "bg-gray-400 cursor-not-allowed"
-              : "bg-blue-600 hover:bg-blue-700"
+              : "bg-blue-600 hover:bg-blue-700 text-white"
               }`}
           >
             {loadingAction ? "Creando..." : "Añadir Tarea"}
@@ -350,9 +350,9 @@ export default function Tareas({ onTareasUpdate }) {
 
               {/* Botones de cambio de estado */}
               <div className="flex gap-3">
-                <button onClick={() => cambiarEstado(t.id, "Hecho")} disabled={t.estado === "Hecho"} className={`px-3 py-1 rounded text-sm font-medium transition ${t.estado === "Hecho" ? "bg-green-300 text-white cursor-default" : "bg-green-100 text-green-800 hover:bg-green-300"}`}>Hecho</button>
-                <button onClick={() => cambiarEstado(t.id, "En Proceso")} disabled={t.estado === "En Proceso"} className={`px-3 py-1 rounded text-sm font-medium transition ${t.estado === "En Proceso" ? "bg-yellow-300 text-white cursor-default" : "bg-yellow-100 text-yellow-800 hover:bg-yellow-300"}`}>En Proceso</button>
-                <button onClick={() => cambiarEstado(t.id, "Por Hacer")} disabled={t.estado === "Por Hacer"} className={`px-3 py-1 rounded text-sm font-medium transition ${t.estado === "Por Hacer" ? "bg-red-300 text-white cursor-default" : "bg-red-100 text-red-800 hover:bg-red-300"}`}>Por Hacer</button>
+                <button onClick={() => cambiarEstado(t.id, "Hecho")} disabled={t.estado === "Hecho"} className={`px-3 py-1 rounded text-sm font-medium transition ${t.estado === "Hecho" ? "bg-green-300 text-gray-900 cursor-default" : "bg-green-100 text-green-800 hover:bg-green-300"}`}>Hecho</button>
+                <button onClick={() => cambiarEstado(t.id, "En Proceso")} disabled={t.estado === "En Proceso"} className={`px-3 py-1 rounded text-sm font-medium transition ${t.estado === "En Proceso" ? "bg-yellow-300 text-gray-900 cursor-default" : "bg-yellow-100 text-yellow-800 hover:bg-yellow-300"}`}>En Proceso</button>
+                <button onClick={() => cambiarEstado(t.id, "Por Hacer")} disabled={t.estado === "Por Hacer"} className={`px-3 py-1 rounded text-sm font-medium transition ${t.estado === "Por Hacer" ? "bg-red-300 text-gray-900 cursor-default" : "bg-red-100 text-red-800 hover:bg-red-300"}`}>Por Hacer</button>
 
               </div>
             </div>

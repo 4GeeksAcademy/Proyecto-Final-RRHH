@@ -2,7 +2,7 @@ import FloatingInput from "../components/InputForm.jsx";
 import FloatingSelect from "../components/FloatingSelect.jsx";
 import useGlobalReducer from "../hooks/useGlobalReducer";
 import { useNavigate } from "react-router-dom";
-import { useState , useEffect} from "react";
+import { useState, useEffect } from "react";
 
 export default function CrearUsuario() {
 
@@ -63,53 +63,53 @@ export default function CrearUsuario() {
 
   /*funcion de correo electronico Yessi*/
   async function enviarCorreo() {
-  const resp = await fetch(`${import.meta.env.VITE_BACKEND_URL}/email-prueba`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ 
-      recipient: store.inputEmailUsuario,
-      nombre: store.inputNameUsuario,
-      apellidos: store.inputApellidosUsuario,
-      password: store.inputPasswordUsuario,
-      empresa_nombre: store.empresa?.nombre || "TeamCore",
-      video_url: store.empresa?.videoBienvenida || "/docs/assets/teamcoreLogo2.png"
-    }),
-  });
+    const resp = await fetch(`${import.meta.env.VITE_BACKEND_URL}/email-prueba`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        recipient: store.inputEmailUsuario,
+        nombre: store.inputNameUsuario,
+        apellidos: store.inputApellidosUsuario,
+        password: store.inputPasswordUsuario,
+        empresa_nombre: store.empresa?.nombre || "TeamCore",
+        video_url: store.empresa?.videoBienvenida || "/docs/assets/teamcoreLogo2.png"
+      }),
+    });
 
-  if (!resp.ok) throw new Error("Error enviando el correo");
-  return await resp.json();
-}
-
-useEffect(() => {
-  async function fetchEmpresa() {
-    try {
-      const resp = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/empresa`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (!resp.ok) throw new Error("Error obteniendo la empresa");
-
-      const data = await resp.json();
-
-      dispatch({
-        type: "set_empresa",
-        payload: { empresa: data.empresa },
-      });
-
-    } catch (error) {
-      console.error("Error cargando empresa:", error);
-    }
+    if (!resp.ok) throw new Error("Error enviando el correo");
+    return await resp.json();
   }
 
-  fetchEmpresa();
-}, []);
- 
+  useEffect(() => {
+    async function fetchEmpresa() {
+      try {
+        const resp = await fetch(
+          `${import.meta.env.VITE_BACKEND_URL}/api/empresa`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (!resp.ok) throw new Error("Error obteniendo la empresa");
+
+        const data = await resp.json();
+
+        dispatch({
+          type: "set_empresa",
+          payload: { empresa: data.empresa },
+        });
+
+      } catch (error) {
+        console.error("Error cargando empresa:", error);
+      }
+    }
+
+    fetchEmpresa();
+  }, []);
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-sky-50 via-white to-indigo-50 px-4">
       <form className="w-full max-w-2xl bg-white rounded-2xl shadow-xl border border-neutral-200 p-8 space-y-6" onSubmit={crearUsuario}>
@@ -156,7 +156,7 @@ useEffect(() => {
         </div>
         <button
           type="submit"
-          className="w-full py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-sky-500 text-white font-semibold text-lg hover:opacity-90 transition shadow-md"
+          className="w-full py-3 rounded-xl bg-green-600 hover:bg-green-700 text-white font-semibold text-lg transition shadow-md"
         >
           Crear cuenta
         </button>
