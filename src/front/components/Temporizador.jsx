@@ -6,9 +6,47 @@ export default function TemporizadorFichaje({ token, refrescarFichajes }) {
   const [horaInicio, setHoraInicio] = useState(() => {
     const guardado = localStorage.getItem("horaInicioFichaje");
     return guardado ? parseInt(guardado) : null;
+
   });
 
+   
+
   const intervaloRef = useRef(null);
+ useEffect(() => {
+  const cargarFichajeActivo = async () => {
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/mis-fichajes`,
+        {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        }
+      );
+
+      if (!res.ok) return;
+
+      const data = await res.json();
+
+      // Buscar fichaje activo (sin hora de salida)
+      const fichajeActivo = data.fichajes.find(
+        (f) => !f.hora_salida
+      );
+
+      if (fichajeActivo && fichajeActivo.hora_entrada) {
+        const inicio = new Date(fichajeActivo.hora_entrada).getTime();
+
+        setHoraInicio(inicio);
+        setActivo(true);
+        localStorage.setItem("horaInicioFichaje", inicio);
+      }
+    } catch (error) {
+      console.error("Error cargando fichaje activo:", error);
+    }
+  };
+
+  cargarFichajeActivo();
+}, [token]);
 
   // Actualiza el temporizador
   useEffect(() => {
@@ -80,6 +118,17 @@ export default function TemporizadorFichaje({ token, refrescarFichajes }) {
   useEffect(() => {
     if (horaInicio) setActivo(true);
   }, [horaInicio]);
+
+  // Reiniciar temporizador cuando el token cambie (p. ej. al hacer logout o login de otro usuario)
+  useEffect(() => {
+    if (!token) {
+      setActivo(false);
+      setSegundos(0);
+      setHoraInicio(null);
+      localStorage.removeItem("horaInicioFichaje");
+      clearInterval(intervaloRef.current);
+    }
+  }, [token]);
 
   const formatearTiempo = () => {
     const hrs = Math.floor(segundos / 3600);

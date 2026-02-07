@@ -12,31 +12,19 @@ export default function EditarUsuario() {
   const { store, dispatch } = useGlobalReducer();
   const token = localStorage.getItem("jwt-token");
 
-  useEffect(function() {
-    if (!token) return;
-
+  useEffect(function () {
     fetch(import.meta.env.VITE_BACKEND_URL + `/api/usuario/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
     })
-    .then(response => response.json())
-    .then(data => {
-      // 1. Cambiamos el nombre para evitar el error de "constant assignment"
-      const datosUsuario = data.usuario;
-      console.log("Usuario cargado:", datosUsuario);
-      
-      // 2. Guardamos en el estado local para que los inputs funcionen
-      setUsuario(datosUsuario);
-      
-      // 3. Sincronizamos con el reducer global si es necesario
-      dispatch({ 
-        type: 'set_input_nameUsuario', 
-        payload: { inputNameUsuario: datosUsuario.nombre } 
-      });
-    })
-    .catch(error => console.error("Error cargando usuario:", error));
-  }, [id, token, dispatch]); // Importante: dependencias para evitar bucle infinito
+      .then(response => response.json())
+      .then(data => {
+        setUsuario(data.usuario);
+        console.log("Usuario", data.usuario);
+        dispatch({ type: 'set_input_nameUsuario', payload: { inputNameUsuario: data.usuario.nombre } })
+      })
+  }, [])
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-sky-50 via-white to-indigo-50 px-4">
@@ -50,33 +38,38 @@ export default function EditarUsuario() {
         </p>
 
         <div className="grid md:grid-cols-2 gap-6">
-          <FloatingInput id="email" label="Correo electrónico" type="email" value={usuario?.email || ""} />
+          <FloatingInput id="email" label="Correo electrónico" type="email" value={usuario?.email} />
           <FloatingInput id="password" label="Contraseña" type="password" />
         </div>
 
         {/* Name */}
         <div className="grid md:grid-cols-2 gap-6">
-          <FloatingInput id="first_name" label="Nombre" value={usuario?.nombre || ""} />
-          <FloatingInput id="last_name" label="Apellidos" value={usuario?.apellidos || ""} />
+          <FloatingInput id="first_name" label="Nombre" />
+          <FloatingInput id="last_name" label="Apellidos" />
         </div>
 
         {/* Extra */}
         <div className="grid md:grid-cols-2 gap-6">
-          <FloatingInput id="phone" label="Teléfono" type="tel" value={usuario?.telefono || ""} />
-          <FloatingInput id="dni" label="DNI" value={usuario?.dni || ""} />
+          <FloatingInput id="phone" label="Teléfono" type="tel" />
+          <FloatingInput id="dni" label="DNI" />
         </div>
 
         {/* Selects */}
         <div className="grid md:grid-cols-2 gap-6">
-          <FloatingSelect id="horario" label="Horario" value={usuario?.horario_id || ""}>
+          <FloatingSelect id="horario" label="Horario">
             <option value="">Selecciona horario</option>
+            {/* {store.horarios.map((horario) => {
+              return <option value={horario.id}>{horario.name}</option>
+            })} */}
           </FloatingSelect>
 
-          <FloatingSelect id="rol" label="Rol" value={usuario?.rol_id || ""}>
+          <FloatingSelect id="rol" label="Rol">
             <option value="">Selecciona rol</option>
+            {/* {store.roles.map((rol) => {
+              return <option value={rol.id}>{rol.nombre}</option>
+            })} */}
           </FloatingSelect>
         </div>
-        
         <button
           type="submit"
           className="w-full py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-sky-500 text-white font-semibold text-lg hover:opacity-90 transition shadow-md"

@@ -1,32 +1,43 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
+@layer base {
+  :root {
+    @apply bg-white text-gray-900 transition-colors duration-300;
+  }
+
+  :root.dark {
+    @apply bg-gray-950 text-gray-100;
+  }
+}
 
 nav {
-    background-color:white;
-    color: black;
-    padding: 1rem;
-    text-align: center;
+  background-color: white;
+  color: black;
+  padding: 1rem;
+  text-align: center;
 }
 
 main {
-    background-color: #ecf0f1;
-    padding: 2rem;
+  background-color: #ecf0f1;
+  padding: 2rem;
 }
 
 footer {
-    background-color: white;
-    color: black;
-    text-align: center;
-    padding: 1rem;
+  background-color: white;
+  color: black;
+  text-align: center;
+  padding: 1rem;
 }
 
 .animated-circuits {
-  background:
-    linear-gradient(
-      120deg,
-      rgba(0, 180, 255, 0.15),
-      rgba(0, 255, 255, 0.25),
-      rgba(0, 180, 255, 0.15)
-    );
+  background: linear-gradient(
+    120deg,
+    rgba(0, 180, 255, 0.15),
+    rgba(0, 255, 255, 0.25),
+    rgba(0, 180, 255, 0.15)
+  );
   background-size: 200% 200%;
   animation: circuitFlow 12s ease-in-out infinite;
   mix-blend-mode: screen;
@@ -47,5 +58,4 @@ footer {
 .contenedor-calendly {
   width: 100rem;
   height: auto;
-
 }

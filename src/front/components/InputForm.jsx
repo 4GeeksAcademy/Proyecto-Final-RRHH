@@ -3,8 +3,8 @@ export default function FloatingInput({ id, label, type = "text", onChange }) {
     <div className="flex flex-col gap-1 group">
       <label
         htmlFor={id}
-        className="text-xs font-medium text-neutral-600
-                   group-focus-within:text-indigo-600 transition-colors"
+        className="text-xs font-medium text-neutral-600 dark:text-gray-400
+                   group-focus-within:text-indigo-600 dark:group-focus-within:text-indigo-400 transition-colors"
       >
         {label}
       </label>
@@ -14,9 +14,9 @@ export default function FloatingInput({ id, label, type = "text", onChange }) {
         type={type}
         required
         onChange={onChange}
-        className="w-full px-4 py-3 text-sm text-neutral-800 bg-neutral-50
-                   border border-neutral-300 rounded-xl
-                   focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        className="w-full px-4 py-3 text-sm text-neutral-800 dark:text-white bg-neutral-50 dark:bg-gray-800
+                   border border-neutral-300 dark:border-gray-700 rounded-xl
+                   focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400"
       />
     </div>
   );
